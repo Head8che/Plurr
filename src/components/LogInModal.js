@@ -37,7 +37,7 @@ export default function LogInModal({show, onHide, closeModal}) {
 
       // post the validated data to the backend registration service
       axios
-        .post("http://localhost:8000/service/author/login/", data)
+        .post("https://plurr.herokuapp.com/service/author/login/", data)
         .then((response) => {  
           // close the modal
           closeModal();

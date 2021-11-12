@@ -111,7 +111,7 @@ def getLoggedInAuthorObject(request):
 
 def postToAuthorInbox(request, data, receiver_author_uuid):
   try:
-    url = 'http://localhost:8000/service/author/' + receiver_author_uuid + '/inbox'
+    url = 'https://plurr.herokuapp.com/service/author/' + receiver_author_uuid + '/inbox'
     payload = data
     sender_author_authorization = request.headers['Authorization']
     headers = {'content-type': 'application/json', 'Authorization': sender_author_authorization}

@@ -19,7 +19,7 @@ export const setObjectFromApi = (path, setObject) => {
 // validate the token
 export const validateToken = () => {
   // get a resource from the backend
-  fetch("http://localhost:8000/service/authors/", {
+  fetch("https://plurr.herokuapp.com/service/authors/", {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ export const validateToken = () => {
           if (apiResponse.code === 'token_not_valid') {
 
             // try to get a new token
-            fetch("http://localhost:8000/service/api/token/refresh/", {
+            fetch("https://plurr.herokuapp.com/service/api/token/refresh/", {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',

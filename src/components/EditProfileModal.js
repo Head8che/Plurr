@@ -27,7 +27,7 @@ export default function EditProfileModal({authorUUID, author, show, onHide, clos
     });
 
     const submitHandler = (data) => {
-      fetch(`http://localhost:8000/service/author/${authorUUID}/`, {
+      fetch(`https://plurr.herokuapp.com/service/author/${authorUUID}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
