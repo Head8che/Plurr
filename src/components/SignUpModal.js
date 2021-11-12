@@ -48,7 +48,7 @@ export default function SignUpModal({show, onHide, closeModal}) {
 
       // post the validated data to the backend registration service
       axios
-        .post("http://127.0.0.1:8000/service/author/register/", 
+        .post("http://localhost:8000/service/author/register/", 
           (host === null) ? data : {...data, host})
         .then(() => {
           // close the modal

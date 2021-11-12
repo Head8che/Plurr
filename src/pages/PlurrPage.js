@@ -21,24 +21,24 @@ export default function PlurrPage ({ page })  {
   const pageObjects = [
     {
       name: "Author",
-      apiRoute: `http://127.0.0.1:8000/service/author/${authorId}/`,
-      secondApiRoute: `http://127.0.0.1:8000/service/author/${authorId}/followers/`,
-      thirdApiRoute: `http://127.0.0.1:8000/service/author/${authorId}/posts/`,
+      apiRoute: `http://localhost:8000/service/author/${authorId}/`,
+      secondApiRoute: `http://localhost:8000/service/author/${authorId}/followers/`,
+      thirdApiRoute: `http://localhost:8000/service/author/${authorId}/posts/`,
       component: <Author loggedInUser={loggedInUser} author={object} authorFollowers={secondObject} posts={thirdObject} />
     },
     {
       name: "Authors",
-      apiRoute: `http://127.0.0.1:8000/service/authors/`,
+      apiRoute: `http://localhost:8000/service/authors/`,
       component: <Authors authors={object} />
     },
     {
       name: "Inbox",
-      apiRoute: `http://127.0.0.1:8000/service/authors/`,
+      apiRoute: `http://localhost:8000/service/authors/`,
       component: <Inbox authors={object} />
     },
     {
       name: "Stream",
-      apiRoute: `http://127.0.0.1:8000/service/authors/`,
+      apiRoute: `http://localhost:8000/service/authors/`,
       component: <Stream authors={object} />
     },
   ]

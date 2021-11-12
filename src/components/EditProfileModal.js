@@ -27,7 +27,7 @@ export default function EditProfileModal({authorUUID, author, show, onHide, clos
     });
 
     const submitHandler = (data) => {
-      fetch(`http://127.0.0.1:8000/service/author/${authorUUID}/`, {
+      fetch(`http://localhost:8000/service/author/${authorUUID}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

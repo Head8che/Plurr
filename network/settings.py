@@ -14,7 +14,7 @@ from datetime import timedelta
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 dotenv_file = os.path.join(BASE_DIR, ".env")
 if os.path.isfile(dotenv_file):
@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.28.0.3', 'localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['0.0.0.0', '127.28.0.3', 'localhost', '127.0.0.1', 'plurr.herokuapp.com']
 
 
 # Application definition
@@ -37,8 +37,7 @@ ALLOWED_HOSTS = ['0.0.0.0', '127.28.0.3', 'localhost', '127.0.0.1']
 INSTALLED_APPS = [
     'corsheaders',
     'api',
-    'rest_framework',
-     
+    'rest_framework',   
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -97,7 +96,7 @@ WSGI_APPLICATION = 'network.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': os.environ.get('404_DB_DATABASE'),
         'USER': os.environ.get('404_DB_USER'),
         'PASSWORD': os.environ.get('404_DB_PASSWORD'),
@@ -105,12 +104,14 @@ DATABASES = {
         # 'PORT': os.environ.get('404_DB_PORT', ''),
     },
 }
+db_from_env = dj_database_url.config(conn_max_age=600)
+DATABASES['default'].update(db_from_env)
 
-PRODUCTION = int(os.environ.get('PRODUCTION',default=1))
+# PRODUCTION = int(os.environ.get('PRODUCTION',default=1))
 
-if PRODUCTION:
-    db_from_env = dj_database_url.config()
-    DATABASES['default'].update(db_from_env)
+# if PRODUCTION:
+#     db_from_env = dj_database_url.config()
+#     DATABASES['default'].update(db_from_env)
 
 if DEBUG:
     CORS_ORIGIN_ALLOW_ALL = True
@@ -181,7 +182,7 @@ APPEND_SLASH = True
 
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
-# STATICFILES_DIRS = [os.path.join(BASE_DIR,'build/static')]
+STATICFILES_DIRS = [os.path.join(BASE_DIR,'build/static')]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'build', 'media')
@@ -194,3 +195,5 @@ AUTH_USER_MODEL = 'api.Author'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 django_on_heroku.settings(locals())
+options = DATABASES['default'].get('OPTIONS',{})
+options.pop('sslmode', None)
