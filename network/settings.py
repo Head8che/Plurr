@@ -29,7 +29,7 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['0.0.0.0', '127.28.0.3', 'localhost', '127.0.0.1', 'plurr.herokuapp.com']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -113,8 +113,8 @@ DATABASES['default'].update(db_from_env)
 #     db_from_env = dj_database_url.config()
 #     DATABASES['default'].update(db_from_env)
 
-if DEBUG:
-    CORS_ORIGIN_ALLOW_ALL = True
+
+CORS_ORIGIN_ALLOW_ALL = True
 
 CORS_ALLOW_HEADERS=[
     'accept',
