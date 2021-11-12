@@ -3,13 +3,9 @@ from django.conf.urls import url
 
 from .views import index, authorView, followerView, postView, authView, inboxView, likeView, likedView, commentView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from django.views.generic import TemplateView
 
 
 urlpatterns = [
-    # Index
-    re_path('.*', TemplateView.as_view(template_name='index.html')),
-    
     # Auth Endpoints
     path('author/login/', authView.LoginView.as_view(), name="login"),
     path('author/register/', authView.SignupView, name="register"),
