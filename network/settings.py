@@ -27,7 +27,7 @@ if os.path.isfile(dotenv_file):
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -96,7 +96,7 @@ WSGI_APPLICATION = 'network.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': os.environ.get('404_DB_DATABASE'),
         'USER': os.environ.get('404_DB_USER'),
         'PASSWORD': os.environ.get('404_DB_PASSWORD'),
@@ -175,7 +175,7 @@ USE_L10N = True
 
 USE_TZ = True
 
-APPEND_SLASH = True
+# APPEND_SLASH = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
