@@ -23,7 +23,7 @@ export default function PlurrPage ({ page })  {
       name: "Author",
       apiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/`,
       secondApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/followers/`,
-      thirdApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/posts/`,
+      // thirdApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/posts/`,
       component: <Author loggedInUser={loggedInUser} author={object} authorFollowers={secondObject} posts={thirdObject} />
     },
     {
@@ -32,8 +32,15 @@ export default function PlurrPage ({ page })  {
       component: <Authors authors={object} />
     },
     {
+      name: "Posts",
+      apiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/`,
+      secondApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/followers/`,
+      thirdApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/posts/`,
+      component: <Author loggedInUser={loggedInUser} author={object} authorFollowers={secondObject} posts={thirdObject} />
+    },
+    {
       name: "Inbox",
-      apiRoute: `https://plurr.herokuapp.com/service/authors/`,
+      apiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/inbox`,
       component: <Inbox authors={object} />
     },
     {
