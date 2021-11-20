@@ -65,6 +65,7 @@ def loggedInUserExists(request):
   return True
 
 def loggedInUserIsAuthor(request, author_uuid):
+  print(request.user)
   try:  # try to get the logged in author
     logged_in_author_uuid = request.user.uuid
     Author.objects.get(uuid=logged_in_author_uuid)

@@ -43,27 +43,28 @@ def InboxList(request, author_uuid):
       try:  # try to get the author and potential follower
         follow_actor = request.data['actor']
         follow_object = request.data['object']
-        if follow_object.id != authorObject.id:
+        if follow_object['id'] != authorObject.id:
           raise ValueError("Follow object is not the same as Inbox Author")
         actor_serializer = AuthorSerializer(data=follow_actor)
         object_serializer = AuthorSerializer(data=follow_object)
         if actor_serializer.is_valid() and object_serializer.is_valid():
-          Author.objects.get(id=follow_actor.id)
-          Author.objects.get(id=follow_object.id)
+          Author.objects.get(id=follow_actor['id'])
+          Author.objects.get(id=follow_object['id'])
       except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
 
-      if follow_actor.id == follow_object.id:
-          return Response({"message": "Self-following is prohibited.", "data": serializer.data}, 
+      #  "data": serializer.data raises an error
+      if follow_actor['id'] == follow_object['id']:
+          return Response({"message": "Self-following is prohibited."}, 
             status=status.HTTP_409_CONFLICT)
       try:
-        Author.objects.get(id=follow_object.id).followers.get(id=follow_actor.id)
-        return Response({"message": "Already following.", "data": serializer.data}, 
+        Author.objects.get(id=follow_object['id']).followers.get(id=follow_actor['id'])
+        return Response({"message": "Already following."}, 
           status=status.HTTP_409_CONFLICT)
       except:
         inbox.items.append(request.data)
         inbox.save()
-        return Response({"message": "Inbox item added", "data": serializer.data}, 
+        return Response({"message": "Inbox item added"}, 
           status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'like':
