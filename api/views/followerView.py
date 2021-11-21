@@ -60,6 +60,7 @@ def FollowerDetail(request, author_uuid, follower_uuid):
   # Create a specific follower
   elif request.method == 'PUT':
     # if the logged in user is not the author
+    
     if not loggedInUserIsAuthor(request, author_uuid):  
       return Response(status=status.HTTP_401_UNAUTHORIZED)
     
@@ -70,8 +71,8 @@ def FollowerDetail(request, author_uuid, follower_uuid):
       return Response(status=status.HTTP_404_NOT_FOUND)
 
     try:  # try to add the potential follower
-      author.followers.append(follower)
-      return Response({"message": "Follower created", "data": follower}, 
+      author.followers.add(follower)
+      return Response({"message": "Follower created"}, # "data": follower raised and internal server error 500
         status=status.HTTP_201_CREATED)
     except:  # return an error if something goes wrong with the update
       return Response({"message": "something went wrong", 
@@ -85,16 +86,19 @@ def FollowerDetail(request, author_uuid, follower_uuid):
       return Response(status=status.HTTP_401_UNAUTHORIZED)
     
     try:  # try to get the specific follower
-      follower = Author.objects.get(uuid=author_uuid).followers.get(uuid=follower_uuid)
+      author = Author.objects.get(uuid=author_uuid)
+      follower = Author.objects.get(uuid=follower_uuid)
     except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
     
-    # delete the follower
-    follower.delete()
-
-    # return a deletion message
-    return Response({"message": "Follower deleted"}, 
-      status=status.HTTP_204_NO_CONTENT)
+    try:
+      # remove follower from the author's followers
+      author.followers.remove(follower)
+      # return a deletion message
+      return Response({"message": "Follower deleted"}, 
+        status=status.HTTP_204_NO_CONTENT)
+    except:
+      return Response(status=status.HTTP_404_NOT_FOUND)
   
   # Handle unaccepted methods
   else:
