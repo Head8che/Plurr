@@ -40,7 +40,7 @@
         "prepare": "npx husky install",
         "check-format": "npx prettier --check .",
         "format-prettier": "npx prettier --write .",
-        "precommit": "npm run lint-staged && npm run format-prettier",
+        "precommit": "npm run lint-staged",
         "start-frontend": "npm run start",
         "start-backend": "source venv/bin/activate && python manage.py runserver",
         "start-servers": "npm-run-all --parallel start-frontend start-backend",
