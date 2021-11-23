@@ -8,7 +8,6 @@ export const setObjectFromApi = (path, setObject) => {
       }
     })
       .then((corsResponse) => {
-        console.log(path)
         const apiPromise = corsResponse.json();
         apiPromise.then((apiResponse) => {
           console.log(apiResponse)
@@ -17,7 +16,7 @@ export const setObjectFromApi = (path, setObject) => {
           if (apiResponse.code === 'token_not_valid') {
 
             // try to get a new token
-            fetch("http://127.0.0.1:8000/service/api/token/refresh/", {
+            fetch(`${getBackEndHostWithSlash()}service/api/token/refresh/`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -64,7 +63,7 @@ export const setObjectFromApi = (path, setObject) => {
 // validate the token
 export const validateToken = () => {
   // get a resource from the backend
-  fetch("http://127.0.0.1:8000/service/authors/", {
+  fetch(`${getBackEndHostWithSlash()}service/authors/`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -79,7 +78,7 @@ export const validateToken = () => {
           if (apiResponse.code === 'token_not_valid') {
 
             // try to get a new token
-            fetch("http://127.0.0.1:8000/service/api/token/refresh/", {
+            fetch(`${getBackEndHostWithSlash()}service/api/token/refresh/`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -105,4 +104,30 @@ export const validateToken = () => {
           }
         })
       })
+}
+
+// get host (e.g. "https://plurr.herokuapp.com/")
+export const getFrontEndHostWithSlash = () => {
+  if ((window !== null) && (window !== undefined)) {
+    const host = window.location.href.split("/").slice(0, 4).join("/")
+    return (host.includes("localhost") || host.includes("127.0.0.1")) 
+      ? "http://127.0.0.1:3000/" : host
+  }
+  
+  return null;
+}
+
+// get host (e.g. "https://plurr.herokuapp.com/")
+export const getBackEndHostWithSlash = () => {
+  if ((window !== null) && (window !== undefined)) {
+    const host = window.location.href.split("/").slice(0, 4).join("/")
+    return (host.includes("localhost") || host.includes("127.0.0.1")) 
+      ? "http://127.0.0.1:8000/" : host
+  }
+  
+  return null;
+}
+
+export const appendOrKeepSlash = (url) => {
+ return url.endsWith("/") ? url.slice(0, -1) : url
 }
