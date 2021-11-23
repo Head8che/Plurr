@@ -46,7 +46,7 @@ import { getBackEndHostWithSlash } from "../utils"
             console.log(e)
           })
         })
-  }, [post, isLiked])
+  }, [host, post, isLiked])
 
   const fetchAndSetIsLiked = () => {
     // post the validated data to the backend registration service
