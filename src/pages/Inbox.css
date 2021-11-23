@@ -1,7 +1,7 @@
-.Inbox-leftCol{
+.Inbox-leftCol {
     background: linear-gradient(#e66465, #9198e5);
-    background-color:Red /*this your primary color*/
-  }
+    background-color: Red; /*this your primary color*/
+}
 
 .Inbox-rightCol {
     background-color: rgb(32, 35, 42);
@@ -12,17 +12,15 @@
     padding-top: 40%;
 }
 
-   
-.Inbox-leftColLink{
+.Inbox-leftColLink {
     color: white !important;
     text-decoration: none !important;
 }
 
-.btn{
+.btn {
     margin-right: 5px !important;
 }
 
-.card{
+.card {
     width: 80%;
-    
 }
