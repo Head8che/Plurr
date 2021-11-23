@@ -60,7 +60,7 @@ export default function Author ({ loggedInUser, author, authorFollowers, posts, 
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                       }
                   };
-                  fetch( "http://127.0.0.1:8000/service/author/"+author_uuid+"/inbox/", options )
+                  fetch( "https://plurr.herokuapp.com/service/author/"+author_uuid+"/inbox/", options )
                       .then( response => {
                         console.log(response.status)
                       });

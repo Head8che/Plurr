@@ -23,27 +23,27 @@ export default function PlurrPage ({ page })  {
   const pageObjects = [
     {
       name: "Author",
-      apiRoute: `http://127.0.0.1:8000/service/author/${authorId}/`,
-      secondApiRoute: `http://127.0.0.1:8000/service/author/${authorId}/followers/`,
-      thirdApiRoute: `http://127.0.0.1:8000/service/author/${authorId}/posts/`,
-      fourthApiRoute: `http://127.0.0.1:8000/service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      apiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/`,
+      secondApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/followers/`,
+      thirdApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/posts/`,
+      fourthApiRoute: `https://plurr.herokuapp.com/service/author/${loggedInUser.uuid}/liked/?size=10000`,
       component: <Author loggedInUser={loggedInUser} author={object} 
         authorFollowers={secondObject} posts={thirdObject} liked={fourthObject} setRenderNewPost={setRenderNewPost} />
     },
     {
       name: "Authors",
-      apiRoute: `http://127.0.0.1:8000/service/authors/`,
+      apiRoute: `https://plurr.herokuapp.com/service/authors/`,
       component: <Authors authors={object} />
     },
     {
       name: "Inbox",
-      apiRoute: `http://127.0.0.1:8000/service/author/${loggedInUser.uuid}/inbox/`,
+      apiRoute: `https://plurr.herokuapp.com/service/author/${loggedInUser.uuid}/inbox/`,
       component: <Inbox inbox={object} />
     },
     {
       name: "Stream",
-      apiRoute: `http://127.0.0.1:8000/service/stream/?size=1000`,
-      secondApiRoute: `http://127.0.0.1:8000/service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      apiRoute: `https://plurr.herokuapp.com/service/stream/?size=1000`,
+      secondApiRoute: `https://plurr.herokuapp.com/service/author/${loggedInUser.uuid}/liked/?size=10000`,
       component: <Stream loggedInUser={loggedInUser} posts={object} liked={secondObject} />
     },
   ]

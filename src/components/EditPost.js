@@ -35,7 +35,7 @@ export default function EditPost ({ loggedInUser, author })  {
       }
 
       // post the validated data to the backend registration service
-      fetch(`http://127.0.0.1:8000/service/author/${loggedInUser.uuid}/posts/`, {
+      fetch(`https://plurr.herokuapp.com/service/author/${loggedInUser.uuid}/posts/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

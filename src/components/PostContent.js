@@ -25,7 +25,7 @@ export default function PostContent ({ loggedInUser, post, liked, authorHasLiked
   const authorLiked = liked?.items?.map(likedObject => likedObject.object)
 
   React.useEffect(() => {
-    post?.id?.split('/author')[1] && fetch(`http://127.0.0.1:8000/service/author${post?.id?.split('/author')[1]}/comments/`, {
+    post?.id?.split('/author')[1] && fetch(`https://plurr.herokuapp.com/service/author${post?.id?.split('/author')[1]}/comments/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +46,7 @@ export default function PostContent ({ loggedInUser, post, liked, authorHasLiked
 
   const fetchAndSetIsLiked = () => {
     // post the validated data to the backend registration service
-      fetch(`http://127.0.0.1:8000/service/author${post.id.split('/author')[1]}/likes/`, {
+      fetch(`https://plurr.herokuapp.com/service/author${post.id.split('/author')[1]}/likes/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -26,7 +26,7 @@ export default function EditPostModal({authorUUID, postUUID, author, show, onHid
     var postID = postUUID
     postID = postID.split('/').pop();
 
-    fetch(`http://127.0.0.1:8000/service/author/${authorUUID}/posts/${postID}/`, {
+    fetch(`https://plurr.herokuapp.com/service/author/${authorUUID}/posts/${postID}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
