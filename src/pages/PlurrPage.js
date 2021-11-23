@@ -21,7 +21,6 @@ export default function PlurrPage ({ page })  {
   const [renderNewPost, setRenderNewPost] = React.useState("1");
 
   const host = getBackEndHostWithSlash();
-  console.log(host)
 
   // array of page objects
   const pageObjects = [

@@ -5,6 +5,7 @@ import PostContent from '../components/PostContent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from "@fortawesome/free-brands-svg-icons"
 import CreatePost from '../components/CreatePost';
+import { getBackEndHostWithSlash } from "../utils"
 
 
 export default function Author ({ loggedInUser, author, authorFollowers, posts, liked, setRenderNewPost })  {
@@ -12,6 +13,8 @@ export default function Author ({ loggedInUser, author, authorFollowers, posts, 
   const showEdit = (author.id === loggedInUser.id);
   const [modalShowEdit, setModalShowEdit] = React.useState(false);
   const authorLiked = liked?.items?.map(likedObject => likedObject.object)
+
+  const host = getBackEndHostWithSlash()
 
   return (    
     <div>
@@ -60,7 +63,7 @@ export default function Author ({ loggedInUser, author, authorFollowers, posts, 
                         'Authorization': `Bearer ${localStorage.getItem('token')}`,
                       }
                   };
-                  fetch( "https://plurr.herokuapp.com/service/author/"+author_uuid+"/inbox/", options )
+                  host && fetch( `${host}service/author/`+author_uuid+"/inbox/", options )
                       .then( response => {
                         console.log(response.status)
                       });
@@ -73,7 +76,7 @@ export default function Author ({ loggedInUser, author, authorFollowers, posts, 
       {showEdit ? <CreatePost loggedInUser={loggedInUser} author={author} setRenderNewPost={setRenderNewPost} /> : null}
       { posts && posts.items?.map((post) => {
           return <PostContent key={post.id} loggedInUser={loggedInUser} 
-            post={post} liked={liked} authorHasLiked={authorLiked?.includes(post.id)} />
+            post={post} liked={liked} authorHasLiked={authorLiked?.includes(post.id)} setRenderNewPost={setRenderNewPost} />
         })
       }
     </div>
