@@ -10,8 +10,6 @@ export const setObjectFromApi = (path, setObject) => {
     })
       .then((corsResponse) => {
         const apiPromise = corsResponse.json();
-        console.log(corsResponse)
-        console.log(apiPromise)
         apiPromise.then((apiResponse) => {
           console.log(apiResponse)
 
@@ -33,8 +31,6 @@ export const setObjectFromApi = (path, setObject) => {
               })
                 .then((corsResponse) => {
                   const apiPromise = corsResponse.json();
-                  console.log(corsResponse)
-                  console.log(apiPromise)
                   apiPromise.then((apiResponse) => {
                     console.log(apiResponse)
 
@@ -87,8 +83,6 @@ export const validateToken = () => {
       })
         .then((corsResponse) => {
           const apiPromise = corsResponse.json();
-          console.log(corsResponse)
-          console.log(apiPromise)
           apiPromise.then((apiResponse) => {
             console.log(apiResponse)
 
@@ -144,7 +138,6 @@ export const getFrontEndHostWithSlash = () => {
 export const getBackEndHostWithSlash = () => {
   if ((window !== null) && (window !== undefined)) {
     const host = window.location.href.split("/").slice(0, 3).join("/") + "/"
-    console.log(host)
     return (host.includes("localhost") || host.includes("127.0.0.1")) 
       ? "http://localhost:8000/" : host.endsWith("/") ? host : null
   }

@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useUserHandler } from "../UserContext"
 import * as Yup from 'yup';
+import { getBackEndHostWithSlash } from "../utils"
 
 export default function EditProfileModal({authorUUID, author, show, onHide, closeModal}) {
 
@@ -26,8 +27,10 @@ export default function EditProfileModal({authorUUID, author, show, onHide, clos
       resolver: yupResolver(validationSchema)
     });
 
+    const host = getBackEndHostWithSlash();
+
     const submitHandler = (data) => {
-      fetch(`https://plurr.herokuapp.com/service/author/${authorUUID}/`, {
+      fetch(`${host}service/author/${authorUUID}/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

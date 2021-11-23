@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios"
 import * as Yup from 'yup';
+import { getBackEndHostWithSlash } from "../utils"
 
 export default function SignUpModal({show, onHide, closeModal}) {
     // boolean for showing or hiding the password
@@ -31,12 +32,6 @@ export default function SignUpModal({show, onHide, closeModal}) {
         })
     });
 
-    // get host (e.g. "https://plurr.herokuapp.com/")
-    const getHost = () => {
-      return ((window !== null) && (window !== undefined)) 
-        ? window.location.href.split("/").slice(0, 4).join("/") : null
-    }
-
     // get form functions and link validation schema to form
     const { register, handleSubmit, reset, setError, formState: { errors } } = useForm({
       resolver: yupResolver(validationSchema)
@@ -44,11 +39,11 @@ export default function SignUpModal({show, onHide, closeModal}) {
 
     const submitHandler = (data) => {
       // get the host
-      const host = getHost()
+      const host = getBackEndHostWithSlash();
 
       // post the validated data to the backend registration service
-      axios
-        .post("https://plurr.herokuapp.com/service/author/register/", 
+      host && axios
+        .post(`${host}service/author/register/`, 
           (host === null) ? data : {...data, host})
         .then(() => {
           // close the modal

@@ -4,28 +4,32 @@ import CommentContent from './CommentContent';
 import EditPost from './EditPost';
 import { Row, Col, Image, Button, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import EditPostModal from '../components/EditPostModal';
 import DeletePostModal from '../components/DeletePostModal';
+// import EditPostModal from '../components/EditPostModal';
 import { faHeart } from '@fortawesome/free-solid-svg-icons'
 // import { faComment } from '@fortawesome/free-solid-svg-icons'
 import { RiShareLine } from 'react-icons/ri'
 // import { RiShareFill } from 'react-icons/ri'
 import { faHeart as farHeart, faComment as farComment } from '@fortawesome/free-regular-svg-icons'
+import { getBackEndHostWithSlash } from "../utils"
 
-export default function PostContent ({ loggedInUser, post, liked, authorHasLiked })  {
-  const [modalShowEdit, setModalShowEdit] = React.useState(false);
+  export default function PostContent ({ loggedInUser, post, liked, authorHasLiked, setRenderNewPost })  {
   const [modalShowDelete, setModalShowDelete] = React.useState(false);
+  // const [modalShowEdit, setModalShowEdit] = React.useState(false);
   const loggedInUserId = loggedInUser?.id?.endsWith("/") ? loggedInUser?.id?.slice(0, -1) : loggedInUser?.id
   const postAuthorId = post?.author?.id?.endsWith("/") ? post?.author?.id?.slice(0, -1) : post?.author?.id
   const author = post?.author
   const loggedInUserIsAuthor = loggedInUserId === postAuthorId
   const [isLiked, setIsLiked] = React.useState(authorHasLiked)
   const [isEditing, setIsEditing] = React.useState(false)
+  const [shouldSubmitForm, setShouldSubmitForm] = React.useState(true)
   const [comments, setComments] = React.useState([])
   const authorLiked = liked?.items?.map(likedObject => likedObject.object)
 
+  const host = getBackEndHostWithSlash();
+  
   React.useEffect(() => {
-    post?.id?.split('/author')[1] && fetch(`https://plurr.herokuapp.com/service/author${post?.id?.split('/author')[1]}/comments/`, {
+    post?.id?.split('/author')[1] && fetch(`${host}service/author${post?.id?.split('/author')[1]}/comments/`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -46,7 +50,7 @@ export default function PostContent ({ loggedInUser, post, liked, authorHasLiked
 
   const fetchAndSetIsLiked = () => {
     // post the validated data to the backend registration service
-      fetch(`https://plurr.herokuapp.com/service/author${post.id.split('/author')[1]}/likes/`, {
+      fetch(`${host}service/author${post.id.split('/author')[1]}/likes/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -86,21 +90,12 @@ export default function PostContent ({ loggedInUser, post, liked, authorHasLiked
                   loggedInUserIsAuthor ? (
                   <>
                       <Col style={{display: 'flex', alignItems: 'center', justifyContent: 'end'}}>
-                      <Button variant="outline-primary" onClick={() => setModalShowEdit(true)}>Edit</Button>
-                      {/* {isEditing ? 
-                        <Button variant="outline-primary" onClick={() => setModalShowEdit(true)}>Edit</Button> : 
+                      {isEditing ? 
                         <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                          <Button className="pl-5" variant="primary" type="submit" style={{padding: '0.6rem 1rem'}}>Edit Post</Button>
-                        </div>
-                        } */}
-                        <EditPostModal
-                          authorUUID={loggedInUser.uuid}
-                          postUUID= {post.id}
-                          author={author}
-                          show={modalShowEdit}
-                          onHide={() => setModalShowEdit(false)}
-                          closeModal={() => setModalShowEdit(false)}
-                        />
+                          <Button className="pl-5" variant="primary" form="edit_form" type="submit" style={{padding: '0.4rem 1rem'}}>Submit Edits</Button>
+                        </div> :
+                        <Button variant="outline-primary" style={{padding: '0.4rem 1rem'}} onClick={() => {setIsEditing(true); } }>Edit</Button>
+                        }
                       </Col>
                         <Button variant="outline-danger" onClick={() => setModalShowDelete(true)}>Delete</Button>
                         <DeletePostModal
@@ -116,8 +111,9 @@ export default function PostContent ({ loggedInUser, post, liked, authorHasLiked
                   }
               </Col>
             </Row>
-            {/* {isEditing ?
-              <EditPost loggedInUser={loggedInUser} author={author} /> : */}
+            {isEditing ?
+              <EditPost key={shouldSubmitForm} loggedInUser={loggedInUser} author={author} post={post} 
+                shouldSubmitForm={shouldSubmitForm} setShouldSubmitForm={setShouldSubmitForm} setIsEditing={setIsEditing} setRenderNewPost={setRenderNewPost} /> :
               <>
                 <Card.Title className="mt-3" style={{fontSize: "1.2rem", fontWeight: '500'}}>
                   {post.title}
@@ -126,7 +122,7 @@ export default function PostContent ({ loggedInUser, post, liked, authorHasLiked
                     {post.content}
                 </Card.Text>
               </>
-            {/* } */}
+            }
             <Row>
               <Col xs={12} style={{display: 'flex', alignItems: 'center', gap: "10px"}}>
                 <div className={`icon-container like ${loggedInUserIsAuthor ? "isAuthor" : ""} ${isLiked ? "isLiked" : ""}`} 

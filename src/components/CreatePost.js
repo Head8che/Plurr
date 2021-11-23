@@ -4,6 +4,7 @@ import { Row, Col, Image, Button, Form, Card, FloatingLabel } from 'react-bootst
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { getBackEndHostWithSlash } from "../utils"
 
 export default function CreatePost ({ loggedInUser, author, setRenderNewPost })  {
     // schema to validate form inputs
@@ -33,8 +34,10 @@ export default function CreatePost ({ loggedInUser, author, setRenderNewPost }) 
         return;
       }
 
+      const host = getBackEndHostWithSlash();
+
       // post the validated data to the backend registration service
-      fetch(`https://plurr.herokuapp.com/service/author/${loggedInUser.uuid}/posts/`, {
+      fetch(`${host}service/author/${loggedInUser.uuid}/posts/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,14 +62,6 @@ export default function CreatePost ({ loggedInUser, author, setRenderNewPost }) 
               setError('content', {
                 type: "server",
                 message: errors.content[0],
-              });
-            }
-
-            // set description errors
-            if (errors.description) {
-              setError('description', {
-                type: "server",
-                message: errors.description[0],
               });
             }
 

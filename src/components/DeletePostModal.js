@@ -1,15 +1,9 @@
 import React from "react";
-import { useForm } from 'react-hook-form';
-import { yupResolver } from '@hookform/resolvers/yup';
-import { Modal, Row, Col, Image, Button, Form, Card, FloatingLabel } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
-import axios from "axios"
-import * as Yup from 'yup';
+import { Modal, Row, Col, Image, Button, Form, Card } from 'react-bootstrap';
 import { useUserHandler } from "../UserContext"
 import { getBackEndHostWithSlash } from "../utils"
 
-export default function EditPostModal({authorUUID, postUUID, author, show, onHide, closeModal}) {
+export default function DeletePostModal({authorUUID, postUUID, author, show, onHide, closeModal}) {
   const {setLoggedInUser} = useUserHandler()
     
   
@@ -23,9 +17,9 @@ export default function EditPostModal({authorUUID, postUUID, author, show, onHid
     postID = postID.split('/').pop();
     
 
-    const host = getBackEndHostWithSlash()
+    const host = getBackEndHostWithSlash();
 
-    host && fetch(`${host}service/author/${authorUUID}/posts/${postID}/`, {
+    fetch(`${host}service/author/${authorUUID}/posts/${postID}/`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',

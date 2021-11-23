@@ -2,9 +2,9 @@ import React from "react";
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { Modal, Row, Col, Image, Button, Form, Card, FloatingLabel } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
-import axios from "axios"
+// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+// import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
+// import axios from "axios"
 import * as Yup from 'yup';
 import { useUserHandler } from "../UserContext"
 
@@ -26,7 +26,7 @@ export default function EditPostModal({authorUUID, postUUID, author, show, onHid
     var postID = postUUID
     postID = postID.split('/').pop();
 
-    fetch(`https://plurr.herokuapp.com/service/author/${authorUUID}/posts/${postID}/`, {
+    fetch(`http://127.0.0.1:8000/service/author/${authorUUID}/posts/${postID}/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

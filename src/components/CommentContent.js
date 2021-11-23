@@ -1,12 +1,9 @@
 import React from 'react'
 import './CommentContent.css'
-import { Row, Col, Image, Card } from 'react-bootstrap';
+import { Row, Col, Image } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart } from '@fortawesome/free-solid-svg-icons'
-// import { faComment } from '@fortawesome/free-solid-svg-icons'
-import { RiShareLine } from 'react-icons/ri'
-// import { RiShareFill } from 'react-icons/ri'
-import { faHeart as farHeart, faComment as farComment } from '@fortawesome/free-regular-svg-icons'
+import { faHeart as farHeart } from '@fortawesome/free-regular-svg-icons'
 import { getBackEndHostWithSlash } from "../utils"
 
 export default function CommentContent ({ loggedInUser, liked, comment, authorHasLiked })  {
@@ -17,12 +14,11 @@ export default function CommentContent ({ loggedInUser, liked, comment, authorHa
   const loggedInUserIsAuthor = loggedInUserId === commentAuthorId
   const [isLiked, setIsLiked] = React.useState(authorHasLiked)
 
-  const authorLiked = liked?.items?.map(likedObject => likedObject.object)
+  // const authorLiked = liked?.items?.map(likedObject => likedObject.object)
+
+  const host = getBackEndHostWithSlash();
 
   const fetchAndSetIsLiked = () => {
-
-    const host = getBackEndHostWithSlash()
-
     // post the validated data to the backend registration service
     host && fetch(`${host}service/author${comment.id.split('/author')[1]}/likes/`, {
         method: 'POST',
