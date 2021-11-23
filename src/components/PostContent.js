@@ -96,16 +96,17 @@ import { getBackEndHostWithSlash } from "../utils"
                         </div> :
                         <Button variant="outline-primary" style={{padding: '0.4rem 1rem'}} onClick={() => {setIsEditing(true); } }>Edit</Button>
                         }
-                      </Col>
-                        <Button variant="outline-danger" onClick={() => setModalShowDelete(true)}>Delete</Button>
+                      
+                        <Button variant="outline-danger" style={{padding: '0.4rem 1rem', marginLeft: "10px"}} onClick={() => setModalShowDelete(true)}>Delete</Button>
                         <DeletePostModal
-                          authorUUID={loggedInUser.uuid}
-                          postUUID= {post.id}
-                          author={author}
+                          loggedInUser={loggedInUser}
+                          post={post}
                           show={modalShowDelete}
                           onHide={() => setModalShowDelete(false)}
                           closeModal={() => setModalShowDelete(false)}
+                          setRenderNewPost={setRenderNewPost}
                         />
+                        </Col>
                     </>
                     ) : null
                   }
