@@ -7,6 +7,7 @@ import Author from './Author';
 import Authors from './Authors';
 import Stream from './Stream';
 import Inbox from './Inbox';
+import { getBackEndHostWithSlash } from "../utils"
 
 
 export default function PlurrPage ({ page })  {
@@ -19,32 +20,34 @@ export default function PlurrPage ({ page })  {
   const [fourthObject, setFourthObject] = React.useState({});
   const [renderNewPost, setRenderNewPost] = React.useState("1");
 
+  const host = getBackEndHostWithSlash();
+
   // array of page objects
   const pageObjects = [
     {
       name: "Author",
-      apiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/`,
-      secondApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/followers/`,
-      thirdApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/posts/`,
-      fourthApiRoute: `https://plurr.herokuapp.com/service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      apiRoute: `${host}service/author/${authorId}/`,
+      secondApiRoute: `${host}service/author/${authorId}/followers/`,
+      thirdApiRoute: `${host}service/author/${authorId}/posts/`,
+      fourthApiRoute: `${host}service/author/${loggedInUser.uuid}/liked/?size=10000`,
       component: <Author loggedInUser={loggedInUser} author={object} 
         authorFollowers={secondObject} posts={thirdObject} liked={fourthObject} setRenderNewPost={setRenderNewPost} />
     },
     {
       name: "Authors",
-      apiRoute: `https://plurr.herokuapp.com/service/authors/`,
+      apiRoute: `${host}service/authors/`,
       component: <Authors authors={object} />
     },
     {
       name: "Inbox",
-      apiRoute: `https://plurr.herokuapp.com/service/author/${loggedInUser.uuid}/inbox/`,
+      apiRoute: `${host}service/author/${loggedInUser.uuid}/inbox/`,
       component: <Inbox inbox={object} />
     },
     {
       name: "Stream",
-      apiRoute: `https://plurr.herokuapp.com/service/stream/?size=1000`,
-      secondApiRoute: `https://plurr.herokuapp.com/service/author/${loggedInUser.uuid}/liked/?size=10000`,
-      component: <Stream loggedInUser={loggedInUser} posts={object} liked={secondObject} />
+      apiRoute: `${host}service/stream/?size=1000`,
+      secondApiRoute: `${host}service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      component: <Stream loggedInUser={loggedInUser} posts={object} liked={secondObject} setRenderNewPost={setRenderNewPost} />
     },
   ]
 
@@ -113,7 +116,7 @@ export default function PlurrPage ({ page })  {
 
   // make api call and use setObject setter to set object
   React.useEffect(() => {
-    if (loggedInUser.uuid !== undefined) {
+    if (host && (loggedInUser.uuid !== undefined)) {
       setObjectFromApi(
         currentPageObject?.apiRoute, setObject
       );
@@ -139,7 +142,7 @@ export default function PlurrPage ({ page })  {
           )
       }
     }
-  }, [loggedInUser, loggedInUser.uuid, currentPageObject.apiRoute, 
+  }, [host, loggedInUser, loggedInUser.uuid, currentPageObject.apiRoute, 
     currentPageObject.secondApiRoute, currentPageObject.thirdApiRoute, 
     currentPageObject.fourthApiRoute, renderNewPost]);
   

@@ -7,6 +7,7 @@ import { faHeart } from '@fortawesome/free-solid-svg-icons'
 import { RiShareLine } from 'react-icons/ri'
 // import { RiShareFill } from 'react-icons/ri'
 import { faHeart as farHeart, faComment as farComment } from '@fortawesome/free-regular-svg-icons'
+import { getBackEndHostWithSlash } from "../utils"
 
 export default function CommentContent ({ loggedInUser, liked, comment, authorHasLiked })  {
 
@@ -19,8 +20,11 @@ export default function CommentContent ({ loggedInUser, liked, comment, authorHa
   const authorLiked = liked?.items?.map(likedObject => likedObject.object)
 
   const fetchAndSetIsLiked = () => {
+
+    const host = getBackEndHostWithSlash()
+
     // post the validated data to the backend registration service
-      fetch(`http://127.0.0.1:8000/service/author${comment.id.split('/author')[1]}/likes/`, {
+    host && fetch(`${host}service/author${comment.id.split('/author')[1]}/likes/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

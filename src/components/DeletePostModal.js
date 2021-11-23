@@ -7,6 +7,7 @@ import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
 import axios from "axios"
 import * as Yup from 'yup';
 import { useUserHandler } from "../UserContext"
+import { getBackEndHostWithSlash } from "../utils"
 
 export default function EditPostModal({authorUUID, postUUID, author, show, onHide, closeModal}) {
   const {setLoggedInUser} = useUserHandler()
@@ -22,7 +23,9 @@ export default function EditPostModal({authorUUID, postUUID, author, show, onHid
     postID = postID.split('/').pop();
     
 
-    fetch(`http://127.0.0.1:8000/service/author/${authorUUID}/posts/${postID}/`, {
+    const host = getBackEndHostWithSlash()
+
+    host && fetch(`${host}service/author/${authorUUID}/posts/${postID}/`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
