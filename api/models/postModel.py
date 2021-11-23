@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from .authorModel import Author
 from django.contrib.postgres.fields import ArrayField
 import uuid
@@ -29,7 +30,7 @@ class Post(models.Model):
     # Post Type
     type = models.CharField(default='post', max_length=100)
     # Post Title
-    title = models.TextField(default='post title', max_length=150)
+    title = models.TextField(default='Post Title', max_length=150)
     # Post UUID 
     uuid = models.UUIDField(primary_key=True, null=False, default=uuid.uuid4, editable=False)
     # Post ID 
@@ -55,7 +56,7 @@ class Post(models.Model):
     # Link to Comments for the Post
     comments = models.URLField(null=True, blank=True)
     # Post Published Date
-    published = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    published = models.DateTimeField(default=timezone.now, null=True, blank=True)
     # Post Visibility Status
     visibility = models.CharField(max_length=10, null=False, choices=VisibilityTypes, default=PUBLIC)
     # Post Unlisted Status

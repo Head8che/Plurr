@@ -81,8 +81,7 @@ def LikeListPost(request, author_uuid, post_uuid):
 def LikeListComment(request, author_uuid, post_uuid, comment_uuid):
   try:  # try to get the specific author, post and comment
       Post.objects.get(author=author_uuid, uuid=post_uuid)
-      commentObject = Comment.objects.get(author=author_uuid, 
-        post=post_uuid, uuid=comment_uuid)
+      commentObject = Comment.objects.get(uuid=comment_uuid)
   except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -120,7 +119,7 @@ def LikeListComment(request, author_uuid, post_uuid, comment_uuid):
         likes = Like.objects.filter(author=author_uuid, 
           object=commentObject.id)
     except:  # return an error if something goes wrong
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({'type': "likes", 'items': []}, status=status.HTTP_200_OK)
 
     # get the page number and size
     page_number = getPageNumber(request)

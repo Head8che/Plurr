@@ -17,11 +17,12 @@ def InboxList(request, author_uuid):
   # Create a new comment
   if request.method == 'POST':
     try:  # try to get the inbox
-        inbox = Inbox.objects.get(author=author_uuid)
+        inbox = Inbox.objects.get(author=authorObject.id)
     except:  # create an inbox if one doesn't already exist
         serializer = InboxSerializer(data={'author': authorObject.id})
         if serializer.is_valid():
           serializer.save(author=author_uuid)
+        inbox = Inbox.objects.get(author=authorObject.id)
 
     try:  # try to get the item type
         item_type = request.data['type']
@@ -75,18 +76,19 @@ def InboxList(request, author_uuid):
       if like_serializer.is_valid():
         inbox.items.append(request.data)
         inbox.save()
-        return Response({"message": "Inbox item added", "data": serializer.data}, 
+        return Response({"message": "Inbox item added", "data": like_serializer.data}, 
           status=status.HTTP_201_CREATED)
 
     else:
       # return an error if something goes wrong with the update
-      return Response({"message": serializer.errors}, 
+      return Response({"message": "Item type must be `post`, `follow` or `like`!"}, 
         status=status.HTTP_400_BAD_REQUEST)
 
   # List all the things in the author's inbox
   if request.method == 'GET':
     try:  # try to get the inbox items
-        inbox = Inbox.objects.get(author=author_uuid)
+        author = Author.objects.get(uuid=author_uuid)
+        inbox = Inbox.objects.get(author=author.id)
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
     
@@ -104,13 +106,21 @@ def InboxList(request, author_uuid):
     page_size = getPageSize(request)
 
     # get the paginated inbox
-    paginated_inbox = getPaginatedObject(inbox, page_number, page_size)
+    paginated_inbox = getPaginatedObject(inbox.items, page_number, page_size)
 
     # get the Inbox serializer
     serializer = InboxSerializer(paginated_inbox, many=True)
 
+    # create the `type` field for the Posts data
+    new_data = {'type': "inbox", 'author': author.id}
+
+    # add the `type` field to the Posts data
+    new_data.update({
+        'items': serializer.data,
+    })
+
     # return the Inbox data
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(new_data, status=status.HTTP_200_OK)
   
   # Delete the inbox
   elif request.method == 'DELETE':

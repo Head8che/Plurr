@@ -4,12 +4,14 @@ import EditProfileModal from '../components/EditProfileModal';
 import PostContent from '../components/PostContent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faGithub } from "@fortawesome/free-brands-svg-icons"
+import CreatePost from '../components/CreatePost';
 
 
-export default function Author ({ loggedInUser, author, authorFollowers, posts })  {
+export default function Author ({ loggedInUser, author, authorFollowers, posts, liked, setRenderNewPost })  {
 
   const showEdit = (author.id === loggedInUser.id);
   const [modalShowEdit, setModalShowEdit] = React.useState(false);
+  const authorLiked = liked?.items?.map(likedObject => likedObject.object)
 
   return (    
     <div>
@@ -43,14 +45,35 @@ export default function Author ({ loggedInUser, author, authorFollowers, posts }
               (authorFollowers?.items?.filter(author => author.id === loggedInUser.id).length > 0) ? (
                 <Button className="pl-5" variant="secondary" disabled>Follow</Button>
               ) : (
-                <Button className="pl-5" variant="outline-primary">Follow</Button>
+                <Button className="pl-5" variant="outline-primary" onClick = { () => {
+                  const author_uuid = author.id.split('/').pop();
+                  var params = {
+                          type: "follow",
+                          actor: loggedInUser,
+                          object: author,
+                  };
+                  var options = {
+                      method: 'POST',
+                      body: JSON.stringify(params),
+                      headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`,
+                      }
+                  };
+                  fetch( "http://127.0.0.1:8000/service/author/"+author_uuid+"/inbox/", options )
+                      .then( response => {
+                        console.log(response.status)
+                      });
+                }}>Follow</Button>
               )
             )
           }
         </Col>
       </Row>
+      {showEdit ? <CreatePost loggedInUser={loggedInUser} author={author} setRenderNewPost={setRenderNewPost} /> : null}
       { posts && posts.items?.map((post) => {
-          return <PostContent key={post.id} author={author} post={post} />
+          return <PostContent key={post.id} loggedInUser={loggedInUser} 
+            post={post} liked={liked} authorHasLiked={authorLiked?.includes(post.id)} />
         })
       }
     </div>

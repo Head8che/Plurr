@@ -20,24 +20,6 @@
   content: "Like";
 }
 
-.icon-container.like.isAuthor:hover {
-  cursor: default;
-  background-color: transparent;
-}
-
-.icon-container.like.isAuthor:before {
-  content: "No Self-Likes";
-}
-
-.icon-container.like.isLiked:hover {
-  cursor: default;
-  background-color: transparent;
-}
-
-.icon-container.like.isLiked:before {
-  content: "Liked";
-}
-
 .icon-container.comment:before {
   content: "Comment";
 }

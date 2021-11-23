@@ -8,6 +8,40 @@ from ..serializers import PostSerializer
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
 
 
+@api_view([ 'GET'])
+def StreamList(request):
+  # List all the posts
+  if request.method == 'GET':
+    try:  # try to get the posts
+        posts = Post.objects.all().order_by('-published')
+    except:  # return an error if something goes wrong
+        return Response(status=status.HTTP_404_NOT_FOUND)
+
+    # get the page number and size
+    page_number = getPageNumber(request)
+    page_size = getPageSize(request)
+
+    # get the paginated posts
+    paginated_posts = getPaginatedObject(posts, page_number, page_size)
+
+    # get the Post serializer
+    serializer = PostSerializer(paginated_posts, many=True)
+
+    # create the `type` field for the Posts data
+    new_data = {'type': "posts"}
+
+    # add the `type` field to the Posts data
+    new_data.update({
+        'items': serializer.data,
+    })
+
+    # return the updated Posts data
+    return Response(new_data, status=status.HTTP_200_OK)
+
+  # Handle unaccepted methods
+  else:
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
 @api_view(['POST', 'GET'])
 def PostList(request, author_uuid):
   try:  # try to get the specific author
@@ -22,7 +56,10 @@ def PostList(request, author_uuid):
       return Response(status=status.HTTP_401_UNAUTHORIZED)
 
     try:  # try to get the image handled data
+      post_count = Post.objects.filter(author=author_uuid).count()
       request_data = handlePostImage(request.data)
+      if request_data.get('title') == None:
+        request_data["title"] = "Post " + str(post_count + 1) + " by " + authorObject.displayName
     except:  # return an error if something goes wrong
       return Response(status=status.HTTP_400_BAD_REQUEST)
         
@@ -50,7 +87,7 @@ def PostList(request, author_uuid):
   # List all the posts
   elif request.method == 'GET':
     try:  # try to get the posts
-        posts = Post.objects.filter(author=author_uuid).order_by('id')
+        posts = Post.objects.filter(author=author_uuid).order_by('-published')
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
 

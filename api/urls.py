@@ -6,6 +6,9 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 
 urlpatterns = [
+    # Index
+    path('', index.index, name="index"),
+    
     # Auth Endpoints
     path('author/login/', authView.LoginView.as_view(), name="login"),
     path('author/register/', authView.SignupView, name="register"),
@@ -22,7 +25,7 @@ urlpatterns = [
     path('author/<str:author_uuid>/followers/<str:follower_uuid>/', followerView.FollowerDetail, name="followerDetail"),
 
     # Post Endpoints
-    # path('author/<str:authorID>/stream/', postView.getStreamPosts, name="streamPosts"),
+    path('stream/', postView.StreamList, name="streamPosts"),
     path('author/<str:author_uuid>/posts/', postView.PostList, name="authorPosts"),
     path('author/<str:author_uuid>/posts/<str:post_uuid>/', postView.PostDetail, name="authorPost"),
 

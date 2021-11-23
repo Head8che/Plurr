@@ -112,10 +112,17 @@ def getLoggedInAuthorObject(request):
 
 def postToAuthorInbox(request, data, receiver_author_uuid):
   try:
-    url = 'https://plurr.herokuapp.com/service/author/' + receiver_author_uuid + '/inbox'
+    url = 'http://127.0.0.1:8000/service/author/' + receiver_author_uuid + '/inbox/'
     payload = data
     sender_author_authorization = request.headers['Authorization']
     headers = {'content-type': 'application/json', 'Authorization': sender_author_authorization}
     requests.post(url, data=json.dumps(payload), headers=headers)
   except:  # raise an error if something goes wrong
       raise ValueError('Posting to Inbox went wrong.')
+
+def sendPostRequestAsUser(path, username, password, data=None):
+  try:
+    login_request = requests.post("http://127.0.0.1:8000/service/author/login/", data = {'username': username, 'password': password})
+    requests.post(path, json = data, headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer ' + json.loads(login_request.text)["token"]})
+  except:  # raise an error if something goes wrong
+    raise ValueError('Sending the POST request went wrong.')

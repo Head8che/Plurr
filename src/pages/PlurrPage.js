@@ -16,37 +16,35 @@ export default function PlurrPage ({ page })  {
   const [object, setObject] = React.useState({});
   const [secondObject, setSecondObject] = React.useState({});
   const [thirdObject, setThirdObject] = React.useState({});
+  const [fourthObject, setFourthObject] = React.useState({});
+  const [renderNewPost, setRenderNewPost] = React.useState("1");
 
   // array of page objects
   const pageObjects = [
     {
       name: "Author",
-      apiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/`,
-      secondApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/followers/`,
-      // thirdApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/posts/`,
-      component: <Author loggedInUser={loggedInUser} author={object} authorFollowers={secondObject} posts={thirdObject} />
+      apiRoute: `http://127.0.0.1:8000/service/author/${authorId}/`,
+      secondApiRoute: `http://127.0.0.1:8000/service/author/${authorId}/followers/`,
+      thirdApiRoute: `http://127.0.0.1:8000/service/author/${authorId}/posts/`,
+      fourthApiRoute: `http://127.0.0.1:8000/service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      component: <Author loggedInUser={loggedInUser} author={object} 
+        authorFollowers={secondObject} posts={thirdObject} liked={fourthObject} setRenderNewPost={setRenderNewPost} />
     },
     {
       name: "Authors",
-      apiRoute: `https://plurr.herokuapp.com/service/authors/`,
+      apiRoute: `http://127.0.0.1:8000/service/authors/`,
       component: <Authors authors={object} />
     },
     {
-      name: "Posts",
-      apiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/`,
-      secondApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/followers/`,
-      thirdApiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/posts/`,
-      component: <Author loggedInUser={loggedInUser} author={object} authorFollowers={secondObject} posts={thirdObject} />
-    },
-    {
       name: "Inbox",
-      apiRoute: `https://plurr.herokuapp.com/service/author/${authorId}/inbox`,
-      component: <Inbox authors={object} />
+      apiRoute: `http://127.0.0.1:8000/service/author/${loggedInUser.uuid}/inbox/`,
+      component: <Inbox inbox={object} />
     },
     {
       name: "Stream",
-      apiRoute: `https://plurr.herokuapp.com/service/authors/`,
-      component: <Stream authors={object} />
+      apiRoute: `http://127.0.0.1:8000/service/stream/?size=1000`,
+      secondApiRoute: `http://127.0.0.1:8000/service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      component: <Stream loggedInUser={loggedInUser} posts={object} liked={secondObject} />
     },
   ]
 
@@ -58,6 +56,29 @@ export default function PlurrPage ({ page })  {
   // set loading to false once object has been set
   React.useEffect(() => {
     if (Object.keys(object).length !== 0) {
+      if ((currentPageObject?.fourthApiRoute !== undefined) 
+        && (currentPageObject?.fourthApiRoute !== null)) {
+          if ((currentPageObject?.thirdApiRoute !== undefined) 
+            && (currentPageObject?.thirdApiRoute !== null)) {
+              if ((currentPageObject?.secondApiRoute !== undefined) 
+                && (currentPageObject?.secondApiRoute !== null)) {
+                  if (Object.keys(secondObject).length !== 0) {
+                    setLoading(false);
+                  }
+              } else {
+                setLoading(false);
+              }
+          } else {
+            if ((currentPageObject?.secondApiRoute !== undefined) 
+              && (currentPageObject?.secondApiRoute !== null)) {
+                if (Object.keys(secondObject).length !== 0) {
+                  setLoading(false);
+                }
+            } else {
+              setLoading(false);
+            }
+          }
+      }
       if ((currentPageObject?.thirdApiRoute !== undefined) 
         && (currentPageObject?.thirdApiRoute !== null)) {
           if ((currentPageObject?.secondApiRoute !== undefined) 
@@ -80,8 +101,10 @@ export default function PlurrPage ({ page })  {
       }
       // console.log(object)
     }
-  }, [object, secondObject, currentPageObject.secondApiRoute, 
-    thirdObject, currentPageObject.thirdApiRoute])
+  }, [object, secondObject, currentPageObject.apiRoute, 
+    currentPageObject.secondApiRoute, 
+    thirdObject, currentPageObject.thirdApiRoute, fourthObject, 
+    currentPageObject.fourthApiRoute])
   
   // validate the token on each page load
   React.useEffect(() => {
@@ -108,9 +131,17 @@ export default function PlurrPage ({ page })  {
             currentPageObject?.thirdApiRoute, setThirdObject
           )
       }
+
+      if ((currentPageObject?.fourthApiRoute !== undefined) 
+        && (currentPageObject?.fourthApiRoute !== null)) {
+          setObjectFromApi(
+            currentPageObject?.fourthApiRoute, setFourthObject
+          )
+      }
     }
   }, [loggedInUser, loggedInUser.uuid, currentPageObject.apiRoute, 
-    currentPageObject.secondApiRoute,currentPageObject.thirdApiRoute]);
+    currentPageObject.secondApiRoute, currentPageObject.thirdApiRoute, 
+    currentPageObject.fourthApiRoute, renderNewPost]);
   
   // show component when loading is complete
   return (    

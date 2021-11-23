@@ -1,5 +1,8 @@
 from django.db import models
+from .inboxModel import Inbox
 from django.contrib.auth.models import AbstractUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 import uuid
 
 # Author Model extends from Django's User model when a new account is registered
@@ -32,3 +35,9 @@ class Author(AbstractUser):
             # set id and url to format specified in the project specifications
             self.id = self.host + 'author/' + str(self.uuid)
             self.url = self.id
+
+# https://stackoverflow.com/a/52196396 to auto-create Inbox when Author is created
+@receiver(post_save, sender=Author)
+def create_user_author(sender, instance, created, **kwargs):
+    if created:
+        Inbox.objects.create(author=instance.id)

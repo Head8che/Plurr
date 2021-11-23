@@ -5,9 +5,9 @@ class Node(models.Model):
     # Host URL (Main identifier for hosts)
     host = models.URLField(max_length=200)
     # Host displayName[username] for (Basic Authentication)
-    displayName = models.CharField(max_length=100, null=False)
+    authUsername = models.CharField(max_length=100, null=False)
     # Host password for (Basic Authentication)
-    password = models.CharField(max_length=128, verbose_name='password', null=False)
+    authPassword = models.CharField(max_length=128, verbose_name='password', null=False)
     # Host connected date
     connectedDate = models.DateTimeField(auto_now_add=True)
 
@@ -16,4 +16,4 @@ class Node(models.Model):
         if self.host != None:
             # make sure host ends with a '/'
             self.host += '/' if (not self.host.endswith('/')) else ''
-        return (f"Node: Host={self.host}, Name={self.displayName}, Password={self.password}")
+        return (f"Node: Host={self.host}, Name={self.authPassword}, Password={self.authPassword}")
