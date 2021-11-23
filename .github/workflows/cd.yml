@@ -1,10 +1,12 @@
+# code adapted from https://raturi.in/blog/automatic-deployment-django-app-using-heroku-and-github-action/
+
 name: CD
 
 # Controls when the workflow will run
 on:
   # Triggers the workflow on push request events but only for the main branch
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
