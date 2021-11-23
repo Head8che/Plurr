@@ -144,6 +144,7 @@ export const getFrontEndHostWithSlash = () => {
 export const getBackEndHostWithSlash = () => {
   if ((window !== null) && (window !== undefined)) {
     const host = window.location.href.split("/").slice(0, 4).join("/")
+    console.log(host)
     return (host.includes("localhost") || host.includes("127.0.0.1")) 
       ? "http://127.0.0.1:8000/" : host.endsWith("/") ? host : null
   }
