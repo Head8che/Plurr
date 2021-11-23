@@ -8,6 +8,7 @@ import { useUserHandler } from "../UserContext"
 import { useHistory } from "react-router-dom"
 import axios from "axios"
 import * as Yup from 'yup';
+import { getBackEndHostWithSlash } from "../utils"
 
 export default function LogInModal({show, onHide, closeModal}) {
     // boolean for showing or hiding the password
@@ -35,9 +36,11 @@ export default function LogInModal({show, onHide, closeModal}) {
       // remove invalid credentials error
       setInvalidCredentials(false)
 
+      const host = getBackEndHostWithSlash();
+
       // post the validated data to the backend registration service
-      axios
-        .post("https://plurr.herokuapp.com/service/author/login/", data)
+      host && axios
+        .post(`${host}service/author/login/`, data)
         .then((response) => {  
           // close the modal
           closeModal();

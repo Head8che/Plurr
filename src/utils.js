@@ -132,7 +132,7 @@ export const validateToken = () => {
 // get host (e.g. "https://plurr.herokuapp.com/")
 export const getFrontEndHostWithSlash = () => {
   if ((window !== null) && (window !== undefined)) {
-    const host = window.location.href.split("/").slice(0, 4).join("/")
+    const host = window.location.href.split("/").slice(0, 3).join("/") + "/"
     return (host.includes("localhost") || host.includes("127.0.0.1")) 
       ? "http://127.0.0.1:3000/" : host.endsWith("/") ? host : null
   }
@@ -143,10 +143,10 @@ export const getFrontEndHostWithSlash = () => {
 // get host (e.g. "https://plurr.herokuapp.com/")
 export const getBackEndHostWithSlash = () => {
   if ((window !== null) && (window !== undefined)) {
-    const host = window.location.href.split("/").slice(0, 4).join("/")
+    const host = window.location.href.split("/").slice(0, 3).join("/") + "/"
     console.log(host)
     return (host.includes("localhost") || host.includes("127.0.0.1")) 
-      ? "http://127.0.0.1:8000/" : host.endsWith("/") ? host : null
+      ? "http://localhost:8000/" : host.endsWith("/") ? host : null
   }
   
   return null;
