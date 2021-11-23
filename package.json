@@ -1,57 +1,81 @@
 {
-  "name": "plurr",
-  "version": "0.1.0",
-  "private": true,
-  "proxy": "https://plurr.herokuapp.com/",
-  "dependencies": {
-    "@fortawesome/fontawesome-free": "^5.15.4",
-    "@fortawesome/fontawesome-svg-core": "^1.2.36",
-    "@fortawesome/free-brands-svg-icons": "^5.15.4",
-    "@fortawesome/free-regular-svg-icons": "^5.15.4",
-    "@fortawesome/free-solid-svg-icons": "^5.15.4",
-    "@fortawesome/react-fontawesome": "^0.1.16",
-    "@hookform/resolvers": "^2.8.2",
-    "@testing-library/jest-dom": "^5.14.1",
-    "@testing-library/react": "^11.2.7",
-    "@testing-library/user-event": "^12.8.3",
-    "axios": "^0.22.0",
-    "bootstrap": "^5.1.3",
-    "react": "^17.0.2",
-    "react-bootstrap": "^2.0.0-rc.1",
-    "react-dom": "^17.0.2",
-    "react-hook-form": "^7.18.1",
-    "react-icons": "^4.3.1",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^3.4.4",
-    "web-vitals": "^1.1.2",
-    "yup": "^0.32.9"
-  },
-  "engines": {
-    "node": "16.10.0",
-    "npm": "7.24.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "postinstall": "npm run build"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  }
+    "name": "plurr",
+    "version": "0.1.0",
+    "private": true,
+    "proxy": "https://plurr.herokuapp.com/",
+    "dependencies": {
+        "@fortawesome/fontawesome-free": "^5.15.4",
+        "@fortawesome/fontawesome-svg-core": "^1.2.36",
+        "@fortawesome/free-brands-svg-icons": "^5.15.4",
+        "@fortawesome/free-regular-svg-icons": "^5.15.4",
+        "@fortawesome/free-solid-svg-icons": "^5.15.4",
+        "@fortawesome/react-fontawesome": "^0.1.16",
+        "@hookform/resolvers": "^2.8.2",
+        "@testing-library/jest-dom": "^5.14.1",
+        "@testing-library/react": "^11.2.7",
+        "@testing-library/user-event": "^12.8.3",
+        "axios": "^0.22.0",
+        "bootstrap": "^5.1.3",
+        "react": "^17.0.2",
+        "react-bootstrap": "^2.0.0-rc.1",
+        "react-dom": "^17.0.2",
+        "react-hook-form": "^7.18.1",
+        "react-icons": "^4.3.1",
+        "react-router-dom": "^5.2.0",
+        "react-scripts": "^3.4.4",
+        "web-vitals": "^1.1.2",
+        "yup": "^0.32.9"
+    },
+    "engines": {
+        "node": "16.10.0",
+        "npm": "7.24.0"
+    },
+    "scripts": {
+        "start": "react-scripts start",
+        "build": "react-scripts build",
+        "test": "react-scripts test",
+        "eject": "react-scripts eject",
+        "postinstall": "npm run build",
+        "lint-staged": "lint-staged",
+        "prepare": "npx husky install",
+        "check-format": "npx prettier --check .",
+        "start-frontend": "npm run start",
+        "start-backend": "source venv/bin/activate && python manage.py runserver",
+        "start-servers": "npm-run-all --parallel start-frontend start-backend",
+        "test-frontend": "npm run test",
+        "test-backend": "source venv/bin/activate && python manage.py test",
+        "test-all": "npm run test-frontend && npm run test-backend",
+        "install-all-dependencies": "pip install -r requirements.txt && npm install && npx husky install"
+    },
+    "eslintConfig": {
+        "extends": [
+            "react-app"
+        ]
+    },
+    "browserslist": {
+        "production": [
+            ">0.2%",
+            "not dead",
+            "not op_mini all"
+        ],
+        "development": [
+            "last 1 chrome version",
+            "last 1 firefox version",
+            "last 1 safari version"
+        ]
+    },
+    "devDependencies": {
+        "husky": "^7.0.4",
+        "lint-staged": "^12.1.2",
+        "npm-run-all": "^4.1.5",
+        "prettier": "^2.4.1"
+    },
+    "lint-staged": {
+        "*.{js,css,md}": "prettier --write",
+        "src/**/*.{js,jsx,ts,tsx}": [
+            "npx eslint --fix",
+            "npx prettier --write"
+        ],
+        "src/**/*.{json,css,scss,md}": "prettier --write"
+    }
 }
