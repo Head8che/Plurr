@@ -4,11 +4,14 @@ export const setObjectFromApi = (path, setObject) => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     })
       .then((corsResponse) => {
         const apiPromise = corsResponse.json();
+        console.log(corsResponse)
+        console.log(apiPromise)
         apiPromise.then((apiResponse) => {
           console.log(apiResponse)
 
@@ -27,7 +30,10 @@ export const setObjectFromApi = (path, setObject) => {
             })
               .then((corsResponse) => {
                 const apiPromise = corsResponse.json();
+                console.log(corsResponse)
+                console.log(apiPromise)
                 apiPromise.then((apiResponse) => {
+                  console.log(apiResponse)
 
                   // if getting a new token did not work
                   if (apiResponse.code === 'token_not_valid') {
@@ -67,12 +73,16 @@ export const validateToken = () => {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
+        'Accept': 'application/json',
         'Authorization': `Bearer ${localStorage.getItem('token')}`
       }
     })
       .then((corsResponse) => {
         const apiPromise = corsResponse.json();
+        console.log(corsResponse)
+        console.log(apiPromise)
         apiPromise.then((apiResponse) => {
+          console.log(apiResponse)
 
           // if the token is not valid
           if (apiResponse.code === 'token_not_valid') {
