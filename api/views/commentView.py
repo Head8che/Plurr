@@ -44,7 +44,7 @@ def CommentList(request, author_uuid, post_uuid):
   # List all the comments
   elif request.method == 'GET':
     try:  # try to get the comments
-        comments = Comment.objects.filter(post=post_uuid).order_by('id')
+        comments = Comment.objects.filter(post=post_uuid).order_by('-published')
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
 

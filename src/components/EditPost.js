@@ -4,8 +4,7 @@ import { Row, Col, Form, FloatingLabel } from 'react-bootstrap';
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { appendOrKeepSlash } from "../utils"
-import { getBackEndHostWithSlash } from "../utils"
+import { appendOrKeepSlash, getBackEndHostWithSlash } from "../utils"
 
 // export default function EditPost ({ loggedInUser, author, setRenderNewPost })  {
 export default function EditPost ({ loggedInUser, author, post, setIsEditing, setRenderNewPost })  {

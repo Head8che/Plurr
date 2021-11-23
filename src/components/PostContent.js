@@ -2,6 +2,7 @@ import React from 'react'
 import './PostContent.css'
 import CommentContent from './CommentContent';
 import EditPost from './EditPost';
+import CreateComment from './CreateComment';
 import { Row, Col, Image, Button, Card } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import DeletePostModal from '../components/DeletePostModal';
@@ -146,12 +147,14 @@ import { getBackEndHostWithSlash } from "../utils"
                 </div>
               </Col>
             </Row>
-            { comments.length === 0 ? null : <div style={{borderBottom: "1px solid #CCC", height: "0px", width: "100%", marginTop: "20px"}}></div>}
+            { comments.length === 0 ? null : <div style={{borderBottom: "1px solid #CCC", height: "0px", width: "100%", marginTop: "20px", marginBottom: "30px"}}></div>}
             { comments && comments?.map((comment) => {
                 return <CommentContent key={comment.id} loggedInUser={loggedInUser} 
                   comment={comment} liked={liked} authorHasLiked={authorLiked?.includes(comment.id)} />
               })
             }
+            <div style={{borderBottom: "1px solid #CCC", height: "0px", width: "100%", marginTop: "30px"}}></div>
+            <CreateComment author={author} post={post} setRenderNewPost={setRenderNewPost} />
 
           </Card.Body>
         </Card>

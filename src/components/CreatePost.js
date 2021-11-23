@@ -4,7 +4,7 @@ import { Row, Col, Image, Button, Form, Card, FloatingLabel } from 'react-bootst
 import * as Yup from 'yup';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { getBackEndHostWithSlash } from "../utils"
+import { appendOrKeepSlash, getBackEndHostWithSlash } from "../utils"
 
 export default function CreatePost ({ loggedInUser, author, setRenderNewPost })  {
     // schema to validate form inputs
@@ -26,7 +26,7 @@ export default function CreatePost ({ loggedInUser, author, setRenderNewPost }) 
         delete newData.title
       }
 
-      if (loggedInUser.id !== author.id) {
+      if (appendOrKeepSlash(loggedInUser.id) !== appendOrKeepSlash(author.id)) {
         setError('content', {
           type: "server",
           message: `${author.displayName} cannot post for ${loggedInUser.displayName}!`,

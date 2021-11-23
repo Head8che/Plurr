@@ -90,13 +90,13 @@ function PlurrContainer ({children})  {
                   </h3>
                   <div className="list-group list-group-flush" >
                       <Link className={`plurr-nav-item 
-                        ${(currentPath === "/stream" ? "active" : "")}`} 
+                        ${(currentPath === "/stream" || currentPath === "/stream/" ? "active" : "")}`} 
                         to="/stream">Stream</Link>
                       <Link className={`plurr-nav-item 
-                        ${(currentPath === "/inbox" ? "active" : "")}`} 
+                        ${(currentPath === "/inbox" || currentPath === "/inbox/" ? "active" : "")}`} 
                         to="/inbox">Inbox</Link>
                       <Link className={`plurr-nav-item 
-                        ${(currentPath === `/author/${loggedInUser?.uuid}` ? "active" : "")}`}
+                        ${(currentPath === `/author/${loggedInUser?.uuid}` || currentPath === `/author/${loggedInUser?.uuid}/` ? "active" : "")}`}
                         to={`/author/${loggedInUser?.uuid}`}>Profile</Link>
                       <div className="plurr-nav-item" 
                         onClick={() => {handleLogout()}}>Logout</div>
