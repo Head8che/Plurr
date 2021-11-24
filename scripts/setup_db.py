@@ -51,6 +51,9 @@ def main():
         PORT = url.port
         PG_CONNECT_USER = url.username
         PG_CONNECT_PASSWORD = url.password
+        DB_NAME = url.path[1:]
+        USER = url.username
+        PASSWORD = url.password
 
     # Connect to database named 'postgres'
     conn = psycopg2.connect(
