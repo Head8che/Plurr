@@ -1,18 +1,15 @@
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
-from api.permissions import NodePermission
 from ..models.likeModel import Like
-from ..models.authorModel import Author
 from ..models.commentModel import Comment
 from ..models.postModel import Post
-from rest_framework import permissions, status
+from rest_framework import status
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserExists, getLoggedInAuthorObject, postToAuthorInbox
 from ..serializers import LikeSerializer
 
 
 @api_view(['POST', 'GET'])
-@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def LikeListPost(request, author_uuid, post_uuid):
   try:  # try to get the specific author and post
       postObject = Post.objects.get(author=author_uuid, uuid=post_uuid)
@@ -80,7 +77,6 @@ def LikeListPost(request, author_uuid, post_uuid):
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @api_view(['POST', 'GET'])
-@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def LikeListComment(request, author_uuid, post_uuid, comment_uuid):
   try:  # try to get the specific author, post and comment
       Post.objects.get(author=author_uuid, uuid=post_uuid)

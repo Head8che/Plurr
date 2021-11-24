@@ -1,4 +1,5 @@
 from ..models.nodeModel import Node
+from ..models.nodeModel import NodeUser
 from ..models.authorModel import Author
 from ..serializers import AuthorSerializer
 from django.http import HttpResponse
@@ -320,25 +321,15 @@ class nodeServices():
 ## From authentication.py from rest_framework ##
 class BasicAuthentication(authentication.BaseAuthentication):
     def authenticate(self, request):
-        authRequst = request.META
-        if 'Basic' in authRequst:
-            auth_split = authRequst.split()
-            # authenticated username and pasword
-            authentication = base64.b64decode(auth_split[-1]).decode('utf8')
-            authenticated_Username, authenticated_Password = authentication.split(':')
-            node = Node.objects.filter(host__exact=os.environ.get('HEROKU_HOST'))
-            if not node.exist():
-                response = HttpResponse("Request Admins, to add credentials to Server")
-                response.status_code = status.HTTP_401_UNAUTHORIZED
-            elif authenticated_Username == node[0].authUsername and authenticated_Password == node[0].authPassword:
-                return (verifiedAuthentication(), None)
-            else:
-                raise exceptions.AuthenticationFailed("invalid Node credentials provided.")
+
+        authRequest = str(request.META.get('HTTP_AUTHORIZATION', None))
+
+        if authRequest != None and authRequest.split()[0] == 'Basic':
+            username, password = base64.b64decode(authRequest.split()[-1]).decode('utf8').split(":")
+            try:  # try to get the authors
+                node = Node.objects.get(username=username, password=password)
+            except:  # return an error if something goes wrong
+                return None
+            return (NodeUser(node.host, node.username, node.password), None)
         else:
             return None
-
-class verifiedAuthentication:
-    def __init__(self):
-        # make a UUID based on the host ID and current time
-        self.id = uuid.uuid1()
-        self.verified_Authentication = True

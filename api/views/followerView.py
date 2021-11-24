@@ -1,14 +1,12 @@
-from api.permissions import NodePermission
 from ..models.authorModel import Author
 from ..serializers import AuthorSerializer
-from rest_framework import permissions, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor
 
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def FollowerList(request, author_uuid):
   # List all the followers
   if request.method == 'GET':
@@ -44,7 +42,6 @@ def FollowerList(request, author_uuid):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
-@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def FollowerDetail(request, author_uuid, follower_uuid):
 
   # List a specific follower

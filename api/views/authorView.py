@@ -1,13 +1,11 @@
-from api.permissions import NodePermission
 from ..models.authorModel import Author
 from ..serializers import AuthorSerializer
-from rest_framework import permissions, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import  status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor
 
 @api_view(['GET'])
-@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def AuthorList(request):
   # List all the authors
   if request.method == 'GET':
@@ -43,7 +41,6 @@ def AuthorList(request):
 
 
 @api_view(['GET', 'POST'])
-@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def AuthorDetail(request, author_uuid):
   try:  # try to get the specific author
       author = Author.objects.get(uuid=author_uuid)

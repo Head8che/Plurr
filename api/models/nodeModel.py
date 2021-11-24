@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import AnonymousUser 
 
 # Node Model
 class Node(models.Model):  
@@ -24,3 +25,18 @@ class Node(models.Model):
 
     def __str__(self, *args, **kwargs):
         return (f"Node: Host={self.host}, Name={self.username}, Password={self.password}")
+
+# Node User Model
+class NodeUser(AnonymousUser):
+    def __init__(self, host, username, password):
+        self.host = host
+        self.username = username
+        self.password = password
+        
+        if self.host != None:
+            # make sure host ends with a '/'
+            self.host += '/' if (not self.host.endswith('/')) else ''
+
+    @property 
+    def is_authenticated(self):
+        return True

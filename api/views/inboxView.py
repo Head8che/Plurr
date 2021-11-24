@@ -1,15 +1,13 @@
-from api.permissions import NodePermission
 from ..models.inboxModel import Inbox
 from ..models.authorModel import Author
 from ..serializers import InboxSerializer, AuthorSerializer, LikeSerializer, PostSerializer
-from rest_framework import permissions, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework import status
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor, getLoggedInAuthorObject
 
 
 @api_view(['POST', 'GET', 'DELETE'])
-@permission_classes([permissions.IsAuthenticated|NodePermission])
 def InboxList(request, author_uuid):
   try:  # try to get the specific author and post
       authorObject = Author.objects.get(uuid=author_uuid)
