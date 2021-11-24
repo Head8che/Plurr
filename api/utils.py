@@ -1,7 +1,11 @@
 from django.core.paginator import Paginator, EmptyPage
+from requests.auth import HTTPBasicAuth
 from rest_framework.response import Response
+
+from api.serializers import AuthorSerializer
 from .models.authorModel import Author
 from rest_framework import status
+from django.contrib.auth.hashers import make_password
 import base64, requests, json
 
 def getPageNumber(request, number=1):
@@ -119,6 +123,30 @@ def postToAuthorInbox(request, data, receiver_author_uuid):
     requests.post(url, data=json.dumps(payload), headers=headers)
   except:  # raise an error if something goes wrong
       raise ValueError('Posting to Inbox went wrong.')
+
+def _makeRemoteGetRequest(path, node):
+    login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
+    return json.loads(login_request.text)
+  
+def _createAuthorObjectsFromNode(node):
+    get_authors_path = node.host + "authors/"
+    json_response = _makeRemoteGetRequest(get_authors_path, node)
+    print("\nPATH\n{path}\nRESPONSE\n{response}\n".format(path=get_authors_path, response=str(json_response)))
+    remote_authors_list = json_response.get('items', None)
+    for remote_author in remote_authors_list:
+        remote_author_uuid = str(remote_author.get('id').split('/')[-1])
+        remote_author_data = remote_author.copy()
+        serializer = AuthorSerializer(data=remote_author_data)
+
+        if serializer.is_valid():
+            remote_author_data['uuid'] = remote_author_uuid
+            remote_author_data['username'] = remote_author_uuid
+            if remote_author_data['profileImage'] is None:
+                remote_author_data['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
+            remote_author_data['password'] = make_password(remote_author_uuid + "pass")
+            Author.objects.create(**remote_author_data)
+    
+    return None
 
 # def sendPostRequestAsUser(path, username, password, data=None):
 #   try:

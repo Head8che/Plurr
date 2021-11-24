@@ -38,6 +38,6 @@ class Author(AbstractUser):
 
 # https://stackoverflow.com/a/52196396 to auto-create Inbox when Author is created
 @receiver(post_save, sender=Author)
-def create_user_author(sender, instance, created, **kwargs):
+def create_author_inbox(sender, instance, created, **kwargs):
     if created:
         Inbox.objects.create(author=instance.id)

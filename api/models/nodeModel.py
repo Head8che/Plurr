@@ -1,6 +1,9 @@
 from django.db import models
 from django.utils import timezone
-from django.contrib.auth.models import AnonymousUser 
+from django.contrib.auth.models import AnonymousUser
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+from ..utils import _createAuthorObjectsFromNode
 
 # Node Model
 class Node(models.Model):  
@@ -25,6 +28,12 @@ class Node(models.Model):
 
     def __str__(self, *args, **kwargs):
         return (f"Node: Host={self.host}, Name={self.username}, Password={self.password}")
+
+# https://stackoverflow.com/a/52196396 to auto-create local objects when Node is created
+@receiver(post_save, sender=Node)
+def create_node_objects_locally(sender, instance, created, **kwargs):
+    if created:
+        _createAuthorObjectsFromNode(instance)
 
 # Node User Model
 class NodeUser(AnonymousUser):
