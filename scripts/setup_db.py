@@ -4,13 +4,14 @@ import argparse
 from pathlib import Path
 
 import psycopg2
+import urllib.parse as urlparse
 import os, dotenv
 from psycopg2 import sql
 
 
 def main():
     # Parse command-line arguments
-    parser = argparse.ArgumentParser(description="Set up the database for the portal.")
+    parser = argparse.ArgumentParser(description="Set up the database.")
     parser.add_argument(
         "--reset",
         action="store_true",
@@ -41,6 +42,15 @@ def main():
     USER = os.environ.get("404_DB_USER")
     PASSWORD = os.environ.get("404_DB_PASSWORD")
     print(PASSWORD)
+
+    url = os.environ.get('DATABASE_URL', None)
+    if url is not None:
+        url = urlparse.urlparse(os.environ.get('DATABASE_URL', None))
+        PG_CONNECT_DB_NAME = url.path[1:]
+        HOST = url.hostname
+        PORT = url.port
+        PG_CONNECT_USER = url.username
+        PG_CONNECT_PASSWORD = url.password
 
     # Connect to database named 'postgres'
     conn = psycopg2.connect(
