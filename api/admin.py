@@ -8,7 +8,6 @@ from .models.likeModel import Like
 from .models.commentModel import Comment
 from .models.inboxModel import Inbox
 from .models.nodeModel import Node
-from .models.node1Model import Node1
 
 
 from .views.adminView import pendingRequestView
@@ -21,7 +20,6 @@ admin.site.register(Comment)
 admin.site.register(Inbox)
 admin.site.register(Like)
 admin.site.register(Node)
-admin.site.register(Node1)
 
 
 

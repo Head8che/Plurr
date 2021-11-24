@@ -11,9 +11,9 @@ class Node(models.Model):
     # Host connected date
     connectedDate = models.DateTimeField(auto_now_add=True)
 
-    def __init__(self, *args, **kwargs):
-        super(Node, self).__init__(*args, **kwargs)
-        if self.host != None:
-            # make sure host ends with a '/'
-            self.host += '/' if (not self.host.endswith('/')) else ''
+    def __str__(self, *args, **kwargs):
+        # super(Node, self).__init__(*args, **kwargs)
+        # if self.host != None:
+        #     # make sure host ends with a '/'
+        #     self.host += '/' if (not self.host.endswith('/')) else ''
         return (f"Node: Host={self.host}, Name={self.authPassword}, Password={self.authPassword}")
