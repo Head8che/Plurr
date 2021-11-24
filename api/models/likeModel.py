@@ -1,5 +1,6 @@
 from django.db import models
 from api.models.authorModel import Author
+from django.utils import timezone
 
 class Like(models.Model):
     # Like Context
@@ -13,7 +14,7 @@ class Like(models.Model):
     # Like Object
     object = models.URLField(null=True, blank=True)
     # Like Date
-    date = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    date = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     def __init__(self, *args, **kwargs):
         super(Like, self).__init__(*args, **kwargs)

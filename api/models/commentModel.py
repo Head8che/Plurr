@@ -1,6 +1,7 @@
 from django.db import models
 from .postModel import Post
 from api.models.authorModel import Author
+from django.utils import timezone
 import uuid
 
 class Comment(models.Model):
@@ -27,7 +28,7 @@ class Comment(models.Model):
     # Comment Content Type
     contentType = models.CharField(null=False, choices=ContentTypes, default=TEXT_PLAIN, max_length=18)
     # Comment Published Date
-    published = models.DateTimeField(null=True, blank=True, auto_now_add=True)
+    published = models.DateTimeField(default=timezone.now, null=True, blank=True)
 
     def __init__(self, *args, **kwargs):
         super(Comment, self).__init__(*args, **kwargs)

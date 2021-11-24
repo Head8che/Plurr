@@ -1,15 +1,20 @@
+from api.permissions import NodePermission
 from ..models.authorModel import Author
+from ..models.nodeModel import Node
 from ..serializers import AuthorSerializer
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import permissions, status
+from django.contrib.auth.hashers import make_password
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor
 
 
 @api_view(['GET'])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def AuthorList(request):
   # List all the authors
   if request.method == 'GET':
+    print(make_password('password'))
     try:  # try to get the authors
         authors = Author.objects.all().order_by('id')
     except:  # return an error if something goes wrong
@@ -42,6 +47,7 @@ def AuthorList(request):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def AuthorDetail(request, author_uuid):
   try:  # try to get the specific author
       author = Author.objects.get(uuid=author_uuid)

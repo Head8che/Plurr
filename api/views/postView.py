@@ -1,14 +1,16 @@
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
+from api.permissions import NodePermission
 from ..models.authorModel import Author
 from ..models.postModel import Post
-from rest_framework import status
+from rest_framework import permissions, status
 from ..serializers import PostSerializer
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
 
 
-@api_view([ 'GET'])
+@api_view(['GET'])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def StreamList(request):
   # List all the posts
   if request.method == 'GET':
@@ -43,6 +45,7 @@ def StreamList(request):
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @api_view(['POST', 'GET'])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def PostList(request, author_uuid):
   try:  # try to get the specific author
       authorObject = Author.objects.get(uuid=author_uuid)
@@ -118,6 +121,7 @@ def PostList(request, author_uuid):
 
 
 @api_view(['GET', 'POST', 'DELETE', 'PUT'])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def PostDetail(request, author_uuid, post_uuid):
   try:  # try to get the specific author
     authorObject = Author.objects.get(uuid=author_uuid)

@@ -1,13 +1,15 @@
+from api.permissions import NodePermission
 from ..models.likeModel import Like
 from ..models.authorModel import Author
 from ..serializers import LikeSerializer
-from rest_framework import status
-from rest_framework.decorators import api_view
+from rest_framework import permissions, status
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from ..utils import getPageNumber, getPageSize, getPaginatedObject
 
 
 @api_view(['GET'])
+@permission_classes([permissions.IsAuthenticatedOrReadOnly|NodePermission])
 def LikedList(request, author_uuid):
   try:  # try to get the specific author
       authorObject = Author.objects.get(uuid=author_uuid)
