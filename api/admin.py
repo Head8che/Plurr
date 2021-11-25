@@ -16,7 +16,7 @@ from .views.adminView import pendingRequestView
 def create_local_authors(modeladmin, request, queryset):
     for node in queryset:
         _createAuthorObjectsFromNode(node)
-create_local_authors.short_description = 'Create Local Author Objects'
+create_local_authors.short_description = 'Create local Author objects'
 
 class NodeAdmin(admin.ModelAdmin):
     actions = [create_local_authors, ]

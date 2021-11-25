@@ -130,16 +130,25 @@ def _makeRemoteGetRequest(path, node):
     print("username: " + node.remoteUsername + "\npassword: " + node.remotePassword + "\n")
 
     credentials = node.remoteUsername + ':' + node.remotePassword
-    token = base64.b64encode(credentials.encode())
+    token = base64.b64encode(credentials.encode()).decode('utf-8')
     proxies = {
       "http": None,
       "https": None,
     }
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT x.y; Win64; x64; rv:10.0) Gecko/20100101 Firefox/10.0 ', 'Authorization': 'Basic ' + token.decode('utf-8')}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT x.y; Win64; x64; rv:10.0) Gecko/20100101 Firefox/10.0 ', 'Authorization': 'Basic ' + token}
 
     # print("\n\n")
     # print(requests.get(path, headers=headers, proxies=proxies).status_code)
     # print(requests.get(path, headers=headers, proxies=proxies).text)
+    # print(str(requests.get(path, headers=headers, proxies=proxies).headers))
+    # print("\nabc\n")
+    # print(str(requests.get(path, headers=headers, proxies=proxies).request))
+    # session = requests.Session()
+    # session.auth = (node.remoteUsername, node.remotePassword)
+    # session.trust_env = False
+    # print("session\n")
+    # print(session.get(path))
+    # print(session.get(path).text)
     # print("\n\n")
     # print(requests.get(path, headers=headers).status_code)
     # print(requests.get(path, headers=headers).text)
@@ -163,8 +172,25 @@ def _makeRemoteGetRequest(path, node):
       print("\nREQUEST FAILED: BAD URL\n")
       return None
     except:
-      print("\nREQUEST FAILED\n")
-      return None
+      try:
+        print("\nretry with no proxy\n")
+        login_request = requests.get(path, headers=headers, proxies=proxies)
+        print("\n" + login_request.text + "\n")
+        # print("\nstatus code: " + str(login_request.status_code) + "\n")
+        return json.loads(login_request.text)
+      except:
+        try:
+          print("\nretry with session\n")
+          session = requests.Session()
+          session.auth = (node.remoteUsername, node.remotePassword)
+          session.trust_env = False
+          login_request = session.get(path)
+          print("\n" + login_request.text + "\n")
+          # print("\nstatus code: " + str(login_request.status_code) + "\n")
+          return json.loads(login_request.text)
+        except:
+          print("\nREQUEST FAILED\n")
+          return None
   
 def _createAuthorObjectsFromNode(node):
     get_authors_path = node.host + "authors/"
