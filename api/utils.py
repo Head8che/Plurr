@@ -154,6 +154,9 @@ def _makeRemoteGetRequest(path, node):
     # print(requests.get(path, headers=headers).text)
     # print("\n\n")
     try:
+      print("\ntry with localhost\n")
+      login_request = requests.get('http://localhost:8000/authors/', auth=HTTPBasicAuth(node.username, node.password))
+      print("\n" + login_request.text + "\n")
       login_request = requests.get(path, headers=headers, proxies=proxies)
       print("\n" + login_request.text + "\n")
       # print("\nstatus code: " + str(login_request.status_code) + "\n")
