@@ -158,9 +158,6 @@ CORS_ALLOW_CREDENTIALS = True
 
 CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
 
-# CSRF_COOKIE_DOMAIN = '.cmput404-vgt-socialdist.herokuapp.com'
-# CSRF_TRUSTED_ORIGINS = ['.cmput404-vgt-socialdist.herokuapp.com', 'apps.domain.com', 'stagingX.otherdomain.com']
-
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
 
