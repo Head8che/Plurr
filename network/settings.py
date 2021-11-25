@@ -130,8 +130,36 @@ CORS_ALLOW_HEADERS=[
     'X-Url',
 ]
 
-CSRF_COOKIE_DOMAIN = '.cmput404-vgt-socialdist.herokuapp.com'
-CSRF_TRUSTED_ORIGINS = ['.cmput404-vgt-socialdist.herokuapp.com', 'apps.domain.com', 'stagingX.otherdomain.com']
+CORS_ORIGIN_WHITELIST = [
+    'http://127.0.0.1:3000',
+    'http://localhost:3000',
+    'http://127.0.0.1:8000',
+    'http://localhost:8000',
+    'https://cmput404-vgt-socialdist.herokuapp.com',
+    'https://plurr.herokuapp.com'
+]
+
+CORS_EXPOSE_HEADERS = [
+    "Set-Cookie",
+    "Authorization",
+    "Uid",
+    "Access-Token"
+]
+
+CSRF_COOKIE_SAMESITE = 'None'
+
+SESSION_COOKIE_SECURE = True
+
+CSRF_COOKIE_SECURE = True
+
+SESSION_COOKIE_SAMESITE = 'None'
+
+CORS_ALLOW_CREDENTIALS = True
+
+CSRF_HEADER_NAME = "HTTP_X_CSRFTOKEN"
+
+# CSRF_COOKIE_DOMAIN = '.cmput404-vgt-socialdist.herokuapp.com'
+# CSRF_TRUSTED_ORIGINS = ['.cmput404-vgt-socialdist.herokuapp.com', 'apps.domain.com', 'stagingX.otherdomain.com']
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
