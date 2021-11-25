@@ -104,19 +104,27 @@ def InboxList(request, author_uuid):
           status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'like':
-      # get the Like serializer
-      like_serializer = LikeSerializer(data=request.data)
+      try:
+        print("\n\nLike Object\n" + request.data + "\n\n")
+        # get the Like serializer
+        like_serializer = LikeSerializer(data=request.data)
 
-      # update the Inbox data if the serializer is valid
-      if like_serializer.is_valid():
-        if likeIsInInbox(request.data, inbox):
-          return Response({"message": "Inbox item already exists"}, 
-          status=status.HTTP_409_CONFLICT)
-        
-        inbox.items.append(request.data)
-        inbox.save()
-        return Response({"message": "Inbox item added", "data": like_serializer.data}, 
-          status=status.HTTP_201_CREATED)
+        # update the Inbox data if the serializer is valid
+        if like_serializer.is_valid():
+          if likeIsInInbox(request.data, inbox):
+            return Response({"message": "Inbox item already exists"}, 
+            status=status.HTTP_409_CONFLICT)
+          
+          inbox.items.append(request.data)
+          inbox.save()
+          return Response({"message": "Inbox item added", "data": like_serializer.data}, 
+            status=status.HTTP_201_CREATED)
+        else:
+          return Response({"message": "Like object is invalid"}, 
+          status=status.HTTP_400_BAD_REQUEST)
+      except:
+        return Response({"message": "Like object cannot be serialized"}, 
+          status=status.HTTP_400_BAD_REQUEST)
 
     else:
       # return an error if something goes wrong with the update
