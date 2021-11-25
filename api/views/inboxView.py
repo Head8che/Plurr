@@ -117,7 +117,7 @@ def InboxList(request, author_uuid):
           
           inbox.items.append(request.data)
           inbox.save()
-          return Response({"message": "Inbox item added", "data": like_serializer.data}, 
+          return Response({"message": "Inbox item added", "data": like_serializer.validated_data}, 
             status=status.HTTP_201_CREATED)
         else:
           return Response({"message": "Like object is invalid"}, 
