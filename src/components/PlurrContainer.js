@@ -4,9 +4,11 @@ import { Link } from "react-router-dom"
 import "./PlurrContainer.css"
 import { useHistory, useLocation } from "react-router-dom"
 import { useUserHandler } from "../UserContext"
+import { getFrontEndHostWithSlash } from "../utils"
 
 // sidebar code adapted from https://startbootstrap.com/template/simple-sidebar
 function PlurrContainer({ children }) {
+  const host = getFrontEndHostWithSlash()
   const { loggedInUser, setLoggedInUser } = useUserHandler()
 
   // redirect away from PlurrContainer with useHistory
@@ -121,17 +123,17 @@ function PlurrContainer({ children }) {
             >
               Stream
             </Link>
-            <Link
+            <div
               className={`plurr-nav-item 
                         ${
                           currentPath === "/inbox" || currentPath === "/inbox/"
                             ? "active"
                             : ""
                         }`}
-              to="/inbox"
+              onClick={() => window.location.replace(`${host}inbox`)}
             >
               Inbox
-            </Link>
+            </div>
             <Link
               className={`plurr-nav-item 
                         ${
