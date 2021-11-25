@@ -140,7 +140,18 @@ def _makeRemoteGetRequest(path, node):
     except:
       print("\nREQUEST FAILED\n")
       return None
-    return json.loads(login_request.text)
+    
+    try:
+      print("\n\n_helper\n" + login_request + "\n\n")
+      print("\n\n_helper\n" + login_request.text + "\n\n")
+      print("\n\n_helper\n" + login_request.json() + "\n\n")
+      response = login_request.text
+      if response is None:
+        return None
+    except:
+      return None
+    
+    return json.loads(response)
   
 def _createAuthorObjectsFromNode(node):
     get_authors_path = node.host + "authors/"
