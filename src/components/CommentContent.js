@@ -4,7 +4,7 @@ import { Row, Col, Image } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHeart } from "@fortawesome/free-solid-svg-icons"
 import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons"
-import { getBackEndHostWithSlash } from "../utils"
+import { getBackEndHostWithSlash, withoutTrailingSlash } from "../utils"
 
 export default function CommentContent({
   loggedInUser,
@@ -12,14 +12,11 @@ export default function CommentContent({
   comment,
   authorHasLiked,
 }) {
-  const loggedInUserId = loggedInUser?.id?.endsWith("/")
-    ? loggedInUser?.id?.slice(0, -1)
-    : loggedInUser?.id
-  const commentAuthorId = comment?.author?.id?.endsWith("/")
-    ? comment?.author?.id?.slice(0, -1)
-    : comment?.author?.id
   const author = comment?.author
-  const loggedInUserIsAuthor = loggedInUserId === commentAuthorId
+  const loggedInUserIsAuthor =
+    loggedInUser?.id &&
+    withoutTrailingSlash(loggedInUser?.id) ===
+      withoutTrailingSlash(comment?.author?.id)
   const [isLiked, setIsLiked] = React.useState(authorHasLiked)
 
   // const authorLiked = liked?.items?.map(likedObject => likedObject.object)

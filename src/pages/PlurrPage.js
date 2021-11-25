@@ -9,6 +9,10 @@ import Stream from "./Stream"
 import Inbox from "./Inbox"
 import { getBackEndHostWithSlash } from "../utils"
 
+const allObjectsAreLoaded = (arr) => {
+  return arr.filter((item) => Object.keys(item).length === 0).length === 0
+}
+
 export default function PlurrPage({ page }) {
   const { authorId } = useParams()
   const { loggedInUser } = useUserHandler()
@@ -17,9 +21,14 @@ export default function PlurrPage({ page }) {
   const [secondObject, setSecondObject] = React.useState({})
   const [thirdObject, setThirdObject] = React.useState({})
   const [fourthObject, setFourthObject] = React.useState({})
-  const [renderNewPost, setRenderNewPost] = React.useState("1")
+  const [fifthObject, setFifthObject] = React.useState({})
+  const [renderNewPost, setRenderNewPost] = React.useState(Math.random())
 
   const host = getBackEndHostWithSlash()
+
+  const triggerRerender = () => {
+    setRenderNewPost(Math.random())
+  }
 
   // array of page objects
   const pageObjects = [
@@ -29,6 +38,7 @@ export default function PlurrPage({ page }) {
       secondApiRoute: `${host}service/author/${authorId}/followers/`,
       thirdApiRoute: `${host}service/author/${authorId}/posts/`,
       fourthApiRoute: `${host}service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      fifthApiRoute: `${host}service/author/${authorId}/inbox/`,
       component: (
         <Author
           loggedInUser={loggedInUser}
@@ -36,7 +46,8 @@ export default function PlurrPage({ page }) {
           authorFollowers={secondObject}
           posts={thirdObject}
           liked={fourthObject}
-          setRenderNewPost={setRenderNewPost}
+          inbox={fifthObject}
+          triggerRerender={triggerRerender}
         />
       ),
     },
@@ -48,7 +59,15 @@ export default function PlurrPage({ page }) {
     {
       name: "Inbox",
       apiRoute: `${host}service/author/${loggedInUser.uuid}/inbox/`,
-      component: <Inbox inbox={object} />,
+      secondApiRoute: `${host}service/author/${loggedInUser.uuid}/followers/`,
+      component: (
+        <Inbox
+          loggedInUser={loggedInUser}
+          inbox={object}
+          followers={secondObject}
+          triggerRerender={triggerRerender}
+        />
+      ),
     },
     {
       name: "Stream",
@@ -59,7 +78,7 @@ export default function PlurrPage({ page }) {
           loggedInUser={loggedInUser}
           posts={object}
           liked={secondObject}
-          setRenderNewPost={setRenderNewPost}
+          triggerRerender={triggerRerender}
         />
       ),
     },
@@ -72,65 +91,48 @@ export default function PlurrPage({ page }) {
 
   // set loading to false once object has been set
   React.useEffect(() => {
-    if (Object.keys(object).length !== 0) {
+    if (
+      currentPageObject?.fifthApiRoute !== undefined &&
+      currentPageObject?.fifthApiRoute !== null
+    ) {
       if (
-        currentPageObject?.fourthApiRoute !== undefined &&
-        currentPageObject?.fourthApiRoute !== null
+        allObjectsAreLoaded([
+          object,
+          secondObject,
+          thirdObject,
+          fourthObject,
+          fifthObject,
+        ])
       ) {
-        if (
-          currentPageObject?.thirdApiRoute !== undefined &&
-          currentPageObject?.thirdApiRoute !== null
-        ) {
-          if (
-            currentPageObject?.secondApiRoute !== undefined &&
-            currentPageObject?.secondApiRoute !== null
-          ) {
-            if (Object.keys(secondObject).length !== 0) {
-              setLoading(false)
-            }
-          } else {
-            setLoading(false)
-          }
-        } else {
-          if (
-            currentPageObject?.secondApiRoute !== undefined &&
-            currentPageObject?.secondApiRoute !== null
-          ) {
-            if (Object.keys(secondObject).length !== 0) {
-              setLoading(false)
-            }
-          } else {
-            setLoading(false)
-          }
-        }
+        setLoading(false)
       }
+    } else if (
+      currentPageObject?.fourthApiRoute !== undefined &&
+      currentPageObject?.fourthApiRoute !== null
+    ) {
       if (
-        currentPageObject?.thirdApiRoute !== undefined &&
-        currentPageObject?.thirdApiRoute !== null
+        allObjectsAreLoaded([object, secondObject, thirdObject, fourthObject])
       ) {
-        if (
-          currentPageObject?.secondApiRoute !== undefined &&
-          currentPageObject?.secondApiRoute !== null
-        ) {
-          if (Object.keys(secondObject).length !== 0) {
-            setLoading(false)
-          }
-        } else {
-          setLoading(false)
-        }
-      } else {
-        if (
-          currentPageObject?.secondApiRoute !== undefined &&
-          currentPageObject?.secondApiRoute !== null
-        ) {
-          if (Object.keys(secondObject).length !== 0) {
-            setLoading(false)
-          }
-        } else {
-          setLoading(false)
-        }
+        setLoading(false)
       }
-      // console.log(object)
+    } else if (
+      currentPageObject?.thirdApiRoute !== undefined &&
+      currentPageObject?.thirdApiRoute !== null
+    ) {
+      if (allObjectsAreLoaded([object, secondObject, thirdObject])) {
+        setLoading(false)
+      }
+    } else if (
+      currentPageObject?.secondApiRoute !== undefined &&
+      currentPageObject?.secondApiRoute !== null
+    ) {
+      if (allObjectsAreLoaded([object, secondObject])) {
+        setLoading(false)
+      }
+    } else {
+      if (allObjectsAreLoaded([object])) {
+        setLoading(false)
+      }
     }
   }, [
     object,
@@ -141,6 +143,8 @@ export default function PlurrPage({ page }) {
     currentPageObject.thirdApiRoute,
     fourthObject,
     currentPageObject.fourthApiRoute,
+    fifthObject,
+    currentPageObject.fifthApiRoute,
   ])
 
   // validate the token on each page load
@@ -173,6 +177,13 @@ export default function PlurrPage({ page }) {
       ) {
         setObjectFromApi(currentPageObject?.fourthApiRoute, setFourthObject)
       }
+
+      if (
+        currentPageObject?.fifthApiRoute !== undefined &&
+        currentPageObject?.fifthApiRoute !== null
+      ) {
+        setObjectFromApi(currentPageObject?.fifthApiRoute, setFifthObject)
+      }
     }
   }, [
     host,
@@ -182,6 +193,7 @@ export default function PlurrPage({ page }) {
     currentPageObject.secondApiRoute,
     currentPageObject.thirdApiRoute,
     currentPageObject.fourthApiRoute,
+    currentPageObject.fifthApiRoute,
     renderNewPost,
   ])
 

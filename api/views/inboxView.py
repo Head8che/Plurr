@@ -7,6 +7,32 @@ from rest_framework.response import Response
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor, getLoggedInAuthorObject
 
 
+def postIsInInbox(post, inbox):
+  for item in inbox.items:
+    if (item.type == "post" and item.id == post.id):
+      return True
+  return False
+
+def followIsInInbox(follow, inbox):
+  for item in inbox.items:
+    if (
+      item.type == "follow" 
+      and item.actor.id == follow.actor.id 
+      and item.object.id == follow.object.id
+    ):
+      return True
+  return False
+
+def likeIsInInbox(like, inbox):
+  for item in inbox.items:
+    if (
+      item.type == "like" 
+      and item.author.id == like.author.id 
+      and item.object == like.object
+    ):
+      return True
+  return False
+
 @api_view(['POST', 'GET', 'DELETE'])
 def InboxList(request, author_uuid):
   try:  # try to get the specific author and post
@@ -35,6 +61,10 @@ def InboxList(request, author_uuid):
 
       # update the Inbox data if the serializer is valid
       if post_serializer.is_valid():
+        if postIsInInbox(request.data, inbox):
+          return Response({"message": "Inbox item already exists"}, 
+          status=status.HTTP_409_CONFLICT)
+        
         inbox.items.append(request.data)
         inbox.save()
         return Response({"message": "Inbox item added", "data": serializer.data}, 
@@ -63,6 +93,10 @@ def InboxList(request, author_uuid):
         return Response({"message": "Already following."}, 
           status=status.HTTP_409_CONFLICT)
       except:
+        if followIsInInbox(request.data, inbox):
+          return Response({"message": "Inbox item already exists"}, 
+          status=status.HTTP_409_CONFLICT)
+        
         inbox.items.append(request.data)
         inbox.save()
         return Response({"message": "Inbox item added"}, 
@@ -74,6 +108,10 @@ def InboxList(request, author_uuid):
 
       # update the Inbox data if the serializer is valid
       if like_serializer.is_valid():
+        if likeIsInInbox(request.data, inbox):
+          return Response({"message": "Inbox item already exists"}, 
+          status=status.HTTP_409_CONFLICT)
+        
         inbox.items.append(request.data)
         inbox.save()
         return Response({"message": "Inbox item added", "data": like_serializer.data}, 
@@ -92,14 +130,14 @@ def InboxList(request, author_uuid):
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
     
-    # if the logged in user is not the author
-    if not loggedInUserIsAuthor(request, author_uuid):  
+    # # if the logged in user is not the author
+    # if not loggedInUserIsAuthor(request, author_uuid):  
+    #   return Response(status=status.HTTP_401_UNAUTHORIZED)
+    # else:  # if the logged in user is the author
+    loggedInAuthorObject = getLoggedInAuthorObject(request)
+    # if the logged in user does not have an Author object
+    if loggedInAuthorObject is None:
       return Response(status=status.HTTP_401_UNAUTHORIZED)
-    else:  # if the logged in user is the author
-      loggedInAuthorObject = getLoggedInAuthorObject(request)
-      # if the logged in user does not have an Author object
-      if loggedInAuthorObject is None:
-        return Response(status=status.HTTP_401_UNAUTHORIZED)
     
     # get the page number and size
     page_number = getPageNumber(request)
@@ -108,15 +146,12 @@ def InboxList(request, author_uuid):
     # get the paginated inbox
     paginated_inbox = getPaginatedObject(inbox.items, page_number, page_size)
 
-    # get the Inbox serializer
-    serializer = InboxSerializer(paginated_inbox, many=True)
-
     # create the `type` field for the Posts data
     new_data = {'type': "inbox", 'author': author.id}
 
     # add the `type` field to the Posts data
     new_data.update({
-        'items': serializer.data,
+        'items': paginated_inbox.object_list,
     })
 
     # return the Inbox data
@@ -125,7 +160,7 @@ def InboxList(request, author_uuid):
   # Delete the inbox
   elif request.method == 'DELETE':
     try:  # try to get the inbox
-      inbox = Inbox.objects.get(author=author_uuid)
+      inbox = Inbox.objects.get(author=authorObject.id)
     except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
     
@@ -144,7 +179,7 @@ def InboxList(request, author_uuid):
 
     # return a deletion message
     return Response({"message": "Inbox cleared"}, 
-      status=status.HTTP_200_OK)
+      status=status.HTTP_204_NO_CONTENT)
   
   # Handle unaccepted methods
   else:

@@ -82,8 +82,8 @@ def FollowerDetail(request, author_uuid, follower_uuid):
   # Delete a specific follower
   elif request.method == 'DELETE':
     # if the logged in user is not the author
-    if not loggedInUserIsAuthor(request, author_uuid):  
-      return Response(status=status.HTTP_401_UNAUTHORIZED)
+    # if not loggedInUserIsAuthor(request, author_uuid):  
+    #   return Response(status=status.HTTP_401_UNAUTHORIZED)
     
     try:  # try to get the specific follower
       author = Author.objects.get(uuid=author_uuid)

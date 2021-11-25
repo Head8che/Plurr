@@ -12,25 +12,21 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons"
 import { RiShareLine } from "react-icons/ri"
 // import { RiShareFill } from 'react-icons/ri'
 import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons"
-import { getBackEndHostWithSlash } from "../utils"
+import { getBackEndHostWithSlash, withoutTrailingSlash } from "../utils"
 
 export default function PostContent({
   loggedInUser,
   post,
   liked,
   authorHasLiked,
-  setRenderNewPost,
+  triggerRerender,
 }) {
   const [modalShowDelete, setModalShowDelete] = React.useState(false)
-  // const [modalShowEdit, setModalShowEdit] = React.useState(false);
-  const loggedInUserId = loggedInUser?.id?.endsWith("/")
-    ? loggedInUser?.id?.slice(0, -1)
-    : loggedInUser?.id
-  const postAuthorId = post?.author?.id?.endsWith("/")
-    ? post?.author?.id?.slice(0, -1)
-    : post?.author?.id
   const author = post?.author
-  const loggedInUserIsAuthor = loggedInUserId === postAuthorId
+  const loggedInUserIsAuthor =
+    loggedInUser?.id &&
+    withoutTrailingSlash(loggedInUser?.id) ===
+      withoutTrailingSlash(post?.author?.id)
   const [isLiked, setIsLiked] = React.useState(authorHasLiked)
   const [isEditing, setIsEditing] = React.useState(false)
   const [shouldSubmitForm, setShouldSubmitForm] = React.useState(true)
@@ -81,10 +77,12 @@ export default function PostContent({
     })
   }
 
-  return (
+  return author === null || author === undefined ? (
+    <div></div>
+  ) : (
     <div>
       <Card
-        key={1}
+        key={post.id}
         className="Card my-5 border-0"
         style={{
           boxShadow: "#e0e3e8 0px 1px 1px, #e0e3e8 0px 1px 2px",
@@ -116,7 +114,7 @@ export default function PostContent({
                     fontWeight: "700",
                   }}
                 >
-                  {author.displayName}
+                  {author?.displayName}
                 </div>
               </a>
               {loggedInUserIsAuthor ? (
@@ -177,7 +175,7 @@ export default function PostContent({
                       show={modalShowDelete}
                       onHide={() => setModalShowDelete(false)}
                       closeModal={() => setModalShowDelete(false)}
-                      setRenderNewPost={setRenderNewPost}
+                      triggerRerender={triggerRerender}
                     />
                   </Col>
                 </>
@@ -193,7 +191,7 @@ export default function PostContent({
               shouldSubmitForm={shouldSubmitForm}
               setShouldSubmitForm={setShouldSubmitForm}
               setIsEditing={setIsEditing}
-              setRenderNewPost={setRenderNewPost}
+              triggerRerender={triggerRerender}
             />
           ) : (
             <>
@@ -296,7 +294,7 @@ export default function PostContent({
           <CreateComment
             author={author}
             post={post}
-            setRenderNewPost={setRenderNewPost}
+            triggerRerender={triggerRerender}
           />
         </Card.Body>
       </Card>

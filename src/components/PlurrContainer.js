@@ -115,6 +115,9 @@ function PlurrContainer({ children }) {
                             : ""
                         }`}
               to="/stream"
+              // onClick={() =>
+              //   window.location.replace("http://localhost:3000/stream")
+              // }
             >
               Stream
             </Link>

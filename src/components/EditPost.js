@@ -4,15 +4,15 @@ import { Row, Col, Form, FloatingLabel } from "react-bootstrap"
 import * as Yup from "yup"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { appendOrKeepSlash, getBackEndHostWithSlash } from "../utils"
+import { withoutTrailingSlash, getBackEndHostWithSlash } from "../utils"
 
-// export default function EditPost ({ loggedInUser, author, setRenderNewPost })  {
+// export default function EditPost ({ loggedInUser, author, triggerRerender })  {
 export default function EditPost({
   loggedInUser,
   author,
   post,
   setIsEditing,
-  setRenderNewPost,
+  triggerRerender,
 }) {
   // schema to validate form inputs
   const validationSchema = Yup.object().shape({
@@ -37,7 +37,9 @@ export default function EditPost({
       delete newData.title
     }
 
-    if (appendOrKeepSlash(loggedInUser.id) !== appendOrKeepSlash(author.id)) {
+    if (
+      withoutTrailingSlash(loggedInUser.id) !== withoutTrailingSlash(author.id)
+    ) {
       setError("content", {
         type: "server",
         message: `${author.displayName} cannot post for ${loggedInUser.displayName}!`,
@@ -60,8 +62,8 @@ export default function EditPost({
       apiPromise
         .then((apiResponse) => {
           console.log(apiResponse)
-          if (setRenderNewPost) {
-            setRenderNewPost(JSON.stringify(apiResponse))
+          if (triggerRerender) {
+            triggerRerender()
           }
           setTimeout(() => {
             setIsEditing(false)

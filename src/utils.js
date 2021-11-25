@@ -1,3 +1,7 @@
+export const isNotNullOrUndefined = (string) => {
+  return string !== null && string !== undefined
+}
+
 // uses setObject setter to set object to fetch response
 export const setObjectFromApi = (path, setObject) => {
   fetch(path, {
@@ -13,7 +17,10 @@ export const setObjectFromApi = (path, setObject) => {
       console.log(apiResponse)
 
       // if the token is not valid
-      if (apiResponse.code === "token_not_valid") {
+      if (
+        apiResponse.code === "token_not_valid" ||
+        apiResponse.code === "user_not_found"
+      ) {
         const host = getBackEndHostWithSlash()
 
         if (host !== null) {
@@ -32,7 +39,10 @@ export const setObjectFromApi = (path, setObject) => {
               console.log(apiResponse)
 
               // if getting a new token did not work
-              if (apiResponse.code === "token_not_valid") {
+              if (
+                apiResponse.code === "token_not_valid" ||
+                apiResponse.code === "user_not_found"
+              ) {
                 // remove the token
                 localStorage.removeItem("token")
               } else {
@@ -81,7 +91,10 @@ export const validateToken = () => {
         console.log(apiResponse)
 
         // if the token is not valid
-        if (apiResponse.code === "token_not_valid") {
+        if (
+          apiResponse.code === "token_not_valid" ||
+          apiResponse.code === "user_not_found"
+        ) {
           const secondHost = getBackEndHostWithSlash()
 
           if (secondHost !== null) {
@@ -98,7 +111,10 @@ export const validateToken = () => {
               const apiPromise = corsResponse.json()
               apiPromise.then((apiResponse) => {
                 // if getting a new token did not work
-                if (apiResponse.code === "token_not_valid") {
+                if (
+                  apiResponse.code === "token_not_valid" ||
+                  apiResponse.code === "user_not_found"
+                ) {
                   // remove the token
                   localStorage.removeItem("token")
                 } else {
@@ -142,6 +158,22 @@ export const getBackEndHostWithSlash = () => {
   return null
 }
 
-export const appendOrKeepSlash = (url) => {
-  return url.endsWith("/") ? url.slice(0, -1) : url
+export const withTrailingSlash = (string) => {
+  if (isNotNullOrUndefined(string)) {
+    return string.endsWith("/") ? string : `${string}/`
+  }
+}
+
+export const withoutTrailingSlash = (string) => {
+  if (isNotNullOrUndefined(string)) {
+    return string.endsWith("/") ? string.slice(0, -1) : string
+  }
+}
+
+export const getUUIDFromId = (string) => {
+  if (isNotNullOrUndefined(string)) {
+    return string.endsWith("/")
+      ? string.split("/").slice(-2).shift()
+      : string.split("/").pop()
+  }
 }

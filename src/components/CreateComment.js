@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import { getBackEndHostWithSlash } from "../utils"
 
-export default function CreateComment({ author, post, setRenderNewPost }) {
+export default function CreateComment({ author, post, triggerRerender }) {
   // schema to validate form inputs
   const validationSchema = Yup.object().shape({
     comment: Yup.string().required("Post comment is required"),
@@ -48,7 +48,7 @@ export default function CreateComment({ author, post, setRenderNewPost }) {
           .then((apiResponse) => {
             // empty out the form
             reset()
-            setRenderNewPost(JSON.stringify(apiResponse))
+            triggerRerender()
 
             console.log(apiResponse)
           })

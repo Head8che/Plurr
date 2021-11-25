@@ -1,7 +1,7 @@
 import React from "react"
 import PostContent from "../components/PostContent"
 
-function Stream({ loggedInUser, posts, liked, setRenderNewPost }) {
+function Stream({ loggedInUser, posts, liked, triggerRerender }) {
   const authorLiked = liked?.items?.map((likedObject) => likedObject.object)
 
   return (
@@ -19,7 +19,7 @@ function Stream({ loggedInUser, posts, liked, setRenderNewPost }) {
               post={post}
               liked={liked}
               authorHasLiked={authorLiked?.includes(post.id)}
-              setRenderNewPost={setRenderNewPost}
+              triggerRerender={triggerRerender}
             />
           )
         })}

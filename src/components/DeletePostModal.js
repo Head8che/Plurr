@@ -1,6 +1,6 @@
 import React from "react"
 import { Modal, Button } from "react-bootstrap"
-import { getBackEndHostWithSlash } from "../utils"
+import { getBackEndHostWithSlash, withoutTrailingSlash } from "../utils"
 
 export default function DeletePostModal({
   loggedInUser,
@@ -8,15 +8,12 @@ export default function DeletePostModal({
   show,
   onHide,
   closeModal,
-  setRenderNewPost,
+  triggerRerender,
 }) {
-  const loggedInUserId = loggedInUser?.id?.endsWith("/")
-    ? loggedInUser?.id?.slice(0, -1)
-    : loggedInUser?.id
-  const postAuthorId = post?.author?.id?.endsWith("/")
-    ? post?.author?.id?.slice(0, -1)
-    : post?.author?.id
-  const loggedInUserIsAuthor = loggedInUserId === postAuthorId
+  const loggedInUserIsAuthor =
+    loggedInUser?.id &&
+    withoutTrailingSlash(loggedInUser?.id) ===
+      withoutTrailingSlash(post?.author?.id)
 
   const submitHandler = (data) => {
     const host = getBackEndHostWithSlash()
@@ -35,7 +32,7 @@ export default function DeletePostModal({
           .then((apiResponse) => {
             console.log(apiResponse)
             closeModal()
-            setRenderNewPost(apiResponse)
+            triggerRerender()
           })
           .catch((e) => {
             console.log(e)

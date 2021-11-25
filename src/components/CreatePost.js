@@ -12,9 +12,9 @@ import {
 import * as Yup from "yup"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { appendOrKeepSlash, getBackEndHostWithSlash } from "../utils"
+import { withoutTrailingSlash, getBackEndHostWithSlash } from "../utils"
 
-export default function CreatePost({ loggedInUser, author, setRenderNewPost }) {
+export default function CreatePost({ loggedInUser, author, triggerRerender }) {
   // schema to validate form inputs
   const validationSchema = Yup.object().shape({
     content: Yup.string().required("Post content is required"),
@@ -39,7 +39,9 @@ export default function CreatePost({ loggedInUser, author, setRenderNewPost }) {
       delete newData.title
     }
 
-    if (appendOrKeepSlash(loggedInUser.id) !== appendOrKeepSlash(author.id)) {
+    if (
+      withoutTrailingSlash(loggedInUser.id) !== withoutTrailingSlash(author.id)
+    ) {
       setError("content", {
         type: "server",
         message: `${author.displayName} cannot post for ${loggedInUser.displayName}!`,
@@ -63,7 +65,7 @@ export default function CreatePost({ loggedInUser, author, setRenderNewPost }) {
         .then((apiResponse) => {
           // empty out the form
           reset()
-          setRenderNewPost(JSON.stringify(apiResponse))
+          triggerRerender()
 
           console.log(apiResponse)
         })

@@ -5,7 +5,7 @@ import PostContent from "../components/PostContent"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faGithub } from "@fortawesome/free-brands-svg-icons"
 import CreatePost from "../components/CreatePost"
-import { getBackEndHostWithSlash } from "../utils"
+import { getBackEndHostWithSlash, getUUIDFromId } from "../utils"
 
 export default function Author({
   loggedInUser,
@@ -13,13 +13,72 @@ export default function Author({
   authorFollowers,
   posts,
   liked,
-  setRenderNewPost,
+  inbox,
+  triggerRerender,
 }) {
   const showEdit = author.id === loggedInUser.id
+  const [showUnfollow, setShowUnfollow] = React.useState(
+    authorFollowers?.items?.filter((author) => author.id === loggedInUser.id)
+      .length > 0
+  )
+  const [disableRequest, setDisableRequest] = React.useState(
+    inbox?.items?.filter(
+      (item) =>
+        item.type === "follow" &&
+        item.actor.id === loggedInUser.id &&
+        item.object.id === author.id
+    ).length > 0
+  )
   const [modalShowEdit, setModalShowEdit] = React.useState(false)
   const authorLiked = liked?.items?.map((likedObject) => likedObject.object)
 
   const host = getBackEndHostWithSlash()
+
+  const sendFriendRequest = () => {
+    const author_uuid = getUUIDFromId(author.id)
+    host &&
+      fetch(`${host}service/author/${author_uuid}/inbox/`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({
+          type: "follow",
+          actor: loggedInUser,
+          object: author,
+        }),
+      }).then((corsResponse) => {
+        const apiPromise = corsResponse.json()
+        apiPromise.then((apiResponse) => {
+          if (corsResponse.status === 201) {
+            setDisableRequest(true)
+          }
+          console.log(apiResponse)
+        })
+      })
+  }
+
+  const unfollowAuthor = () => {
+    const author_uuid = author.id.endsWith("/")
+      ? author.id.split("/").slice(-2).shift()
+      : author.id.split("/").pop()
+    host &&
+      fetch(
+        `${host}service/author/${author_uuid}/followers/${loggedInUser.uuid}/`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        }
+      ).then((corsResponse) => {
+        if (corsResponse.status === 204) {
+          setShowUnfollow(false)
+        }
+      })
+  }
 
   return (
     <div>
@@ -89,41 +148,36 @@ export default function Author({
                 closeModal={() => setModalShowEdit(false)}
               />
             </>
-          ) : authorFollowers?.items?.filter(
-              (author) => author.id === loggedInUser.id
-            ).length > 0 ? (
-            <Button className="pl-5" variant="secondary" disabled>
-              Follow
+          ) : showUnfollow ? (
+            <Button
+              id="unfollowButton"
+              className="pl-5"
+              variant="secondary"
+              onClick={() => {
+                unfollowAuthor()
+              }}
+            >
+              Unfollow
+            </Button>
+          ) : disableRequest ? (
+            <Button
+              id="followButton"
+              className="pl-5"
+              variant="outline-secondary"
+              style={{ pointerEvents: "none" }}
+            >
+              Friend Request
             </Button>
           ) : (
             <Button
+              id="followButton"
               className="pl-5"
               variant="outline-primary"
               onClick={() => {
-                const author_uuid = author.id.split("/").pop()
-                var params = {
-                  type: "follow",
-                  actor: loggedInUser,
-                  object: author,
-                }
-                var options = {
-                  method: "POST",
-                  body: JSON.stringify(params),
-                  headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${localStorage.getItem("token")}`,
-                  },
-                }
-                host &&
-                  fetch(
-                    `${host}service/author/` + author_uuid + "/inbox/",
-                    options
-                  ).then((response) => {
-                    console.log(response.status)
-                  })
+                sendFriendRequest()
               }}
             >
-              Follow
+              Friend Request
             </Button>
           )}
         </Col>
@@ -132,7 +186,7 @@ export default function Author({
         <CreatePost
           loggedInUser={loggedInUser}
           author={author}
-          setRenderNewPost={setRenderNewPost}
+          triggerRerender={triggerRerender}
         />
       ) : null}
       {posts &&
@@ -144,7 +198,7 @@ export default function Author({
               post={post}
               liked={liked}
               authorHasLiked={authorLiked?.includes(post.id)}
-              setRenderNewPost={setRenderNewPost}
+              triggerRerender={triggerRerender}
             />
           )
         })}
