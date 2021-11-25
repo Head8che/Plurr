@@ -130,14 +130,14 @@ def _makeRemoteGetRequest(path, node):
     print("username: " + node.remoteUsername + "\npassword: " + node.remotePassword + "\n")
     try:
       login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
-      print("\n" + login_request + "\n")
-      print("\nstatus code: " + login_request.status_code + "\n")
+      print("\n" + login_request.text + "\n")
+      print("\nstatus code: " + str(login_request.status_code) + "\n")
     except requests.exceptions.Timeout:
       try:
         login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
         print("\nretry\n")
-        print("\n" + login_request + "\n")
-        print("\nstatus code: " + login_request.status_code + "\n")
+        print("\n" + login_request.text + "\n")
+        print("\nstatus code: " + str(login_request.status_code) + "\n")
       except:
         print("\nREQUEST FAILED: TIMEOUT\n")
       return None
@@ -151,7 +151,6 @@ def _makeRemoteGetRequest(path, node):
     try:
       print("\n\n_helper\n" + login_request + "\n\n")
       print("\n\n_helper\n" + login_request.text + "\n\n")
-      print("\n\n_helper\n" + login_request.json() + "\n\n")
       response = login_request.text
       if response is None:
         return None
