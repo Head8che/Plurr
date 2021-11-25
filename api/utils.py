@@ -126,13 +126,20 @@ def postToAuthorInbox(request, data, receiver_author_uuid):
 
 # code adapted from https://stackoverflow.com/a/16511493
 def _makeRemoteGetRequest(path, node):
+    print("\npath\n" + path + "\n")
+    print("username: " + node.remoteUsername + "\npassword: " + node.remotePassword + "\n")
     try:
       login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
+      print("\n" + login_request + "\n")
+      print("\nstatus code: " + login_request.status_code + "\n")
     except requests.exceptions.Timeout:
       try:
         login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
+        print("\nretry\n")
+        print("\n" + login_request + "\n")
+        print("\nstatus code: " + login_request.status_code + "\n")
       except:
-        print("\nREQUEST FAILED\n")
+        print("\nREQUEST FAILED: TIMEOUT\n")
       return None
     except requests.exceptions.TooManyRedirects:
       print("\nREQUEST FAILED: BAD URL\n")
