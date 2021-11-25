@@ -137,6 +137,13 @@ def _makeRemoteGetRequest(path, node):
     }
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT x.y; Win64; x64; rv:10.0) Gecko/20100101 Firefox/10.0 ', 'Authorization': 'Basic ' + token.decode('utf-8')}
 
+    print("\n\n")
+    print(requests.get(path, headers=headers, proxies=proxies).status_code)
+    print(requests.get(path, headers=headers, proxies=proxies).text)
+    print("\n\n")
+    print(requests.get(path, headers=headers).status_code)
+    print(requests.get(path, headers=headers).text)
+    print("\n\n")
     try:
       login_request = requests.get(path, headers=headers, proxies=proxies)
       print("\n" + login_request.text + "\n")
