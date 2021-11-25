@@ -40,6 +40,19 @@ def getAuthorsFromAllNodes():
     except:  # return an error if something goes wrong
         return None
 
+def getPostsFromAllNodes():
+    try:  # try to get the node
+        nodes = Node.objects.all()
+        for node in nodes:
+            get_authors_path = node.host + "authors/"
+            json_response = _makeRemoteGetRequest(get_authors_path, node)
+            print("\nPATH\n{path}\nRESPONSE\n{response}\n".format(path=get_authors_path, response=str(json_response)))
+            remote_authors_list = json_response.get('items', None)
+            for remote_author in remote_authors_list:
+                print(remote_author.id)
+    except:  # return an error if something goes wrong
+        return None
+
 def getAuthorsFromAllNodesAndSaveToDB():
     try:  # try to get the node
         nodes = Node.objects.all()

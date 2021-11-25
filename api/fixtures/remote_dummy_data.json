@@ -243,6 +243,20 @@
     }
   },
   {
+    "model": "api.Author",
+    "fields": {
+      "username": "admin",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "groups": [],
+      "password": "pbkdf2_sha256$260000$l8PH2J1VdL0mK8eLjzpmoT$3Me4egniD6+++3B2Mhbn0EYOr7EXxB2t8AuSwTMYkqA=",
+      "email": "admin1@plurr.com"
+    }
+  },
+  {
     "model": "api.Like",
     "fields": {
       "type": "Like",
