@@ -24,14 +24,17 @@ def followIsInInbox(follow, inbox):
   return False
 
 def likeIsInInbox(like, inbox):
-  for item in inbox.items:
-    if (
-      item.type == "like" 
-      and item.author.id == like.author.id 
-      and item.object == like.object
-    ):
-      return True
-  return False
+  try:
+    for item in inbox.items:
+      if (
+        item.type == "like" 
+        and item.author.id == like.author.id 
+        and item.object == like.object
+      ):
+        return True
+    return False
+  except:
+    return False
 
 @api_view(['POST', 'GET', 'DELETE'])
 def InboxList(request, author_uuid):
@@ -106,24 +109,25 @@ def InboxList(request, author_uuid):
     elif item_type.lower() == 'like':
       try:
         print("\n\nLike Object\n" + str(request.data) + "\n\n")
-        # get the Like serializer
-        like_serializer = LikeSerializer(data=request.data)
+        # # get the Like serializer
+        # like_serializer = LikeSerializer(data=request.data)
 
-        # update the Inbox data if the serializer is valid
-        if like_serializer.is_valid():
-          if likeIsInInbox(request.data, inbox):
-            return Response({"message": "Inbox item already exists"}, 
-            status=status.HTTP_409_CONFLICT)
-          
-          inbox.items.append(request.data)
-          inbox.save()
-          return Response({"message": "Inbox item added", "data": like_serializer.validated_data}, 
-            status=status.HTTP_201_CREATED)
-        else:
-          return Response({"message": "Like object is invalid"}, 
-          status=status.HTTP_400_BAD_REQUEST)
+        # # update the Inbox data if the serializer is valid
+        # if like_serializer.is_valid():
+        if likeIsInInbox(request.data, inbox):
+          return Response({"message": "Inbox item already exists"}, 
+          status=status.HTTP_409_CONFLICT)
+        
+        inbox.items.append(request.data)
+        print("pre-save\n\n")
+        inbox.save()
+        return Response({"message": "Inbox item added", "data": request.data}, 
+          status=status.HTTP_201_CREATED)
+        # else:
+        #   return Response({"message": "Like object is invalid"}, 
+        #   status=status.HTTP_400_BAD_REQUEST)
       except:
-        return Response({"message": "Like object cannot be serialized"}, 
+        return Response({"message": "Like object cannot be serialized!"}, 
           status=status.HTTP_400_BAD_REQUEST)
 
     else:
