@@ -79,8 +79,9 @@ def InboxList(request, author_uuid):
         actor_serializer = AuthorSerializer(data=follow_actor)
         object_serializer = AuthorSerializer(data=follow_object)
         if actor_serializer.is_valid() and object_serializer.is_valid():
-          Author.objects.get(id=follow_actor['id'])
-          Author.objects.get(id=follow_object['id'])
+          # Author.objects.get(id=follow_actor['id'])
+          # Author.objects.get(id=follow_object['id'])
+          pass
       except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
 
