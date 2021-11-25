@@ -137,23 +137,25 @@ def _makeRemoteGetRequest(path, node):
     }
     headers = {'User-Agent': 'Mozilla/5.0 (Windows NT x.y; Win64; x64; rv:10.0) Gecko/20100101 Firefox/10.0 ', 'Authorization': 'Basic ' + token.decode('utf-8')}
 
-    print("\n\n")
-    print(requests.get(path, headers=headers, proxies=proxies).status_code)
-    print(requests.get(path, headers=headers, proxies=proxies).text)
-    print("\n\n")
-    print(requests.get(path, headers=headers).status_code)
-    print(requests.get(path, headers=headers).text)
-    print("\n\n")
+    # print("\n\n")
+    # print(requests.get(path, headers=headers, proxies=proxies).status_code)
+    # print(requests.get(path, headers=headers, proxies=proxies).text)
+    # print("\n\n")
+    # print(requests.get(path, headers=headers).status_code)
+    # print(requests.get(path, headers=headers).text)
+    # print("\n\n")
     try:
       login_request = requests.get(path, headers=headers, proxies=proxies)
       print("\n" + login_request.text + "\n")
-      print("\nstatus code: " + str(login_request.status_code) + "\n")
+      # print("\nstatus code: " + str(login_request.status_code) + "\n")
+      return json.loads(login_request.text)
     except requests.exceptions.Timeout:
       try:
         print("\nretry\n")
         login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
         print("\n" + login_request.text + "\n")
-        print("\nstatus code: " + str(login_request.status_code) + "\n")
+        # print("\nstatus code: " + str(login_request.status_code) + "\n")
+        return json.loads(login_request.text)
       except:
         print("\nREQUEST FAILED: TIMEOUT\n")
       return None
@@ -163,21 +165,11 @@ def _makeRemoteGetRequest(path, node):
     except:
       print("\nREQUEST FAILED\n")
       return None
-    
-    try:
-      print("\n\n_helper\n" + login_request + "\n\n")
-      print("\n\n_helper\n" + login_request.text + "\n\n")
-      response = login_request.text
-      if response is None:
-        return None
-    except:
-      return None
-    
-    return json.loads(response)
   
 def _createAuthorObjectsFromNode(node):
     get_authors_path = node.host + "authors/"
     json_response = _makeRemoteGetRequest(get_authors_path, node)
+    print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
     if json_response is not None:
       print("\nPATH\n{path}\nRESPONSE\n{response}\n".format(path=get_authors_path, response=str(json_response)))
       remote_authors_list = json_response.get('items', None)
