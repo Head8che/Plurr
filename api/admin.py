@@ -18,16 +18,16 @@ def create_local_authors(modeladmin, request, queryset):
         _createAuthorObjectsFromNode(node)
 create_local_authors.short_description = 'Create Local Author Objects'
 
-class AuthorAdmin(admin.ModelAdmin):
+class NodeAdmin(admin.ModelAdmin):
     actions = [create_local_authors, ]
 
-admin.site.register(Author, AuthorAdmin)
+admin.site.register(Author)
 admin.site.register(Friend)
 admin.site.register(Post)
 admin.site.register(Comment)
 admin.site.register(Inbox)
 admin.site.register(Like)
-admin.site.register(Node)
+admin.site.register(Node, NodeAdmin)
 
 
 
