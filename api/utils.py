@@ -124,27 +124,42 @@ def postToAuthorInbox(request, data, receiver_author_uuid):
   except:  # raise an error if something goes wrong
       raise ValueError('Posting to Inbox went wrong.')
 
+# code adapted from https://stackoverflow.com/a/16511493
 def _makeRemoteGetRequest(path, node):
-    login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
+    try:
+      login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
+    except requests.exceptions.Timeout:
+      try:
+        login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
+      except:
+        print("\nREQUEST FAILED\n")
+      return None
+    except requests.exceptions.TooManyRedirects:
+      print("\nREQUEST FAILED: BAD URL\n")
+      return None
+    except:
+      print("\nREQUEST FAILED\n")
+      return None
     return json.loads(login_request.text)
   
 def _createAuthorObjectsFromNode(node):
     get_authors_path = node.host + "authors/"
     json_response = _makeRemoteGetRequest(get_authors_path, node)
-    print("\nPATH\n{path}\nRESPONSE\n{response}\n".format(path=get_authors_path, response=str(json_response)))
-    remote_authors_list = json_response.get('items', None)
-    for remote_author in remote_authors_list:
-        remote_author_uuid = str(remote_author.get('id').split('/')[-1])
-        remote_author_data = remote_author.copy()
-        serializer = AuthorSerializer(data=remote_author_data)
+    if json_response is not None:
+      print("\nPATH\n{path}\nRESPONSE\n{response}\n".format(path=get_authors_path, response=str(json_response)))
+      remote_authors_list = json_response.get('items', None)
+      for remote_author in remote_authors_list:
+          remote_author_uuid = str(remote_author.get('id').split('/')[-1])
+          remote_author_data = remote_author.copy()
+          serializer = AuthorSerializer(data=remote_author_data)
 
-        if serializer.is_valid():
-            remote_author_data['uuid'] = remote_author_uuid
-            remote_author_data['username'] = remote_author_uuid
-            if remote_author_data['profileImage'] is None:
-                remote_author_data['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
-            remote_author_data['password'] = make_password(remote_author_uuid + "pass")
-            Author.objects.create(**remote_author_data)
+          if serializer.is_valid():
+              remote_author_data['uuid'] = remote_author_uuid
+              remote_author_data['username'] = remote_author_uuid
+              if remote_author_data['profileImage'] is None:
+                  remote_author_data['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
+              remote_author_data['password'] = make_password(remote_author_uuid + "pass")
+              Author.objects.create(**remote_author_data)
     
     return None
 
