@@ -180,29 +180,32 @@ def _makeRemoteGetRequest(path, node):
         return json.loads(login_request.text)
       except:
         try:
-          print("\nretry with session\n")
-          login_request = requests.get('http://localhost:3000/authors/', auth=HTTPBasicAuth(node.username, node.password))
+          print("\nretry without headers arg\n")
+          login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
           print("\n" + login_request.text + "\n")
           # print("\nstatus code: " + str(login_request.status_code) + "\n")
           return json.loads(login_request.text)
-          # session = requests.Session()
-          # session.auth = (node.remoteUsername, node.remotePassword)
-          # session.trust_env = False
-          # session.headers.update({'referer': 'https://plurr.herokuapp.com'})
-          # login_request = session.get(path)
-          # print("\n" + login_request.text + "\n")
-          # # print("\nstatus code: " + str(login_request.status_code) + "\n")
-          # return json.loads(login_request.text)
         except:
           try:
             print("\nretry with localhost\n")
-            login_request = requests.get('http://localhost:3000/authors/', auth=HTTPBasicAuth(node.username, node.password))
+            login_request = requests.get('http://localhost:8000/authors/', auth=HTTPBasicAuth(node.username, node.password))
             print("\n" + login_request.text + "\n")
             # print("\nstatus code: " + str(login_request.status_code) + "\n")
             return json.loads(login_request.text)
           except:
-            print("\nREQUEST FAILED\n")
-          return None
+            try:
+              print("\nretry with session\n")
+              session = requests.Session()
+              session.auth = (node.remoteUsername, node.remotePassword)
+              session.trust_env = False
+              session.headers.update({'referer': 'https://plurr.herokuapp.com'})
+              login_request = session.get(path)
+              print("\n" + login_request.text + "\n")
+              # print("\nstatus code: " + str(login_request.status_code) + "\n")
+              return json.loads(login_request.text)
+            except:
+              print("\nREQUEST FAILED\n")
+              return None
   
 def _createAuthorObjectsFromNode(node):
     get_authors_path = node.host + "authors/"
