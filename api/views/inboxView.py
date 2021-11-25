@@ -105,7 +105,7 @@ def InboxList(request, author_uuid):
 
     elif item_type.lower() == 'like':
       try:
-        print("\n\nLike Object\n" + request.data + "\n\n")
+        print("\n\nLike Object\n" + str(request.data) + "\n\n")
         # get the Like serializer
         like_serializer = LikeSerializer(data=request.data)
 
