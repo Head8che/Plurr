@@ -257,6 +257,30 @@
     }
   },
   {
+    "model": "api.Author",
+    "fields": {
+      "username": "PlurrAdmin",
+      "first_name": "",
+      "last_name": "",
+      "is_active": true,
+      "is_superuser": true,
+      "is_staff": true,
+      "groups": [],
+      "password": "pbkdf2_sha256$260000$Tx9aySWUPaZ0a0l9dA4Z4e$lE0hF+dizUZgYkFS0T7LmjFIsRR/+nQjMowD5aTZm20=",
+      "email": "plurr@admin.com"
+    }
+  },
+  {
+    "model": "api.Node",
+    "fields": {
+      "host": "https://cmput404-vgt-socialdist.herokuapp.com/service/",
+      "username": "VGTUsername",
+      "password": "VGTPassword",
+      "remoteUsername": "VeryGoodAuth",
+      "remotePassword": "CoolPassword"
+    }
+  },
+  {
     "model": "api.Like",
     "fields": {
       "type": "Like",

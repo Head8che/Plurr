@@ -30,10 +30,13 @@ class Node(models.Model):
         return (f"Node: Host={self.host}, Name={self.username}, Password={self.password}")
 
 # https://stackoverflow.com/a/52196396 to auto-create local objects when Node is created
-# @receiver(post_save, sender=Node)
-# def create_node_objects_locally(sender, instance, created, **kwargs):
-#     if created:
-#         _createAuthorObjectsFromNode(instance)
+@receiver(post_save, sender=Node)
+def create_node_objects_locally(sender, instance, created, **kwargs):
+    if created:
+        if instance.host != None and instance.remoteUsername != None and instance.remotePassword != None:
+            print(instance)
+            print(instance.host)
+            _createAuthorObjectsFromNode(instance)
 
 # Node User Model
 class NodeUser(AnonymousUser):
