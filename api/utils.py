@@ -135,7 +135,7 @@ def _makeRemoteGetRequest(path, node):
       "http": None,
       "https": None,
     }
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT x.y; Win64; x64; rv:10.0) Gecko/20100101 Firefox/10.0 ', 'Authorization': 'Basic ' + token}
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT x.y; Win64; x64; rv:10.0) Gecko/20100101 Firefox/10.0 ', 'Authorization': 'Basic ' + token, 'Referer': 'https://plurr.herokuapp.com'}
 
     # print("\n\n")
     # print(requests.get(path, headers=headers, proxies=proxies).status_code)
@@ -184,6 +184,7 @@ def _makeRemoteGetRequest(path, node):
           session = requests.Session()
           session.auth = (node.remoteUsername, node.remotePassword)
           session.trust_env = False
+          session.headers.update({'referer': 'https://plurr.herokuapp.com'})
           login_request = session.get(path)
           print("\n" + login_request.text + "\n")
           # print("\nstatus code: " + str(login_request.status_code) + "\n")
