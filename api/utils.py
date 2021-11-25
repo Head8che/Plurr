@@ -128,14 +128,23 @@ def postToAuthorInbox(request, data, receiver_author_uuid):
 def _makeRemoteGetRequest(path, node):
     print("\npath\n" + path + "\n")
     print("username: " + node.remoteUsername + "\npassword: " + node.remotePassword + "\n")
+
+    credentials = node.remoteUsername + ':' + node.remotePassword
+    token = base64.b64encode(credentials.encode())
+    proxies = {
+      "http": None,
+      "https": None,
+    }
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT x.y; Win64; x64; rv:10.0) Gecko/20100101 Firefox/10.0 ', 'Authorization': 'Basic ' + token.decode('utf-8')}
+
     try:
-      login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
+      login_request = requests.get(path, headers=headers, proxies=proxies)
       print("\n" + login_request.text + "\n")
       print("\nstatus code: " + str(login_request.status_code) + "\n")
     except requests.exceptions.Timeout:
       try:
-        login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
         print("\nretry\n")
+        login_request = requests.get(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword))
         print("\n" + login_request.text + "\n")
         print("\nstatus code: " + str(login_request.status_code) + "\n")
       except:
