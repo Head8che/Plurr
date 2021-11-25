@@ -271,16 +271,6 @@
     }
   },
   {
-    "model": "api.Node",
-    "fields": {
-      "host": "https://cmput404-vgt-socialdist.herokuapp.com/service/",
-      "username": "VGTUsername",
-      "password": "VGTPassword",
-      "remoteUsername": "VeryGoodAuth",
-      "remotePassword": "CoolPassword"
-    }
-  },
-  {
     "model": "api.Like",
     "fields": {
       "type": "Like",
