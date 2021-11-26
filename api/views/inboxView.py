@@ -84,7 +84,7 @@ def InboxList(request, author_uuid):
         print("\n\Follow Object\n" + str(request.data) + "\n\n")
         follow_actor = request.data['actor']
         follow_object = request.data['object']
-        if str(follow_object['id'])[:50] != str(authorObject.id)[:50]:
+        if str(follow_object['id'])[:20] != str(authorObject.id)[:20]:
           raise ValueError("Follow object is not the same as Inbox Author")
         # actor_serializer = AuthorSerializer(data=follow_actor)
         # object_serializer = AuthorSerializer(data=follow_object)
