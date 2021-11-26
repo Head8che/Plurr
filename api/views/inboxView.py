@@ -59,34 +59,35 @@ def InboxList(request, author_uuid):
         return Response({"message": "request has no type"}, status=status.HTTP_400_BAD_REQUEST)
 
     if item_type.lower() == 'post':
-      # get the Post serializer
-      post_serializer = PostSerializer(data=request.data)
+      # # get the Post serializer
+      # post_serializer = PostSerializer(data=request.data)
 
-      # update the Inbox data if the serializer is valid
-      if post_serializer.is_valid():
-        if postIsInInbox(request.data, inbox):
-          return Response({"message": "Inbox item already exists"}, 
-          status=status.HTTP_409_CONFLICT)
-        
-        inbox.items.append(request.data)
-        inbox.save()
-        return Response({"message": "Inbox item added", "data": serializer.data}, 
-          status=status.HTTP_201_CREATED)
+      # # update the Inbox data if the serializer is valid
+      # if post_serializer.is_valid():
+      if postIsInInbox(request.data, inbox):
+        return Response({"message": "Inbox item already exists"}, 
+        status=status.HTTP_409_CONFLICT)
+      
+      inbox.items.append(request.data)
+      inbox.save()
+      return Response({"message": "Inbox item added", "data": serializer.data}, 
+        status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'follow':
       try:  # try to get the author and potential follower
+        print("\n\Follow Object\n" + str(request.data) + "\n\n")
         follow_actor = request.data['actor']
         follow_object = request.data['object']
         if follow_object['id'] != authorObject.id:
           raise ValueError("Follow object is not the same as Inbox Author")
-        actor_serializer = AuthorSerializer(data=follow_actor)
-        object_serializer = AuthorSerializer(data=follow_object)
-        if actor_serializer.is_valid() and object_serializer.is_valid():
-          # Author.objects.get(id=follow_actor['id'])
-          # Author.objects.get(id=follow_object['id'])
-          pass
+        # actor_serializer = AuthorSerializer(data=follow_actor)
+        # object_serializer = AuthorSerializer(data=follow_object)
+        # if actor_serializer.is_valid() and object_serializer.is_valid():
+        #   # Author.objects.get(id=follow_actor['id'])
+        #   # Author.objects.get(id=follow_object['id'])
+        #   pass
       except:  # return an error if something goes wrong
-        return Response(status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "Follow object is not the same as Inbox Author"}, status=status.HTTP_404_NOT_FOUND)
 
       #  "data": serializer.data raises an error
       if follow_actor['id'] == follow_object['id']:

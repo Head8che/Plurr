@@ -138,6 +138,42 @@ function Inbox({ loggedInUser, inbox, followers, triggerRerender }) {
               </Card.Body>
             </Card>
           )
+        } else if (inboxItem?.type.toLowerCase() === "like") {
+          return (
+            <Card key={count} className="Card my-5">
+              <Card.Body>
+                <Card.Title>
+                  {inboxItem.type.charAt(0).toUpperCase() +
+                    inboxItem.type.slice(1)}
+                </Card.Title>
+                <div>
+                  {inboxItem?.summary !== null &&
+                  inboxItem?.summary !== undefined
+                    ? inboxItem?.summary
+                    : `${inboxItem.actor?.displayName} likes something of yours`}
+                </div>
+              </Card.Body>
+            </Card>
+          )
+        } else if (inboxItem?.type.toLowerCase() === "post") {
+          return (
+            <Card key={count} className="Card my-5">
+              <Card.Body>
+                <Card.Title
+                  className="mt-3"
+                  style={{
+                    fontSize: "1.2rem",
+                    fontWeight: "500",
+                  }}
+                >
+                  {JSON.stringify(inboxItem?.title)}
+                </Card.Title>
+                <Card.Text className="mb-2">
+                  {JSON.stringify(inboxItem?.content)}
+                </Card.Text>
+              </Card.Body>
+            </Card>
+          )
         } else {
           return null
         }
