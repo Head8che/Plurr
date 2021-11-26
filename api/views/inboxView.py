@@ -87,7 +87,7 @@ def InboxList(request, author_uuid):
         #   # Author.objects.get(id=follow_object['id'])
         #   pass
       except:  # return an error if something goes wrong
-        return Response({"message": "Follow object is not the same as Inbox Author", "data": request.data, "inboxAuthor": authorObject}, status=status.HTTP_404_NOT_FOUND)
+        return Response({"message": "Follow object is not the same as Inbox Author", "data": request.data}, status=status.HTTP_404_NOT_FOUND)
 
       #  "data": serializer.data raises an error
       if follow_actor['id'] == follow_object['id']:
