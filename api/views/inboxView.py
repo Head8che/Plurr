@@ -8,20 +8,26 @@ from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUser
 
 
 def postIsInInbox(post, inbox):
-  for item in inbox.items:
-    if (item.type == "post" and item.id == post.id):
-      return True
-  return False
+  try:
+    for item in inbox.items:
+      if (item.type == "post" and item.id == post.id):
+        return True
+    return False
+  except:
+    return False
 
 def followIsInInbox(follow, inbox):
-  for item in inbox.items:
-    if (
-      item.type == "follow" 
-      and item.actor.id == follow.actor.id 
-      and item.object.id == follow.object.id
-    ):
-      return True
-  return False
+  try:
+    for item in inbox.items:
+      if (
+        item.get("type", None) == "follow" 
+        and item.actor.id == follow.actor.id 
+        and item.object.id == follow.object.id
+      ):
+        return True
+    return False
+  except:
+    return False
 
 def likeIsInInbox(like, inbox):
   try:
