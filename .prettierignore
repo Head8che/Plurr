@@ -4,3 +4,4 @@ package-lock.json
 staticfiles
 venv
 README.md
+api_docs.md
