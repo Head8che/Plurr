@@ -76,7 +76,7 @@ def InboxList(request, author_uuid):
       
       inbox.items.append(request.data)
       inbox.save()
-      return Response({"message": "Inbox item added", "data": serializer.data}, 
+      return Response({"message": "Inbox item added", "data": request.data}, 
         status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'follow':
