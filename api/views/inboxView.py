@@ -61,6 +61,10 @@ def validateAuthorObject(author, plurrAuthor=None):
       return ["the Author object has the wrong number of properties", 
         status.HTTP_400_BAD_REQUEST]
     
+    if authorObject['type'].lower() != "author":
+      return ["the Author object has an invalid type", 
+        status.HTTP_400_BAD_REQUEST]
+    
     if authorObject['host'] is None:
       return ["the Author object needs to have a valid host", 
         status.HTTP_400_BAD_REQUEST]
@@ -100,6 +104,10 @@ def validateFollowObject(follow, inbox=None, toPlurr=None):
     
     if len(followObject.keys()) != len(followKeys):
       return ["the Follow object has the wrong number of properties", 
+        status.HTTP_400_BAD_REQUEST]
+    
+    if followObject['type'].lower() != "follow":
+      return ["the Follow object has an invalid type", 
         status.HTTP_400_BAD_REQUEST]
     
     followObject['type'] = followObject['type'].lower()
@@ -145,6 +153,10 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
       return ["the Like object has the wrong number of properties", 
         status.HTTP_400_BAD_REQUEST]
     
+    if likeObject['type'].lower() != "like":
+      return ["the Like object has an invalid type", 
+        status.HTTP_400_BAD_REQUEST]
+    
     likeObject['type'] = likeObject['type'].lower()
     
     if toPlurr is True:
@@ -185,6 +197,10 @@ def validatePostObject(post, inbox=None, toPlurr=None):
       if key not in postKeys:
         return [key.lower() + " is not a valid property of the Post object", 
           status.HTTP_400_BAD_REQUEST]
+    
+    if postObject['type'].lower() != "post":
+      return ["the Post object has an invalid type", 
+        status.HTTP_400_BAD_REQUEST]
     
     postObject['type'] = postObject['type'].lower()
     
