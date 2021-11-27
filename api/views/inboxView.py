@@ -10,8 +10,9 @@ from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUser
 
 
 def postIsInInbox(post, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
   try:
-    for item in inbox.items:
+    for item in inboxItems:
       if (item.type == "post" and item.id == post.id):
         return True
     return False
@@ -19,12 +20,13 @@ def postIsInInbox(post, inbox):
     return False
 
 def followIsInInbox(follow, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
   try:
-    for item in inbox.items:
+    for item in inboxItems:
       if (
-        item.get("type", None) == "follow" 
-        and item.actor.id == follow.actor.id 
-        and item.object.id == follow.object.id
+        item["type"] == "follow" 
+        and item["actor"]["id"] == follow["actor"]["id"]
+        and item["object"]["id"] == follow["object"]["id"]
       ):
         return True
     return False
@@ -32,8 +34,9 @@ def followIsInInbox(follow, inbox):
     return False
 
 def likeIsInInbox(like, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
   try:
-    for item in inbox.items:
+    for item in inboxItems:
       if (
         item.type == "like" 
         and item.author.id == like.author.id 
@@ -62,23 +65,23 @@ def validateAuthorObject(author, plurrAuthor=None):
       return ["the Author object needs to have a valid host", 
         status.HTTP_400_BAD_REQUEST]
     
-    # if plurrAuthor is True:
-    #   if not authorObject['id'].startsWith(authorObject['host']):
-    #     return ["the Author id needs to needs to start with the Author host", 
-    #       status.HTTP_400_BAD_REQUEST]
+    if plurrAuthor is True:
+      if not authorObject['id'].startswith(authorObject['host']):
+        return ["the Author id needs to needs to start with the Author host", 
+          status.HTTP_400_BAD_REQUEST]
       
-    #   if not authorObject['url'].startsWith(authorObject['host']):
-    #     return ["the Author url needs to needs to start with the Author host", 
-    #       status.HTTP_400_BAD_REQUEST]
+      if not authorObject['url'].startswith(authorObject['host']):
+        return ["the Author url needs to needs to start with the Author host", 
+          status.HTTP_400_BAD_REQUEST]
     
     authorObject['type'] = authorObject['type'].lower()
-    # authorObject['id'] = withoutTrailingSlash(authorObject['id'])
-    # authorObject['host'] = withTrailingSlash(authorObject['host'])
-    # authorObject['id'] = authorObject['id'][:-1] if authorObject['id'].endsWith("/") else authorObject['id']
+    authorObject['id'] = withoutTrailingSlash(authorObject['id'])
+    authorObject['host'] = withTrailingSlash(authorObject['host'])
+    authorObject['id'] = authorObject['id'][:-1] if authorObject['id'].endsWith("/") else authorObject['id']
 
-    # if plurrAuthor is True:
-    #   authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
-    #   authorObject['url'] = authorObject['url'].lower().replace('/service', '').replace('/api', '')
+    if plurrAuthor is True:
+      authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
+      authorObject['url'] = authorObject['url'].lower().replace('/service', '').replace('/api', '')
 
     return authorObject
   except:

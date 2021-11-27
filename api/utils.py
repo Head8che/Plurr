@@ -65,18 +65,18 @@ def isNotNoneOrEmpty(string):
 
 def withTrailingSlash(string):
   if (isNotNoneOrEmpty(string)):
-    return str(string) if string.endsWith("/") else str(string) + "/"
+    return str(string) if string.endswith("/") else str(string) + "/"
   return None
 
 def withoutTrailingSlash(string):
   if (isNotNoneOrEmpty(string)):
-    return str(string[:-1]) if string.endsWith("/") else str(string)
+    return str(string[:-1]) if string.endswith("/") else str(string)
   return None
 
 def getUUIDFromId(string):
   if (isNotNoneOrEmpty(string)):
     return (
-      str(string.split("/")[-2]) if string.endsWith("/")
+      str(string.split("/")[-2]) if string.endswith("/")
       else str(string.split("/")[-1])
     )
   return None
