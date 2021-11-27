@@ -281,9 +281,6 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 >
                   Create Post
                 </Button>
-                <label for="formFile" class="form-label">
-                  Default file input example
-                </label>
                 <input
                   class="form-control"
                   type="file"
