@@ -1,5 +1,7 @@
 from ..models.inboxModel import Inbox
 from ..models.authorModel import Author
+from ..models.likeModel import Like
+from ..models.postModel import Post
 from ..serializers import InboxSerializer, AuthorSerializer, LikeSerializer, PostSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
@@ -42,9 +44,171 @@ def likeIsInInbox(like, inbox):
   except:
     return False
 
+def validateAuthorObject(author, plurrAuthor=None):
+  try:
+    authorKeys = ['type', 'id', 'url', 'host', 'displayName', 'github', 'profileImage']
+    authorObject = author.copy()
+
+    for key in authorObject.keys():
+      if key.lower() not in authorKeys:
+        return [key.lower() + " is not a valid property of the Author object", 
+          status.HTTP_400_BAD_REQUEST]
+    
+    if len(authorObject.keys()) != len(authorKeys):
+      return ["the Author object has the wrong number of properties", 
+        status.HTTP_400_BAD_REQUEST]
+    
+    if authorObject['host'] is None:
+      return ["the Author object needs to have a valid host", 
+        status.HTTP_400_BAD_REQUEST]
+    
+    if plurrAuthor is True:
+      if not authorObject['id'].startsWith(authorObject['host']):
+        return ["the Author id needs to needs to start with the Author host", 
+          status.HTTP_400_BAD_REQUEST]
+      
+      if not authorObject['url'].startsWith(authorObject['host']):
+        return ["the Author url needs to needs to start with the Author host", 
+          status.HTTP_400_BAD_REQUEST]
+    
+    authorObject['type'] = authorObject['type'].lower()
+
+    if plurrAuthor is True:
+      authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
+      authorObject['url'] = authorObject['url'].lower().replace('/service', '').replace('/api', '')
+
+    return authorObject
+  except:
+    return ["the Plurr Author object is invalid" if plurrAuthor is True else "the Author object is invalid", 
+      status.HTTP_400_BAD_REQUEST]
+
+
+def validateFollowObject(follow, inbox=None, toPlurr=None):
+  try:
+    followKeys = ['type', 'actor', 'object']
+    followObject = follow.copy()
+
+    for key in followObject.keys():
+      if key.lower() not in followKeys:
+        return [key.lower() + " is not a valid property of the Follow object", 
+          status.HTTP_400_BAD_REQUEST]
+    
+    if len(followObject.keys()) != len(followKeys):
+      return ["the Follow object has the wrong number of properties", 
+        status.HTTP_400_BAD_REQUEST]
+    
+    followObject['type'] = followObject['type'].lower()
+    
+    if toPlurr is True:
+      followObject['actor'] = validateAuthorObject(followObject['actor'])
+      followObject['object'] = validateAuthorObject(followObject['object'], plurrAuthor=True)
+    else:
+      followObject['actor'] = validateAuthorObject(followObject['actor'], plurrAuthor=True)
+      followObject['object'] = validateAuthorObject(followObject['object'])
+
+    if type(followObject['actor'] is list):
+      return followObject['actor']
+    
+    if type(followObject['object'] is list):
+      return followObject['object']
+    
+    if followObject['actor']['id'] == followObject['object']['id']:
+      return ["Self-following is prohibited.", status.HTTP_409_CONFLICT]
+    
+    try:
+      Author.objects.get(id=followObject['object']['id']).followers.get(id=followObject['actor']['id'])
+      return ["Already following.", status.HTTP_409_CONFLICT]
+    except:
+      if (inbox is True) and followIsInInbox(followObject, inbox):
+        return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
+
+    return followObject
+  except:
+    return ["the Follow object is invalid", status.HTTP_400_BAD_REQUEST]
+
+def validateLikeObject(like, inbox=None, toPlurr=None):
+  try:
+    likeKeys = ['context', 'summary', 'type', 'author', 'object']
+    likeObject = like.copy()
+
+    for key in likeObject.keys():
+      if key.lower() not in likeKeys:
+        return [key.lower() + " is not a valid property of the Like object", 
+          status.HTTP_400_BAD_REQUEST]
+    
+    if len(likeObject.keys()) != len(likeKeys):
+      return ["the Like object has the wrong number of properties", 
+        status.HTTP_400_BAD_REQUEST]
+    
+    likeObject['type'] = likeObject['type'].lower()
+    
+    if toPlurr is True:
+      likeObject['author'] = validateAuthorObject(likeObject['author'])
+      likeObject['object'] = validateAuthorObject(likeObject['object'], plurrAuthor=True)
+    else:
+      likeObject['author'] = validateAuthorObject(likeObject['author'], plurrAuthor=True)
+      likeObject['object'] = validateAuthorObject(likeObject['object'])
+
+    if type(likeObject['author'] is list):
+      return likeObject['author']
+    
+    if type(likeObject['object'] is list):
+      return likeObject['object']
+    
+    if likeObject['author']['id'] == likeObject['object']['id']:
+      return ["Self-liking is prohibited.", status.HTTP_409_CONFLICT]
+    
+    try:
+      Like.objects.get(author=likeObject['author'], object=likeObject['object'])
+      return ["Already liked.", status.HTTP_409_CONFLICT]
+    except:
+      if (inbox is True) and likeIsInInbox(likeObject, inbox):
+        return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
+
+    return likeObject
+  except:
+    return ["the Like object is invalid", status.HTTP_400_BAD_REQUEST]
+
+def validatePostObject(post, inbox=None, toPlurr=None):
+  try:
+    postKeys = ['type', 'title', 'id', 'source', 'origin', 'description', 
+        'contentType', 'content', 'author', 'categories', 'count', 'comments', 
+        'published', 'visibility', 'unlisted']
+    postObject = post.copy()
+
+    for key in postObject.keys():
+      if key.lower() not in postKeys:
+        return [key.lower() + " is not a valid property of the Post object", 
+          status.HTTP_400_BAD_REQUEST]
+    
+    postObject['type'] = postObject['type'].lower()
+    
+    if toPlurr is True:
+      postObject['author'] = validateAuthorObject(postObject['author'])
+    else:
+      postObject['author'] = validateAuthorObject(postObject['author'], plurrAuthor=True)
+
+    if type(postObject['author'] is list):
+      return postObject['author']
+    
+    if postObject['author']['id'] == postObject['object']['id']:
+      return ["Self-liking is prohibited.", status.HTTP_409_CONFLICT]
+    
+    try:
+      Post.objects.get(id=postObject['id'])
+      return ["Already posted.", status.HTTP_409_CONFLICT]
+    except:
+      if (inbox is True) and postIsInInbox(postObject, inbox):
+        return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
+
+    return postObject
+  except:
+    return ["the Post object is invalid", status.HTTP_400_BAD_REQUEST]
+
+
 @api_view(['POST', 'GET', 'DELETE'])
 def InboxList(request, author_uuid):
-  try:  # try to get the specific author and post
+  try:  # try to get the specific author
       authorObject = Author.objects.get(uuid=author_uuid)
   except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
@@ -65,77 +229,55 @@ def InboxList(request, author_uuid):
         return Response({"message": "request has no type"}, status=status.HTTP_400_BAD_REQUEST)
 
     if item_type.lower() == 'post':
-      # # get the Post serializer
-      # post_serializer = PostSerializer(data=request.data)
-
-      # # update the Inbox data if the serializer is valid
-      # if post_serializer.is_valid():
-      if postIsInInbox(request.data, inbox):
-        return Response({"message": "Inbox item already exists"}, 
-        status=status.HTTP_409_CONFLICT)
-      
-      inbox.items.append(request.data)
+      try:  # try to validate the data
+        print("\n\Post Object\n" + str(request.data) + "\n\n")
+        validated_request = validatePostObject(request.data, inbox=True, toPlurr=True)
+        
+        if type(validated_request) is list:
+          return Response({"message": validated_request[0], 
+            "data": request.data}, status=validated_request[1])
+      except:  # return an error if something goes wrong
+        return Response({"message": "the Post object is invalid.", 
+          "data": request.data}, status=status.HTTP_400_BAD_REQUEST)
+        
+      inbox.items.append(validated_request)
       inbox.save()
-      return Response({"message": "Inbox item added", "data": request.data}, 
+      return Response({"message": "Inbox item added"}, 
         status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'follow':
-      try:  # try to get the author and potential follower
+      try:  # try to validate the data
         print("\n\Follow Object\n" + str(request.data) + "\n\n")
-        follow_actor = request.data['actor']
-        follow_object = request.data['object']
-        if str(follow_object['id'])[:20] != str(authorObject.id)[:20]:
-          raise ValueError("Follow object is not the same as Inbox Author")
-        # actor_serializer = AuthorSerializer(data=follow_actor)
-        # object_serializer = AuthorSerializer(data=follow_object)
-        # if actor_serializer.is_valid() and object_serializer.is_valid():
-        #   # Author.objects.get(id=follow_actor['id'])
-        #   # Author.objects.get(id=follow_object['id'])
-        #   pass
-      except:  # return an error if something goes wrong
-        return Response({"message": "Follow object is not the same as Inbox Author", "data": request.data}, status=status.HTTP_404_NOT_FOUND)
-
-      #  "data": serializer.data raises an error
-      if follow_actor['id'] == follow_object['id']:
-          return Response({"message": "Self-following is prohibited."}, 
-            status=status.HTTP_409_CONFLICT)
-      try:
-        Author.objects.get(id=follow_object['id']).followers.get(id=follow_actor['id'])
-        return Response({"message": "Already following."}, 
-          status=status.HTTP_409_CONFLICT)
-      except:
-        if followIsInInbox(request.data, inbox):
-          return Response({"message": "Inbox item already exists"}, 
-          status=status.HTTP_409_CONFLICT)
+        validated_request = validateFollowObject(request.data, inbox=True, toPlurr=True)
         
-        inbox.items.append(request.data)
-        inbox.save()
-        return Response({"message": "Inbox item added"}, 
-          status=status.HTTP_201_CREATED)
+        if type(validated_request) is list:
+          return Response({"message": validated_request[0], 
+            "data": request.data}, status=validated_request[1])
+      except:  # return an error if something goes wrong
+        return Response({"message": "the Follow object is invalid.", 
+          "data": request.data}, status=status.HTTP_400_BAD_REQUEST)
+        
+      inbox.items.append(validated_request)
+      inbox.save()
+      return Response({"message": "Inbox item added"}, 
+        status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'like':
-      try:
-        print("\n\nLike Object\n" + str(request.data) + "\n\n")
-        # # get the Like serializer
-        # like_serializer = LikeSerializer(data=request.data)
-
-        # # update the Inbox data if the serializer is valid
-        # if like_serializer.is_valid():
-        if likeIsInInbox(request.data, inbox):
-          return Response({"message": "Inbox item already exists"}, 
-          status=status.HTTP_409_CONFLICT)
+      try:  # try to validate the data
+        print("\n\Like Object\n" + str(request.data) + "\n\n")
+        validated_request = validateLikeObject(request.data, inbox=True, toPlurr=True)
         
-        inbox.items.append(request.data)
-        print("pre-save\n\n")
-        inbox.save()
-        return Response({"message": "Inbox item added", "data": request.data}, 
-          status=status.HTTP_201_CREATED)
-        # else:
-        #   return Response({"message": "Like object is invalid"}, 
-        #   status=status.HTTP_400_BAD_REQUEST)
-      except:
-        return Response({"message": "Like object cannot be serialized!"}, 
-          status=status.HTTP_400_BAD_REQUEST)
+        if type(validated_request) is list:
+          return Response({"message": validated_request[0], 
+            "data": request.data}, status=validated_request[1])
+      except:  # return an error if something goes wrong
+        return Response({"message": "the Like object is invalid.", 
+          "data": request.data}, status=status.HTTP_400_BAD_REQUEST)
+        
+      inbox.items.append(validated_request)
+      inbox.save()
+      return Response({"message": "Inbox item added"}, 
+        status=status.HTTP_201_CREATED)
 
     else:
       # return an error if something goes wrong with the update
@@ -150,11 +292,8 @@ def InboxList(request, author_uuid):
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
     
-    # # if the logged in user is not the author
-    # if not loggedInUserIsAuthor(request, author_uuid):  
-    #   return Response(status=status.HTTP_401_UNAUTHORIZED)
-    # else:  # if the logged in user is the author
     loggedInAuthorObject = getLoggedInAuthorObject(request)
+
     # if the logged in user does not have an Author object
     if loggedInAuthorObject is None:
       return Response(status=status.HTTP_401_UNAUTHORIZED)
