@@ -6,12 +6,13 @@ from ..serializers import InboxSerializer, AuthorSerializer, LikeSerializer, Pos
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor, getLoggedInAuthorObject
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor, getLoggedInAuthorObject, withTrailingSlash, withoutTrailingSlash
 
 
 def postIsInInbox(post, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
   try:
-    for item in inbox.items:
+    for item in inboxItems:
       if (item.type == "post" and item.id == post.id):
         return True
     return False
@@ -19,12 +20,13 @@ def postIsInInbox(post, inbox):
     return False
 
 def followIsInInbox(follow, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
   try:
-    for item in inbox.items:
+    for item in inboxItems:
       if (
-        item.get("type", None) == "follow" 
-        and item.actor.id == follow.actor.id 
-        and item.object.id == follow.object.id
+        item["type"] == "follow" 
+        and item["actor"]["id"] == follow["actor"]["id"]
+        and item["object"]["id"] == follow["object"]["id"]
       ):
         return True
     return False
@@ -32,8 +34,9 @@ def followIsInInbox(follow, inbox):
     return False
 
 def likeIsInInbox(like, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
   try:
-    for item in inbox.items:
+    for item in inboxItems:
       if (
         item.type == "like" 
         and item.author.id == like.author.id 
@@ -50,7 +53,7 @@ def validateAuthorObject(author, plurrAuthor=None):
     authorObject = author.copy()
 
     for key in authorObject.keys():
-      if key.lower() not in authorKeys:
+      if key not in authorKeys:
         return [key.lower() + " is not a valid property of the Author object", 
           status.HTTP_400_BAD_REQUEST]
     
@@ -63,15 +66,17 @@ def validateAuthorObject(author, plurrAuthor=None):
         status.HTTP_400_BAD_REQUEST]
     
     if plurrAuthor is True:
-      if not authorObject['id'].startsWith(authorObject['host']):
+      if not authorObject['id'].startswith(authorObject['host']):
         return ["the Author id needs to needs to start with the Author host", 
           status.HTTP_400_BAD_REQUEST]
       
-      if not authorObject['url'].startsWith(authorObject['host']):
+      if not authorObject['url'].startswith(authorObject['host']):
         return ["the Author url needs to needs to start with the Author host", 
           status.HTTP_400_BAD_REQUEST]
     
     authorObject['type'] = authorObject['type'].lower()
+    authorObject['id'] = withoutTrailingSlash(authorObject['id'])
+    authorObject['host'] = withTrailingSlash(authorObject['host'])
 
     if plurrAuthor is True:
       authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
@@ -85,11 +90,11 @@ def validateAuthorObject(author, plurrAuthor=None):
 
 def validateFollowObject(follow, inbox=None, toPlurr=None):
   try:
-    followKeys = ['type', 'actor', 'object']
+    followKeys = ['type', 'summary', 'actor', 'object']
     followObject = follow.copy()
 
     for key in followObject.keys():
-      if key.lower() not in followKeys:
+      if key not in followKeys:
         return [key.lower() + " is not a valid property of the Follow object", 
           status.HTTP_400_BAD_REQUEST]
     
@@ -106,10 +111,10 @@ def validateFollowObject(follow, inbox=None, toPlurr=None):
       followObject['actor'] = validateAuthorObject(followObject['actor'], plurrAuthor=True)
       followObject['object'] = validateAuthorObject(followObject['object'])
 
-    if type(followObject['actor'] is list):
+    if type(followObject['actor']) is list:
       return followObject['actor']
     
-    if type(followObject['object'] is list):
+    if type(followObject['object']) is list:
       return followObject['object']
     
     if followObject['actor']['id'] == followObject['object']['id']:
@@ -132,7 +137,7 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
     likeObject = like.copy()
 
     for key in likeObject.keys():
-      if key.lower() not in likeKeys:
+      if key not in likeKeys:
         return [key.lower() + " is not a valid property of the Like object", 
           status.HTTP_400_BAD_REQUEST]
     
@@ -149,10 +154,10 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
       likeObject['author'] = validateAuthorObject(likeObject['author'], plurrAuthor=True)
       likeObject['object'] = validateAuthorObject(likeObject['object'])
 
-    if type(likeObject['author'] is list):
+    if type(likeObject['author']) is list:
       return likeObject['author']
     
-    if type(likeObject['object'] is list):
+    if type(likeObject['object']) is list:
       return likeObject['object']
     
     if likeObject['author']['id'] == likeObject['object']['id']:
@@ -177,7 +182,7 @@ def validatePostObject(post, inbox=None, toPlurr=None):
     postObject = post.copy()
 
     for key in postObject.keys():
-      if key.lower() not in postKeys:
+      if key not in postKeys:
         return [key.lower() + " is not a valid property of the Post object", 
           status.HTTP_400_BAD_REQUEST]
     
@@ -188,7 +193,7 @@ def validatePostObject(post, inbox=None, toPlurr=None):
     else:
       postObject['author'] = validateAuthorObject(postObject['author'], plurrAuthor=True)
 
-    if type(postObject['author'] is list):
+    if type(postObject['author']) is list:
       return postObject['author']
     
     if postObject['author']['id'] == postObject['object']['id']:
@@ -231,7 +236,7 @@ def InboxList(request, author_uuid):
     if item_type.lower() == 'post':
       try:  # try to validate the data
         print("\n\Post Object\n" + str(request.data) + "\n\n")
-        validated_request = validatePostObject(request.data, inbox=True, toPlurr=True)
+        validated_request = validatePostObject(request.data, inbox=inbox, toPlurr=True)
         
         if type(validated_request) is list:
           return Response({"message": validated_request[0], 
@@ -242,13 +247,13 @@ def InboxList(request, author_uuid):
         
       inbox.items.append(validated_request)
       inbox.save()
-      return Response({"message": "Inbox item added"}, 
+      return Response({"message": "Inbox item added", "data": validated_request}, 
         status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'follow':
       try:  # try to validate the data
         print("\n\Follow Object\n" + str(request.data) + "\n\n")
-        validated_request = validateFollowObject(request.data, inbox=True, toPlurr=True)
+        validated_request = validateFollowObject(request.data, inbox=inbox, toPlurr=True)
         
         if type(validated_request) is list:
           return Response({"message": validated_request[0], 
@@ -259,13 +264,13 @@ def InboxList(request, author_uuid):
         
       inbox.items.append(validated_request)
       inbox.save()
-      return Response({"message": "Inbox item added"}, 
+      return Response({"message": "Inbox item added", "data": validated_request}, 
         status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'like':
       try:  # try to validate the data
         print("\n\Like Object\n" + str(request.data) + "\n\n")
-        validated_request = validateLikeObject(request.data, inbox=True, toPlurr=True)
+        validated_request = validateLikeObject(request.data, inbox=inbox, toPlurr=True)
         
         if type(validated_request) is list:
           return Response({"message": validated_request[0], 
@@ -276,7 +281,7 @@ def InboxList(request, author_uuid):
         
       inbox.items.append(validated_request)
       inbox.save()
-      return Response({"message": "Inbox item added"}, 
+      return Response({"message": "Inbox item added", "data": validated_request}, 
         status=status.HTTP_201_CREATED)
 
     else:

@@ -85,3 +85,4 @@ class verifiedAuthentication:
     def __init__(self):
         self.id = uuid.uuid4()
         self.verified_Authentication = True
+        self.is_authenticated = True
