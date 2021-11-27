@@ -74,7 +74,7 @@ def validateAuthorObject(author, plurrAuthor=None):
     authorObject['type'] = authorObject['type'].lower()
     # authorObject['id'] = withoutTrailingSlash(authorObject['id'])
     # authorObject['host'] = withTrailingSlash(authorObject['host'])
-    authorObject['id'] = authorObject['id'][:-1] if authorObject['id'].endsWith("/") else authorObject['id']
+    # authorObject['id'] = authorObject['id'][:-1] if authorObject['id'].endsWith("/") else authorObject['id']
 
     if plurrAuthor is True:
       authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
@@ -245,7 +245,7 @@ def InboxList(request, author_uuid):
         
       inbox.items.append(validated_request)
       inbox.save()
-      return Response({"message": "Inbox item added"}, 
+      return Response({"message": "Inbox item added", "data": validated_request}, 
         status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'follow':
@@ -262,7 +262,7 @@ def InboxList(request, author_uuid):
         
       inbox.items.append(validated_request)
       inbox.save()
-      return Response({"message": "Inbox item added"}, 
+      return Response({"message": "Inbox item added", "data": validated_request}, 
         status=status.HTTP_201_CREATED)
 
     elif item_type.lower() == 'like':
@@ -279,7 +279,7 @@ def InboxList(request, author_uuid):
         
       inbox.items.append(validated_request)
       inbox.save()
-      return Response({"message": "Inbox item added"}, 
+      return Response({"message": "Inbox item added", "data": validated_request}, 
         status=status.HTTP_201_CREATED)
 
     else:
