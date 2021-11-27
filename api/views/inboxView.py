@@ -236,7 +236,7 @@ def InboxList(request, author_uuid):
     if item_type.lower() == 'post':
       try:  # try to validate the data
         print("\n\Post Object\n" + str(request.data) + "\n\n")
-        validated_request = validatePostObject(request.data, inbox=True, toPlurr=True)
+        validated_request = validatePostObject(request.data, inbox=inbox, toPlurr=True)
         
         if type(validated_request) is list:
           return Response({"message": validated_request[0], 
@@ -253,7 +253,7 @@ def InboxList(request, author_uuid):
     elif item_type.lower() == 'follow':
       try:  # try to validate the data
         print("\n\Follow Object\n" + str(request.data) + "\n\n")
-        validated_request = validateFollowObject(request.data, inbox=True, toPlurr=True)
+        validated_request = validateFollowObject(request.data, inbox=inbox, toPlurr=True)
         
         if type(validated_request) is list:
           return Response({"message": validated_request[0], 
@@ -270,7 +270,7 @@ def InboxList(request, author_uuid):
     elif item_type.lower() == 'like':
       try:  # try to validate the data
         print("\n\Like Object\n" + str(request.data) + "\n\n")
-        validated_request = validateLikeObject(request.data, inbox=True, toPlurr=True)
+        validated_request = validateLikeObject(request.data, inbox=inbox, toPlurr=True)
         
         if type(validated_request) is list:
           return Response({"message": validated_request[0], 
