@@ -2,8 +2,9 @@ from django.core.paginator import Paginator, EmptyPage
 from requests.auth import HTTPBasicAuth
 from rest_framework.response import Response
 
-from api.serializers import AuthorSerializer
+from api.serializers import AuthorSerializer, PostSerializer
 from .models.authorModel import Author
+from .models.postModel import Post
 from rest_framework import status
 from django.contrib.auth.hashers import make_password
 import base64, requests, json
@@ -58,6 +59,27 @@ def handlePostImage(body):
   
   # return the request body
   return body
+
+def isNotNoneOrEmpty(string):
+  return str(string) is not None and str(string) != ""
+
+def withTrailingSlash(string):
+  if (isNotNoneOrEmpty(string)):
+    return str(string) if string.endsWith("/") else str(string) + "/"
+  return None
+
+def withoutTrailingSlash(string):
+  if (isNotNoneOrEmpty(string)):
+    return str(string[:-1]) if string.endsWith("/") else str(string)
+  return None
+
+def getUUIDFromId(string):
+  if (isNotNoneOrEmpty(string)):
+    return (
+      str(string.split("/")[-2]) if string.endsWith("/")
+      else str(string.split("/")[-1])
+    )
+  return None
 
 def loggedInUserExists(request):
   try:  # try to get the logged in author
@@ -145,26 +167,54 @@ def _makeRemoteGetRequest(path, node):
       return None
   
 def _createAuthorObjectsFromNode(node):
-    get_authors_path = node.host + "authors/"
-    json_response = _makeRemoteGetRequest(get_authors_path, node)
-    print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
-    if json_response is not None:
-      print("\nPATH\n{path}\nRESPONSE\n{response}\n".format(path=get_authors_path, response=str(json_response)))
-      remote_authors_list = json_response.get('items', None)
-      if remote_authors_list is not None:
-        for remote_author in remote_authors_list:
-            remote_author_uuid = str(remote_author.get('id').split('/')[-1])
-            remote_author_data = remote_author.copy()
-            serializer = AuthorSerializer(data=remote_author_data)
+  get_authors_path = node.host + "authors/"
+  json_response = _makeRemoteGetRequest(get_authors_path, node)
+  print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
+  if json_response is not None:
+    print("\nPATH\n{path}\nRESPONSE\n{response}\n".format(path=get_authors_path, response=str(json_response)))
+    remote_authors_list = json_response.get('items', None)
+    if remote_authors_list is not None:
+      for remote_author in remote_authors_list:
+          remote_author_uuid = getUUIDFromId(remote_author.get('id'))
+          remote_author_data = remote_author.copy()
+          serializer = AuthorSerializer(data=remote_author_data)
 
-            if serializer.is_valid():
-                remote_author_data['uuid'] = remote_author_uuid
-                remote_author_data['username'] = remote_author_uuid
-                if remote_author_data['profileImage'] is None:
-                    remote_author_data['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
-                remote_author_data['password'] = make_password(remote_author_uuid + "pass")
-                Author.objects.create(**remote_author_data)
-    
+          if serializer.is_valid():
+              remote_author_data['uuid'] = remote_author_uuid
+              remote_author_data['username'] = remote_author_uuid
+              if remote_author_data['profileImage'] is None:
+                  remote_author_data['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
+              remote_author_data['password'] = make_password(remote_author_uuid + "pass")
+              Author.objects.update_or_create(**remote_author_data)
+    return None
+  
+def _createPostObjectsFromNode(node):
+  get_authors_path = node.host + "authors/"
+  json_response = _makeRemoteGetRequest(get_authors_path, node)
+  print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
+  if json_response is not None:
+    print("\nPATH\n{path}\nRESPONSE\n{response}\n".format(path=get_authors_path, response=str(json_response)))
+    remote_authors_list = json_response.get('items', None)
+    if remote_authors_list is not None:
+      for remote_author in remote_authors_list:
+        remote_author_uuid = getUUIDFromId(remote_author.get('id'))
+        remote_author_data = remote_author.copy()
+
+        get_posts_path = node.host + "authors/" + remote_author_uuid + "/posts/"
+        json_response = _makeRemoteGetRequest(get_posts_path, node)
+        print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
+        if json_response is not None:
+          print("\nPATH\n{path}\nRESPONSE\n{response}\n".format(path=get_posts_path, response=str(json_response)))
+          remote_posts_list = json_response.get('items', None)
+          if remote_posts_list is not None:
+            for remote_post in remote_posts_list:
+              remote_post_uuid = str(remote_post.get('id').split('/')[-1])
+              remote_post_data = remote_post.copy()
+              serializer = PostSerializer(data=remote_post_data)
+
+              if serializer.is_valid():
+                remote_post_data['host'] = remote_post_uuid
+                Post.objects.update_or_create(**remote_post_data)
     return None
 
 # def sendPostRequestAsUser(path, username, password, data=None):

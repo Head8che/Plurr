@@ -6,7 +6,7 @@ from ..serializers import InboxSerializer, AuthorSerializer, LikeSerializer, Pos
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor, getLoggedInAuthorObject
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor, getLoggedInAuthorObject, withTrailingSlash, withoutTrailingSlash
 
 
 def postIsInInbox(post, inbox):
@@ -72,6 +72,8 @@ def validateAuthorObject(author, plurrAuthor=None):
           status.HTTP_400_BAD_REQUEST]
     
     authorObject['type'] = authorObject['type'].lower()
+    authorObject['id'] = withoutTrailingSlash(authorObject['id'])
+    authorObject['host'] = withTrailingSlash(authorObject['host'])
 
     if plurrAuthor is True:
       authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
@@ -85,7 +87,7 @@ def validateAuthorObject(author, plurrAuthor=None):
 
 def validateFollowObject(follow, inbox=None, toPlurr=None):
   try:
-    followKeys = ['type', 'actor', 'object']
+    followKeys = ['type', 'summary', 'actor', 'object']
     followObject = follow.copy()
 
     for key in followObject.keys():
