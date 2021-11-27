@@ -62,14 +62,14 @@ def validateAuthorObject(author, plurrAuthor=None):
       return ["the Author object needs to have a valid host", 
         status.HTTP_400_BAD_REQUEST]
     
-    if plurrAuthor is True:
-      if not authorObject['id'].startsWith(authorObject['host']):
-        return ["the Author id needs to needs to start with the Author host", 
-          status.HTTP_400_BAD_REQUEST]
+    # if plurrAuthor is True:
+    #   if not authorObject['id'].startsWith(authorObject['host']):
+    #     return ["the Author id needs to needs to start with the Author host", 
+    #       status.HTTP_400_BAD_REQUEST]
       
-      if not authorObject['url'].startsWith(authorObject['host']):
-        return ["the Author url needs to needs to start with the Author host", 
-          status.HTTP_400_BAD_REQUEST]
+    #   if not authorObject['url'].startsWith(authorObject['host']):
+    #     return ["the Author url needs to needs to start with the Author host", 
+    #       status.HTTP_400_BAD_REQUEST]
     
     authorObject['type'] = authorObject['type'].lower()
     # authorObject['id'] = withoutTrailingSlash(authorObject['id'])
