@@ -50,7 +50,7 @@ def validateAuthorObject(author, plurrAuthor=None):
     authorObject = author.copy()
 
     for key in authorObject.keys():
-      if key.lower() not in authorKeys:
+      if key not in authorKeys:
         return [key.lower() + " is not a valid property of the Author object", 
           status.HTTP_400_BAD_REQUEST]
     
@@ -91,7 +91,7 @@ def validateFollowObject(follow, inbox=None, toPlurr=None):
     followObject = follow.copy()
 
     for key in followObject.keys():
-      if key.lower() not in followKeys:
+      if key not in followKeys:
         return [key.lower() + " is not a valid property of the Follow object", 
           status.HTTP_400_BAD_REQUEST]
     
@@ -134,7 +134,7 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
     likeObject = like.copy()
 
     for key in likeObject.keys():
-      if key.lower() not in likeKeys:
+      if key not in likeKeys:
         return [key.lower() + " is not a valid property of the Like object", 
           status.HTTP_400_BAD_REQUEST]
     
@@ -179,7 +179,7 @@ def validatePostObject(post, inbox=None, toPlurr=None):
     postObject = post.copy()
 
     for key in postObject.keys():
-      if key.lower() not in postKeys:
+      if key not in postKeys:
         return [key.lower() + " is not a valid property of the Post object", 
           status.HTTP_400_BAD_REQUEST]
     

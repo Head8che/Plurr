@@ -151,7 +151,9 @@ function Inbox({ loggedInUser, inbox, followers, triggerRerender }) {
                   inboxItem?.summary !== undefined &&
                   inboxItem?.summary !== ""
                     ? inboxItem?.summary
-                    : `${inboxItem.actor?.displayName} likes something of yours`}
+                    : inboxItem?.summary?.includes("comment")
+                    ? `${inboxItem.actor?.displayName} likes something your comment`
+                    : `${inboxItem.actor?.displayName} likes something your post`}
                 </div>
               </Card.Body>
             </Card>
