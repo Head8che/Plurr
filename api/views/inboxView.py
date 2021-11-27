@@ -72,8 +72,8 @@ def validateAuthorObject(author, plurrAuthor=None):
           status.HTTP_400_BAD_REQUEST]
     
     authorObject['type'] = authorObject['type'].lower()
-    authorObject['id'] = withoutTrailingSlash(authorObject['id'])
-    authorObject['host'] = withTrailingSlash(authorObject['host'])
+    # authorObject['id'] = withoutTrailingSlash(authorObject['id'])
+    # authorObject['host'] = withTrailingSlash(authorObject['host'])
 
     if plurrAuthor is True:
       authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
@@ -81,7 +81,7 @@ def validateAuthorObject(author, plurrAuthor=None):
 
     return authorObject
   except:
-    return ["the Plurr Author object is invalid" if plurrAuthor is True else "the Author object is invalid", 
+    return ["the Plurr Author object is invalid" if plurrAuthor is True else authorObject, 
       status.HTTP_400_BAD_REQUEST]
 
 
