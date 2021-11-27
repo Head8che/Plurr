@@ -100,6 +100,26 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
     })
   }
 
+  function previewFile() {
+    const preview = document.getElementsByClassName("previewImg")[0]
+    const file = document.getElementById("formFile").files[0]
+    const reader = new FileReader()
+
+    reader.addEventListener(
+      "load",
+      function () {
+        // convert image file to base64 string
+        preview.src = reader.result
+        console.log(reader.result)
+      },
+      false
+    )
+
+    if (file) {
+      reader.readAsDataURL(file)
+    }
+  }
+
   return (
     <div>
       <Form onSubmit={handleSubmit(submitHandler)}>
@@ -237,6 +257,15 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
             </Row>
 
             <Row>
+              <img
+                className="previewImg"
+                src=""
+                height="200"
+                alt="Image preview..."
+              ></img>
+            </Row>
+
+            <Row>
               {/* Submit Button */}
               <div
                 style={{
@@ -252,6 +281,15 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 >
                   Create Post
                 </Button>
+                <label for="formFile" class="form-label">
+                  Default file input example
+                </label>
+                <input
+                  class="form-control"
+                  type="file"
+                  id="formFile"
+                  onChange={previewFile}
+                ></input>
               </div>
             </Row>
           </Card.Body>
