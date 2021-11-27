@@ -28,7 +28,7 @@ class Author(AbstractUser):
 
     def __init__(self, *args, **kwargs):
         super(Author, self).__init__(*args, **kwargs)
-        if self.host != None:
+        if self.host != None and (not (self.host.endswith('/api/') or self.host.endswith('/service/'))):
             # make sure host ends with a '/'
             self.host += '/' if (not self.host.endswith('/')) else ''
 
