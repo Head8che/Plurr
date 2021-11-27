@@ -77,7 +77,6 @@ def validateAuthorObject(author, plurrAuthor=None):
     authorObject['type'] = authorObject['type'].lower()
     authorObject['id'] = withoutTrailingSlash(authorObject['id'])
     authorObject['host'] = withTrailingSlash(authorObject['host'])
-    authorObject['id'] = authorObject['id'][:-1] if authorObject['id'].endsWith("/") else authorObject['id']
 
     if plurrAuthor is True:
       authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
