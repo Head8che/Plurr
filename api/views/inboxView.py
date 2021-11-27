@@ -72,8 +72,8 @@ def validateAuthorObject(author, plurrAuthor=None):
           status.HTTP_400_BAD_REQUEST]
     
     authorObject['type'] = authorObject['type'].lower()
-    # authorObject['id'] = withoutTrailingSlash(authorObject['id'])
-    # authorObject['host'] = withTrailingSlash(authorObject['host'])
+    authorObject['id'] = withoutTrailingSlash(authorObject['id'])
+    authorObject['host'] = withTrailingSlash(authorObject['host'])
 
     if plurrAuthor is True:
       authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
@@ -108,10 +108,10 @@ def validateFollowObject(follow, inbox=None, toPlurr=None):
       followObject['actor'] = validateAuthorObject(followObject['actor'], plurrAuthor=True)
       followObject['object'] = validateAuthorObject(followObject['object'])
 
-    if type(followObject['actor'] is list):
+    if type(followObject['actor']) is list:
       return followObject['actor']
     
-    if type(followObject['object'] is list):
+    if type(followObject['object']) is list:
       return followObject['object']
     
     if followObject['actor']['id'] == followObject['object']['id']:
@@ -151,10 +151,10 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
       likeObject['author'] = validateAuthorObject(likeObject['author'], plurrAuthor=True)
       likeObject['object'] = validateAuthorObject(likeObject['object'])
 
-    if type(likeObject['author'] is list):
+    if type(likeObject['author']) is list:
       return likeObject['author']
     
-    if type(likeObject['object'] is list):
+    if type(likeObject['object']) is list:
       return likeObject['object']
     
     if likeObject['author']['id'] == likeObject['object']['id']:
@@ -190,7 +190,7 @@ def validatePostObject(post, inbox=None, toPlurr=None):
     else:
       postObject['author'] = validateAuthorObject(postObject['author'], plurrAuthor=True)
 
-    if type(postObject['author'] is list):
+    if type(postObject['author']) is list:
       return postObject['author']
     
     if postObject['author']['id'] == postObject['object']['id']:
