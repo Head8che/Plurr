@@ -6,6 +6,7 @@ import CreateComment from "./CreateComment"
 import { Row, Col, Image, Button, Card } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import DeletePostModal from "../components/DeletePostModal"
+import RemoteChip from "../components/RemoteChip"
 // import EditPostModal from '../components/EditPostModal';
 import { faHeart } from "@fortawesome/free-solid-svg-icons"
 // import { faComment } from '@fortawesome/free-solid-svg-icons'
@@ -16,6 +17,8 @@ import {
   getBackEndHostWithSlash,
   withoutTrailingSlash,
   getAuthorIdOrRemoteLink,
+  getAuthorImgOrDefault,
+  isRemoteAuthor,
 } from "../utils"
 
 export default function PostContent({
@@ -102,7 +105,7 @@ export default function PostContent({
               >
                 <Image
                   className="fluid"
-                  src={author?.profileImage}
+                  src={getAuthorImgOrDefault(author?.profileImage)}
                   roundedCircle
                   style={{
                     objectFit: "cover",
@@ -127,6 +130,17 @@ export default function PostContent({
                   {author?.displayName}
                 </div>
               </a>
+              {isRemoteAuthor(author) && (
+                <Col
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "end",
+                  }}
+                >
+                  <RemoteChip />
+                </Col>
+              )}
               {loggedInUserIsAuthor ? (
                 <>
                   <Col

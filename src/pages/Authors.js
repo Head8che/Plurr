@@ -1,7 +1,12 @@
 import React from "react"
 import "./Authors.css"
 import { Image, Card } from "react-bootstrap"
-import { getAuthorIdOrRemoteLink, isRemoteAuthor } from "../utils"
+import RemoteChip from "../components/RemoteChip"
+import {
+  getAuthorIdOrRemoteLink,
+  isRemoteAuthor,
+  getAuthorImgOrDefault,
+} from "../utils"
 
 function Authors({ authors }) {
   return (
@@ -29,14 +34,7 @@ function Authors({ authors }) {
                     >
                       <Image
                         className="fluid"
-                        src={
-                          author?.profileImage &&
-                          (author?.profileImage.endsWith(".jpg") ||
-                            author?.profileImage.endsWith(".jpeg") ||
-                            author?.profileImage.endsWith(".png"))
-                            ? author?.profileImage
-                            : "https://180dc.org/wp-content/uploads/2016/08/default-profile.png"
-                        }
+                        src={getAuthorImgOrDefault(author?.profileImage)}
                         roundedCircle
                         style={{
                           objectFit: "cover",
@@ -63,22 +61,7 @@ function Authors({ authors }) {
                     </a>
                   </div>
                 </div>
-                {isRemoteAuthor(author) && (
-                  <div
-                    style={{
-                      backgroundColor: "#ffdb99",
-                      borderRadius: "40px",
-                      padding: "2px 10px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <span style={{ fontSize: "12px", color: "#b37300" }}>
-                      remote
-                    </span>
-                  </div>
-                )}
+                {isRemoteAuthor(author) && <RemoteChip />}
               </Card.Body>
             </Card>
           )

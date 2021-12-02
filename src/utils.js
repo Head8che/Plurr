@@ -179,6 +179,17 @@ export const getAuthorIdOrRemoteLink = (author) => {
   }
 }
 
+export const getAuthorImgOrDefault = (author) => {
+  if (isNotNullOrUndefined(author)) {
+    return author?.profileImage &&
+      (author?.profileImage.endsWith(".jpg") ||
+        author?.profileImage.endsWith(".jpeg") ||
+        author?.profileImage.endsWith(".png"))
+      ? author?.profileImage
+      : "https://180dc.org/wp-content/uploads/2016/08/default-profile.png"
+  }
+}
+
 export const withTrailingSlash = (string) => {
   if (isNotNullOrUndefined(string)) {
     return string.endsWith("/") ? string : `${string}/`

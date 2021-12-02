@@ -5,7 +5,11 @@ import PostContent from "../components/PostContent"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faGithub } from "@fortawesome/free-brands-svg-icons"
 import CreatePost from "../components/CreatePost"
-import { getBackEndHostWithSlash, getUUIDFromId } from "../utils"
+import {
+  getBackEndHostWithSlash,
+  getUUIDFromId,
+  getAuthorImgOrDefault,
+} from "../utils"
 
 export default function Author({
   loggedInUser,
@@ -86,7 +90,7 @@ export default function Author({
         <Col xs={6} md={10} style={{ display: "flex", alignItems: "center" }}>
           <Image
             className="fluid"
-            src={author?.profileImage}
+            src={getAuthorImgOrDefault(author?.profileImage)}
             roundedCircle
             style={{
               objectFit: "cover",

@@ -16,7 +16,7 @@ import {
 // import axios from "axios"
 import * as Yup from "yup"
 import { useUserHandler } from "../UserContext"
-import { getAuthorIdOrRemoteLink } from "../utils"
+import { getAuthorIdOrRemoteLink, getAuthorImgOrDefault } from "../utils"
 
 export default function EditPostModal({
   authorUUID,
@@ -119,7 +119,7 @@ export default function EditPostModal({
                   >
                     <Image
                       className="fluid"
-                      src={author?.profileImage}
+                      src={getAuthorImgOrDefault(author?.profileImage)}
                       roundedCircle
                       style={{
                         objectFit: "cover",
@@ -202,7 +202,7 @@ export default function EditPostModal({
                   >
                     <Image
                       className="fluid"
-                      src={author?.profileImage}
+                      src={getAuthorImgOrDefault(author?.profileImage)}
                       roundedCircle
                       style={{
                         objectFit: "cover",

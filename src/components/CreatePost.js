@@ -16,6 +16,7 @@ import {
   withoutTrailingSlash,
   getBackEndHostWithSlash,
   getAuthorIdOrRemoteLink,
+  getAuthorImgOrDefault,
 } from "../utils"
 
 export default function CreatePost({ loggedInUser, author, triggerRerender }) {
@@ -150,7 +151,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 >
                   <Image
                     className="fluid"
-                    src={author?.profileImage}
+                    src={getAuthorImgOrDefault(author?.profileImage)}
                     roundedCircle
                     style={{
                       objectFit: "cover",
@@ -231,7 +232,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 >
                   <Image
                     className="fluid"
-                    src={author?.profileImage}
+                    src={getAuthorImgOrDefault(author?.profileImage)}
                     roundedCircle
                     style={{
                       objectFit: "cover",

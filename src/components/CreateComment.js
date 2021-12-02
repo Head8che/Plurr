@@ -4,7 +4,11 @@ import { Row, Col, Image, Button, Form } from "react-bootstrap"
 import * as Yup from "yup"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { getBackEndHostWithSlash, getAuthorIdOrRemoteLink } from "../utils"
+import {
+  getBackEndHostWithSlash,
+  getAuthorIdOrRemoteLink,
+  getAuthorImgOrDefault,
+} from "../utils"
 
 export default function CreateComment({ author, post, triggerRerender }) {
   // schema to validate form inputs
@@ -81,7 +85,7 @@ export default function CreateComment({ author, post, triggerRerender }) {
             >
               <Image
                 className="fluid"
-                src={author?.profileImage}
+                src={getAuthorImgOrDefault(author?.profileImage)}
                 roundedCircle
                 style={{
                   objectFit: "cover",

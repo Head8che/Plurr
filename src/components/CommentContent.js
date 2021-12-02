@@ -8,6 +8,7 @@ import {
   getBackEndHostWithSlash,
   withoutTrailingSlash,
   getAuthorIdOrRemoteLink,
+  getAuthorImgOrDefault,
 } from "../utils"
 
 export default function CommentContent({
@@ -59,7 +60,7 @@ export default function CommentContent({
           >
             <Image
               className="fluid"
-              src={author?.profileImage}
+              src={getAuthorImgOrDefault(author?.profileImage)}
               roundedCircle
               style={{
                 objectFit: "cover",
