@@ -4,7 +4,7 @@ import { Row, Col, Image, Button, Form } from "react-bootstrap"
 import * as Yup from "yup"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { getBackEndHostWithSlash } from "../utils"
+import { getBackEndHostWithSlash, getAuthorIdOrRemoteLink } from "../utils"
 
 export default function CreateComment({ author, post, triggerRerender }) {
   // schema to validate form inputs
@@ -75,7 +75,10 @@ export default function CreateComment({ author, post, triggerRerender }) {
       <Form onSubmit={handleSubmit(submitHandler)}>
         <Row style={{ marginTop: "30px" }}>
           <Col xs={12} style={{ display: "flex", alignItems: "flex-start" }}>
-            <a href={author.id} style={{ textDecoration: "none" }}>
+            <a
+              href={getAuthorIdOrRemoteLink(author)}
+              style={{ textDecoration: "none" }}
+            >
               <Image
                 className="fluid"
                 src={author?.profileImage}

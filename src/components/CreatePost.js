@@ -12,7 +12,11 @@ import {
 import * as Yup from "yup"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import { withoutTrailingSlash, getBackEndHostWithSlash } from "../utils"
+import {
+  withoutTrailingSlash,
+  getBackEndHostWithSlash,
+  getAuthorIdOrRemoteLink,
+} from "../utils"
 
 export default function CreatePost({ loggedInUser, author, triggerRerender }) {
   // schema to validate form inputs
@@ -140,7 +144,10 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                   alignItems: "flex-start",
                 }}
               >
-                <a href={author.id} style={{ textDecoration: "none" }}>
+                <a
+                  href={getAuthorIdOrRemoteLink(author)}
+                  style={{ textDecoration: "none" }}
+                >
                   <Image
                     className="fluid"
                     src={author?.profileImage}
@@ -215,7 +222,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 }}
               >
                 <a
-                  href={author.id}
+                  href={getAuthorIdOrRemoteLink(author)}
                   style={{
                     textDecoration: "none",
                     opacity: "0",

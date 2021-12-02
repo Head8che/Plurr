@@ -12,7 +12,11 @@ import { faHeart } from "@fortawesome/free-solid-svg-icons"
 import { RiShareLine } from "react-icons/ri"
 // import { RiShareFill } from 'react-icons/ri'
 import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons"
-import { getBackEndHostWithSlash, withoutTrailingSlash } from "../utils"
+import {
+  getBackEndHostWithSlash,
+  withoutTrailingSlash,
+  getAuthorIdOrRemoteLink,
+} from "../utils"
 
 export default function PostContent({
   loggedInUser,
@@ -92,7 +96,10 @@ export default function PostContent({
         <Card.Body className="p-4">
           <Row>
             <Col xs={12} style={{ display: "flex", alignItems: "center" }}>
-              <a href={author.id} style={{ textDecoration: "none" }}>
+              <a
+                href={getAuthorIdOrRemoteLink(author)}
+                style={{ textDecoration: "none" }}
+              >
                 <Image
                   className="fluid"
                   src={author?.profileImage}
@@ -106,7 +113,10 @@ export default function PostContent({
                   }}
                 />
               </a>
-              <a href={author.id} style={{ textDecoration: "none" }}>
+              <a
+                href={getAuthorIdOrRemoteLink(author)}
+                style={{ textDecoration: "none" }}
+              >
                 <div
                   style={{
                     color: "#333",

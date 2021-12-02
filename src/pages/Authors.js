@@ -1,6 +1,7 @@
 import React from "react"
 import "./Authors.css"
-import { Row, Col, Image, Card } from "react-bootstrap"
+import { Image, Card } from "react-bootstrap"
+import { getAuthorIdOrRemoteLink, isRemoteAuthor } from "../utils"
 
 function Authors({ authors }) {
   return (
@@ -22,7 +23,10 @@ function Authors({ authors }) {
               >
                 <div>
                   <div style={{ display: "flex", alignItems: "center" }}>
-                    <a href={author.id} style={{ textDecoration: "none" }}>
+                    <a
+                      href={getAuthorIdOrRemoteLink(author)}
+                      style={{ textDecoration: "none" }}
+                    >
                       <Image
                         className="fluid"
                         src={
@@ -43,7 +47,10 @@ function Authors({ authors }) {
                         }}
                       />
                     </a>
-                    <a href={author.id} style={{ textDecoration: "none" }}>
+                    <a
+                      href={getAuthorIdOrRemoteLink(author)}
+                      style={{ textDecoration: "none" }}
+                    >
                       <div
                         style={{
                           color: "#333",
@@ -56,22 +63,20 @@ function Authors({ authors }) {
                     </a>
                   </div>
                 </div>
-                {!(
-                  author?.host.includes("plurr") ||
-                  author?.host.includes("local")
-                ) && (
+                {isRemoteAuthor(author) && (
                   <div
                     style={{
-                      backgroundColor: "orange",
+                      backgroundColor: "#ffdb99",
                       borderRadius: "40px",
                       padding: "2px 10px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      fontSize: "14px",
                     }}
                   >
-                    remote
+                    <span style={{ fontSize: "12px", color: "#b37300" }}>
+                      remote
+                    </span>
                   </div>
                 )}
               </Card.Body>

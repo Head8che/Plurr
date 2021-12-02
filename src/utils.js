@@ -161,6 +161,24 @@ export const getBackEndHostWithSlash = () => {
   return null
 }
 
+export const getNonServiceHost = (host) => {
+  if (isNotNullOrUndefined(host)) {
+    return host.split("/").slice(0, 3).join("/") + "/"
+  }
+}
+
+export const isRemoteAuthor = (author) => {
+  if (isNotNullOrUndefined(author)) {
+    return !(author?.host.includes("plurr") || author?.host.includes("local"))
+  }
+}
+
+export const getAuthorIdOrRemoteLink = (author) => {
+  if (isNotNullOrUndefined(author)) {
+    return isRemoteAuthor(author) ? getNonServiceHost(author.id) : author.id
+  }
+}
+
 export const withTrailingSlash = (string) => {
   if (isNotNullOrUndefined(string)) {
     return string.endsWith("/") ? string : `${string}/`

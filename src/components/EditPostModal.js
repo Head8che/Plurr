@@ -16,6 +16,7 @@ import {
 // import axios from "axios"
 import * as Yup from "yup"
 import { useUserHandler } from "../UserContext"
+import { getAuthorIdOrRemoteLink } from "../utils"
 
 export default function EditPostModal({
   authorUUID,
@@ -112,7 +113,10 @@ export default function EditPostModal({
                     alignItems: "flex-start",
                   }}
                 >
-                  <a href={author.id} style={{ textDecoration: "none" }}>
+                  <a
+                    href={getAuthorIdOrRemoteLink(author)}
+                    style={{ textDecoration: "none" }}
+                  >
                     <Image
                       className="fluid"
                       src={author?.profileImage}
@@ -189,7 +193,7 @@ export default function EditPostModal({
                   }}
                 >
                   <a
-                    href={author.id}
+                    href={getAuthorIdOrRemoteLink(author)}
                     style={{
                       textDecoration: "none",
                       opacity: "0",

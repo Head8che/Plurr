@@ -4,7 +4,11 @@ import { Row, Col, Image } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faHeart } from "@fortawesome/free-solid-svg-icons"
 import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons"
-import { getBackEndHostWithSlash, withoutTrailingSlash } from "../utils"
+import {
+  getBackEndHostWithSlash,
+  withoutTrailingSlash,
+  getAuthorIdOrRemoteLink,
+} from "../utils"
 
 export default function CommentContent({
   loggedInUser,
@@ -49,7 +53,10 @@ export default function CommentContent({
     <div style={{ marginTop: "20px" }}>
       <div style={{ display: "flex", alignItems: "flex-start" }}>
         <div>
-          <a href={author.id} style={{ textDecoration: "none" }}>
+          <a
+            href={getAuthorIdOrRemoteLink(author)}
+            style={{ textDecoration: "none" }}
+          >
             <Image
               className="fluid"
               src={author?.profileImage}
@@ -82,7 +89,10 @@ export default function CommentContent({
                 justifyContent: "space-between",
               }}
             >
-              <a href={author.id} style={{ textDecoration: "none" }}>
+              <a
+                href={getAuthorIdOrRemoteLink(author)}
+                style={{ textDecoration: "none" }}
+              >
                 <div
                   style={{
                     color: "#333",
