@@ -13,8 +13,7 @@ def AuthorList(request):
         print(request.META["HTTP_HOST"])
         print("\n\n")
         authors = (Author.objects.all().order_by('id') 
-          if ((request.META["HTTP_HOST"] == "localhost:8000")
-            or (request.META["HTTP_HOST"] == "localhost:3000"))
+          if (request.headers.get('x-allauthors') is not None)
           else Author.objects.filter(host="https://plurr.herokuapp.com/").order_by('id'))
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_400_BAD_REQUEST)
