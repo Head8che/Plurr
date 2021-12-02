@@ -8,7 +8,7 @@ export const setObjectFromApi = (path, setObject) => {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
-      "x-allauthors": "True",
+
       Accept: "application/json",
       Authorization: `Bearer ${localStorage.getItem("token")}`,
     },
@@ -53,7 +53,7 @@ export const setObjectFromApi = (path, setObject) => {
                   method: "GET",
                   headers: {
                     "Content-Type": "application/json",
-                    "x-allauthors": "True",
+
                     Authorization: `Bearer ${localStorage.getItem("token")}`,
                   },
                 }).then((corsResponse) => {
@@ -84,7 +84,7 @@ export const validateToken = () => {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
-        "x-allauthors": "True",
+
         Accept: "application/json",
         Authorization: `Bearer ${localStorage.getItem("token")}`,
       },

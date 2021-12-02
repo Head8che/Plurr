@@ -34,11 +34,11 @@ export default function PlurrPage({ page }) {
   const pageObjects = [
     {
       name: "Author",
-      apiRoute: `${host}service/author/${authorId}/`,
-      secondApiRoute: `${host}service/author/${authorId}/followers/`,
-      thirdApiRoute: `${host}service/author/${authorId}/posts/`,
+      apiRoute: `${host}service/author/${authorId}/?size=10000`,
+      secondApiRoute: `${host}service/author/${authorId}/followers/?size=10000`,
+      thirdApiRoute: `${host}service/author/${authorId}/posts/?size=10000`,
       fourthApiRoute: `${host}service/author/${loggedInUser.uuid}/liked/?size=10000`,
-      fifthApiRoute: `${host}service/author/${authorId}/inbox/`,
+      fifthApiRoute: `${host}service/author/${authorId}/inbox/?size=10000`,
       component: (
         <Author
           loggedInUser={loggedInUser}
@@ -53,13 +53,13 @@ export default function PlurrPage({ page }) {
     },
     {
       name: "Authors",
-      apiRoute: `${host}service/authors/`,
+      apiRoute: `${host}service/authors/?size=10000`,
       component: <Authors authors={object} />,
     },
     {
       name: "Inbox",
-      apiRoute: `${host}service/author/${loggedInUser.uuid}/inbox/`,
-      secondApiRoute: `${host}service/author/${loggedInUser.uuid}/followers/`,
+      apiRoute: `${host}service/author/${loggedInUser.uuid}/inbox/?size=10000`,
+      secondApiRoute: `${host}service/author/${loggedInUser.uuid}/followers/?size=10000`,
       component: (
         <Inbox
           loggedInUser={loggedInUser}

@@ -10,10 +10,13 @@ def AuthorList(request):
   # List all the authors
   if request.method == 'GET':
     try:  # try to get the authors
-        print(request.META["HTTP_HOST"])
+        print(request.headers)
+        print(request.META["HTTP_REFERER"])
         print("\n\n")
         authors = (Author.objects.all().order_by('id') 
-          if (request.headers.get('x-allauthors') is not None)
+          if ((request.META["HTTP_REFERER"] == "http://localhost:3000/") 
+            or (request.META["HTTP_REFERER"] == "http://127.0.0.1:3000/"))
+            or (request.META["HTTP_REFERER"] == "https://plurr.herokuapp.com/")
           else Author.objects.filter(host="https://plurr.herokuapp.com/").order_by('id'))
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_400_BAD_REQUEST)

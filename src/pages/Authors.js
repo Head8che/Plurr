@@ -1,52 +1,83 @@
 import React from "react"
 import "./Authors.css"
-import { Button, Card } from "react-bootstrap"
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
-import { faHeart, faComment, faShare } from "@fortawesome/free-solid-svg-icons"
-import { faGithub } from "@fortawesome/free-brands-svg-icons"
+import { Row, Col, Image, Card } from "react-bootstrap"
 
 function Authors({ authors }) {
-  const [isLiked, setLiked] = React.useState(false)
-
-  function toggleLiked() {
-    setLiked(!isLiked)
-  }
-
   return (
     <div>
       <h1 className="Authors-leftColLink" style={{ color: "black" }}>
-        My Plurr Authors
+        Authors
       </h1>
-      {authors?.items?.map((author, count) => (
-        <Card key={count} className="Card my-5">
-          <Card.Img variant="top" src={author.profileImage} />
-          <Card.Body>
-            <Card.Title>
-              <a href={author.id}>@{author.displayName}</a>
-              <a href={author.github}>
-                <FontAwesomeIcon icon={faGithub} />
-              </a>
-            </Card.Title>
-            <Card.Text>
-              {author.profileImage}
-              {author.github}
-            </Card.Text>
-            <Button onClick={() => toggleLiked()} variant="danger">
-              <FontAwesomeIcon
-                style={isLiked ? { color: "black" } : null}
-                icon={faHeart}
-              />
-              &nbsp;{isLiked ? "Liked" : "Like"}
-            </Button>
-            <Button variant="primary">
-              <FontAwesomeIcon icon={faComment} /> Comment
-            </Button>
-            <Button variant="secondary">
-              <FontAwesomeIcon icon={faShare} /> Share
-            </Button>
-          </Card.Body>
-        </Card>
-      ))}
+      {authors?.items?.map(
+        (author, count) =>
+          author?.displayName && (
+            <Card key={count} className="Card my-5">
+              <Card.Body
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <div>
+                  <div style={{ display: "flex", alignItems: "center" }}>
+                    <a href={author.id} style={{ textDecoration: "none" }}>
+                      <Image
+                        className="fluid"
+                        src={
+                          author?.profileImage &&
+                          (author?.profileImage.endsWith(".jpg") ||
+                            author?.profileImage.endsWith(".jpeg") ||
+                            author?.profileImage.endsWith(".png"))
+                            ? author?.profileImage
+                            : "https://180dc.org/wp-content/uploads/2016/08/default-profile.png"
+                        }
+                        roundedCircle
+                        style={{
+                          objectFit: "cover",
+                          backgroundColor: "#EEE",
+                          width: "40px",
+                          height: "40px",
+                          marginRight: "8px",
+                        }}
+                      />
+                    </a>
+                    <a href={author.id} style={{ textDecoration: "none" }}>
+                      <div
+                        style={{
+                          color: "#333",
+                          fontSize: "1rem",
+                          fontWeight: "700",
+                        }}
+                      >
+                        {author?.displayName}
+                      </div>
+                    </a>
+                  </div>
+                </div>
+                {!(
+                  author?.host.includes("plurr") ||
+                  author?.host.includes("local")
+                ) && (
+                  <div
+                    style={{
+                      backgroundColor: "orange",
+                      borderRadius: "40px",
+                      padding: "2px 10px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      fontSize: "14px",
+                    }}
+                  >
+                    remote
+                  </div>
+                )}
+              </Card.Body>
+            </Card>
+          )
+      )}
     </div>
   )
 }
