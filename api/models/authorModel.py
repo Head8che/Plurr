@@ -28,7 +28,12 @@ class Author(AbstractUser):
 
     def __init__(self, *args, **kwargs):
         super(Author, self).__init__(*args, **kwargs)
-        if self.host != None and (not (self.host.endswith('/api/') or self.host.endswith('/service/'))):
+        if self.host != None:
+            if type(self.host) is list:
+                self.host = "/".join(self.host)
+            elif self.host[0] == "[":
+                self.host = self.host.replace("[", "").replace("]", "").replace("'", "").replace(", ", "/")
+
             # make sure host ends with a '/'
             self.host += '/' if (not self.host.endswith('/')) else ''
 

@@ -20,11 +20,11 @@ class Post(models.Model):
     )
 
     PUBLIC = "PUBLIC"
-    PRIVATE = "PRIVATE"
+    FRIENDS = "FRIENDS"
 
     VisibilityTypes = (
         (PUBLIC, "public"),
-        (PRIVATE, "friends")
+        (FRIENDS, "friends")
     )
 
     # Post Type
