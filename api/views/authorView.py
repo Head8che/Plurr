@@ -10,7 +10,13 @@ def AuthorList(request):
   # List all the authors
   if request.method == 'GET':
     try:  # try to get the authors
-        authors = Author.objects.all().order_by('id')
+        print(request.META["HTTP_HOST"])
+        print("\n\n")
+        authors = (Author.objects.all().order_by('id') 
+          if ((request.META["HTTP_HOST"] == "plurr.herokuapp.com") 
+            or (request.META["HTTP_HOST"] == "localhost:8000")
+            or (request.META["HTTP_HOST"] == "localhost:3000"))
+          else Author.objects.filter(host="https://plurr.herokuapp.com/").order_by('id'))
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_400_BAD_REQUEST)
     
