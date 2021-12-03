@@ -132,7 +132,7 @@ function PlurrContainer({ children }) {
             >
               Inbox
             </div>
-            <Link
+            <div
               className={`plurr-nav-item 
                         ${
                           currentPath ===
@@ -142,10 +142,14 @@ function PlurrContainer({ children }) {
                             ? "active"
                             : ""
                         }`}
-              to={`/author/${loggedInUser?.uuid}/followers`}
+              onClick={() =>
+                window.location.replace(
+                  `${host}author/${loggedInUser?.uuid}/followers`
+                )
+              }
             >
               Followers
-            </Link>
+            </div>
             <div
               className={`plurr-nav-item 
                         ${
