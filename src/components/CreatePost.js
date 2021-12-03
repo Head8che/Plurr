@@ -301,9 +301,20 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
               <div
                 style={{
                   display: "flex",
+                  alignItems: "center",
                   justifyContent: "flex-end",
                 }}
               >
+                <Button
+                  className="pl-5"
+                  variant="outline-primary"
+                  // type="file"
+                  // id="formFile"
+                  onClick={() => {}}
+                  style={{ padding: "0.6rem 1rem", marginRight: "10px" }}
+                >
+                  Upload Image
+                </Button>
                 <Button
                   className="pl-5"
                   variant="primary"
@@ -312,14 +323,14 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 >
                   Create Post
                 </Button>
-                <input
+                {/* <input
                   className="form-control"
                   type="file"
                   id="formFile"
-                  {...register("contentx")}
+                  // {...register("contentx")}
                   onChange={previewFile}
-                  style={{ display: "none" }}
-                ></input>
+                  // style={{ display: "none" }}
+                ></input> */}
               </div>
             </Row>
           </Card.Body>
