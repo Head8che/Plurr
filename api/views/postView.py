@@ -1,7 +1,7 @@
 import json
 from re import A
 import requests
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 from ..models.authorModel import Author
@@ -9,7 +9,7 @@ from ..models.postModel import Post
 from rest_framework import status
 from ..serializers import PostSerializer
 from django.db.models import Q
-from ..utils import getLoggedInAuthorUUID, getPageNumber, getPageSize, getPaginatedObject, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
 
 
 @api_view(['GET'])
@@ -17,34 +17,20 @@ def StreamList(request):
   # List all the posts
   if request.method == 'GET':
     try:  # try to get the posts
-      loggedInUserUUID = getLoggedInAuthorUUID(request)
-      loggedInUserFollowersPath = (request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "followers/" 
+      loggedInUserFriendsPath = (request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
         if request.user.id.endswith("/") 
-        else request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "/followers/")
-      loggedInUserFollowers = json.loads(
-        requests.get(loggedInUserFollowersPath, 
+        else request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
+      )
+
+      loggedInUserFriends = (json.loads(requests.get(loggedInUserFriendsPath, 
         headers = {'Content-Type': 'application/json', 
-          'Authorization': request.headers['Authorization']}).text
-        ).get("items", None)
-      friendIds = [follower['id'] for follower in loggedInUserFollowers]
-      # print("\n\n\n")
-      # print(friendIds)
-      # print("\nfriendIDs\n")
+          'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
+      
+      friendIds = []
 
-      for authorId in friendIds:
-        authorFollowersPath = (authorId.replace("/author", "/service/author").replace("3000", "8000") + "followers/" + str(loggedInUserUUID) + "/"
-          if authorId.endswith("/") 
-          else authorId.replace("/author", "/service/author").replace("3000", "8000") + "/followers/" + str(loggedInUserUUID) + "/")
-        try:
-            if (requests.get(authorFollowersPath, 
-              headers = {'Content-Type': 'application/json', 
-                'Authorization': request.headers['Authorization']}).status_code != 200):
-                friendIds.remove(authorId)
-        except:
-          pass
-
-      # print(friendIds)
-      # print("\n\n\n")
+      for loggedInUserFriend in loggedInUserFriends:
+        friendIds.append(str(loggedInUserFriend['id']))
+      
       publicPosts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
       otherAuthorsFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id__in=friendIds).order_by('-published')
       ownFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id=request.user.id).order_by('-published')
@@ -122,20 +108,22 @@ def PostList(request, author_uuid):
   # List all the posts
   elif request.method == 'GET':
     try:  # try to get the posts
-      followersPath = (authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "followers/" 
+      authorFriendsPath = (authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
         if authorObject.id.endswith("/") 
-        else authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "/followers/")
-      authorFollowers = json.loads(
-        requests.get(followersPath, 
+        else authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
+      )
+
+      authorFriends = (json.loads(requests.get(authorFriendsPath, 
         headers = {'Content-Type': 'application/json', 
-          'Authorization': request.headers['Authorization']}).text
-        ).get("items", None)
-      loggedInUserIsFriend = False
-      for follower in authorFollowers:
-        if str(follower['id']) == str(request.user.id):
-          loggedInUserIsFriend = True
-          break
-          
+          'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
+      
+      friendIds = []
+
+      for authorFriend in authorFriends:
+        friendIds.append(str(authorFriend['id']))
+      
+      loggedInUserIsFriend = request.user.id in friendIds
+
       if loggedInUserIsFriend or loggedInUserIsAuthor(request, author_uuid):
         posts = Post.objects.filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC"), 
           author=author_uuid).order_by('-published')
