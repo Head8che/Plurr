@@ -48,7 +48,7 @@ class Post(models.Model):
     # Post Author
     author = models.ForeignKey(Author, on_delete=models.CASCADE, null=True, related_name='post_author')
     # Post Image
-    image = models.ImageField(upload_to='users/%Y-%m-%d/', null=True, blank=True)
+    image = models.TextField(null=True, blank=True)
     # Post Categories
     categories = ArrayField(models.CharField(max_length=100, null=True, blank=True), null=True, blank=True)
     # Total Number of Comments for the Post

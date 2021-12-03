@@ -55,6 +55,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
     }
 
     const host = getBackEndHostWithSlash()
+    console.log(newData, "DETTTTTAA")
 
     // post the validated data to the backend registration service
     fetch(`${host}service/author/${loggedInUser.uuid}/posts/`, {
@@ -103,6 +104,19 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
           }
         })
     })
+  }
+
+  function postCheck() {
+    var postType = document.getElementById("postType").value
+    const preview = document.getElementsByClassName("previewImg")[0]
+    const previewBtn = document.getElementsByClassName("previewBtn")[0]
+    if (postType == "image/png;base64" || postType == "image/jpeg;base64") {
+      preview.style.display = "block"
+      previewBtn.style.display = "block"
+    } else {
+      preview.style.display = "none"
+      previewBtn.style.display = "none"
+    }
   }
 
   function previewFile() {
@@ -187,8 +201,10 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
               <Col xs={3}>
                 <FloatingLabel controlId="type" name="type" label="Type">
                   <Form.Select
+                    id="postType"
                     aria-label="Floating label select example"
                     {...register("type")}
+                    onChange={postCheck}
                   >
                     <option value="text/plain">text/plain</option>
                     <option value="text/markdown">text/markdown</option>
@@ -270,6 +286,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 src=""
                 height="200"
                 alt="Image preview..."
+                style={{ display: "none" }}
               ></img>
             </Row>
 
@@ -290,10 +307,13 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                   Create Post
                 </Button>
                 <input
-                  class="form-control"
+                  className="form-control"
+                  className="previewBtn"
                   type="file"
                   id="formFile"
+                  {...register("contentx")}
                   onChange={previewFile}
+                  style={{ display: "none" }}
                 ></input>
               </div>
             </Row>
