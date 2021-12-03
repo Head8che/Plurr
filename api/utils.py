@@ -229,6 +229,12 @@ def validateFollowObject(follow, inbox=None, toPlurr=None):
     followKeys = ['type', 'summary', 'actor', 'object']
     followObject = follow.copy()
 
+    if followObject['actor'].get('uuid', None) is not None:
+      del followObject['actor']['uuid']
+    
+    if followObject['actor'].get('username', None) is not None:
+      del followObject['actor']['username']
+
     for key in followObject.keys():
       if key not in followKeys:
         return [key + " is not a valid property of the Follow object", 

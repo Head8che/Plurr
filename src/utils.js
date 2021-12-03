@@ -152,7 +152,7 @@ export const getBackEndHostWithSlash = () => {
   if (window !== null && window !== undefined) {
     const host = window.location.href.split("/").slice(0, 3).join("/") + "/"
     return host.includes("localhost") || host.includes("127.0.0.1")
-      ? "http://localhost:8000/"
+      ? "http://127.0.0.1:8000/"
       : host.endsWith("/")
       ? host
       : null
@@ -169,7 +169,11 @@ export const getNonServiceHost = (host) => {
 
 export const isRemoteAuthor = (author) => {
   if (isNotNullOrUndefined(author)) {
-    return !(author?.host.includes("plurr") || author?.host.includes("local"))
+    return !(
+      author?.host.includes("plurr") ||
+      author?.host.includes("local") ||
+      author?.host.includes("127.0.0.1")
+    )
   }
 }
 

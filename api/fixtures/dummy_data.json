@@ -4,10 +4,10 @@
     "pk": 101,
     "fields": {
       "uuid": "51ee7bfc-02f0-4265-aab2-d40f81b6d249",
-      "id": "http://localhost:3000/author/51ee7bfc-02f0-4265-aab2-d40f81b6d249",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/51ee7bfc-02f0-4265-aab2-d40f81b6d249",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Johnny York",
-      "url": "http://localhost:3000/author/51ee7bfc-02f0-4265-aab2-d40f81b6d249",
+      "url": "http://127.0.0.1:3000/author/51ee7bfc-02f0-4265-aab2-d40f81b6d249",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "johnny",
@@ -93,7 +93,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/51ee7bfc-02f0-4265-aab2-d40f81b6d249/posts/ff5ca22f-9d0e-4436-a08d-2aa03cb1c897",
+      "object": "http://127.0.0.1:3000/author/51ee7bfc-02f0-4265-aab2-d40f81b6d249/posts/ff5ca22f-9d0e-4436-a08d-2aa03cb1c897",
       "author": "2e6a6552-36a3-4027-8378-24e118df53aa",
       "summary": "Some one Liked your post"
     }
@@ -102,7 +102,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/51ee7bfc-02f0-4265-aab2-d40f81b6d249/posts/e65279ba-7b69-42ae-95af-3fe303b774f7",
+      "object": "http://127.0.0.1:3000/author/51ee7bfc-02f0-4265-aab2-d40f81b6d249/posts/e65279ba-7b69-42ae-95af-3fe303b774f7",
       "author": "3ae41cb6-9310-429d-b8fc-ebb1ae7a277f",
       "summary": "Some one Liked your post"
     }
@@ -130,10 +130,10 @@
     "pk": 102,
     "fields": {
       "uuid": "2e6a6552-36a3-4027-8378-24e118df53aa",
-      "id": "http://localhost:3000/author/2e6a6552-36a3-4027-8378-24e118df53aa",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/2e6a6552-36a3-4027-8378-24e118df53aa",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Tom Bob",
-      "url": "http://localhost:3000/author/2e6a6552-36a3-4027-8378-24e118df53aa",
+      "url": "http://127.0.0.1:3000/author/2e6a6552-36a3-4027-8378-24e118df53aa",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "tom",
@@ -219,7 +219,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/2e6a6552-36a3-4027-8378-24e118df53aa/posts/4a7295c9-4043-4b7c-a5f5-49a8e0ebe699",
+      "object": "http://127.0.0.1:3000/author/2e6a6552-36a3-4027-8378-24e118df53aa/posts/4a7295c9-4043-4b7c-a5f5-49a8e0ebe699",
       "author": "3ae41cb6-9310-429d-b8fc-ebb1ae7a277f",
       "summary": "Some one Liked your post"
     }
@@ -228,7 +228,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/2e6a6552-36a3-4027-8378-24e118df53aa/posts/37b6c6ae-488e-4795-b130-87a6fbb7c270",
+      "object": "http://127.0.0.1:3000/author/2e6a6552-36a3-4027-8378-24e118df53aa/posts/37b6c6ae-488e-4795-b130-87a6fbb7c270",
       "author": "85ded45d-bdca-455c-b193-19a8ac2332a9",
       "summary": "Some one Liked your post"
     }
@@ -304,10 +304,10 @@
     "pk": 103,
     "fields": {
       "uuid": "3ae41cb6-9310-429d-b8fc-ebb1ae7a277f",
-      "id": "http://localhost:3000/author/3ae41cb6-9310-429d-b8fc-ebb1ae7a277f",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/3ae41cb6-9310-429d-b8fc-ebb1ae7a277f",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Jim Joe",
-      "url": "http://localhost:3000/author/3ae41cb6-9310-429d-b8fc-ebb1ae7a277f",
+      "url": "http://127.0.0.1:3000/author/3ae41cb6-9310-429d-b8fc-ebb1ae7a277f",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "jim",
@@ -393,7 +393,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/3ae41cb6-9310-429d-b8fc-ebb1ae7a277f/posts/77ef3960-47db-499e-8257-35352c8a9507",
+      "object": "http://127.0.0.1:3000/author/3ae41cb6-9310-429d-b8fc-ebb1ae7a277f/posts/77ef3960-47db-499e-8257-35352c8a9507",
       "author": "ac1f04e4-3844-4434-b364-49071e361fa8",
       "summary": "Some one Liked your post"
     }
@@ -402,7 +402,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/3ae41cb6-9310-429d-b8fc-ebb1ae7a277f/posts/77ef3960-47db-499e-8257-35352c8a9507",
+      "object": "http://127.0.0.1:3000/author/3ae41cb6-9310-429d-b8fc-ebb1ae7a277f/posts/77ef3960-47db-499e-8257-35352c8a9507",
       "author": "85ded45d-bdca-455c-b193-19a8ac2332a9",
       "summary": "Some one Liked your post"
     }
@@ -430,10 +430,10 @@
     "pk": 104,
     "fields": {
       "uuid": "85ded45d-bdca-455c-b193-19a8ac2332a9",
-      "id": "http://localhost:3000/author/85ded45d-bdca-455c-b193-19a8ac2332a9",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/85ded45d-bdca-455c-b193-19a8ac2332a9",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Mike Ron",
-      "url": "http://localhost:3000/author/85ded45d-bdca-455c-b193-19a8ac2332a9",
+      "url": "http://127.0.0.1:3000/author/85ded45d-bdca-455c-b193-19a8ac2332a9",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "mike",
@@ -519,7 +519,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/85ded45d-bdca-455c-b193-19a8ac2332a9/posts/fdb25af6-88eb-49b1-bc97-45864ebb9e67",
+      "object": "http://127.0.0.1:3000/author/85ded45d-bdca-455c-b193-19a8ac2332a9/posts/fdb25af6-88eb-49b1-bc97-45864ebb9e67",
       "author": "ac1f04e4-3844-4434-b364-49071e361fa8",
       "summary": "Some one Liked your post"
     }
@@ -528,7 +528,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/85ded45d-bdca-455c-b193-19a8ac2332a9/posts/16b1b370-88be-4b9e-8de5-739206f2235b",
+      "object": "http://127.0.0.1:3000/author/85ded45d-bdca-455c-b193-19a8ac2332a9/posts/16b1b370-88be-4b9e-8de5-739206f2235b",
       "author": "2a680c90-c37a-44d5-8285-72a68cf0fc46",
       "summary": "Some one Liked your post"
     }
@@ -556,10 +556,10 @@
     "pk": 105,
     "fields": {
       "uuid": "ac1f04e4-3844-4434-b364-49071e361fa8",
-      "id": "http://localhost:3000/author/ac1f04e4-3844-4434-b364-49071e361fa8",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/ac1f04e4-3844-4434-b364-49071e361fa8",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Todd Tim",
-      "url": "http://localhost:3000/author/ac1f04e4-3844-4434-b364-49071e361fa8",
+      "url": "http://127.0.0.1:3000/author/ac1f04e4-3844-4434-b364-49071e361fa8",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "todd",
@@ -645,7 +645,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/ac1f04e4-3844-4434-b364-49071e361fa8/posts/aba1b04d-4c8f-45a9-8eee-b11f5a03f042",
+      "object": "http://127.0.0.1:3000/author/ac1f04e4-3844-4434-b364-49071e361fa8/posts/aba1b04d-4c8f-45a9-8eee-b11f5a03f042",
       "author": "2a680c90-c37a-44d5-8285-72a68cf0fc46",
       "summary": "Some one Liked your post"
     }
@@ -654,7 +654,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/ac1f04e4-3844-4434-b364-49071e361fa8/posts/28816446-ab83-44a8-9f11-c1cf4265c86d",
+      "object": "http://127.0.0.1:3000/author/ac1f04e4-3844-4434-b364-49071e361fa8/posts/28816446-ab83-44a8-9f11-c1cf4265c86d",
       "author": "58762950-31e7-46ea-985a-4dcd6434c3c2",
       "summary": "Some one Liked your post"
     }
@@ -683,10 +683,10 @@
     "pk": 106,
     "fields": {
       "uuid": "2a680c90-c37a-44d5-8285-72a68cf0fc46",
-      "id": "http://localhost:3000/author/2a680c90-c37a-44d5-8285-72a68cf0fc46",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/2a680c90-c37a-44d5-8285-72a68cf0fc46",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Liam William",
-      "url": "http://localhost:3000/author/2a680c90-c37a-44d5-8285-72a68cf0fc46",
+      "url": "http://127.0.0.1:3000/author/2a680c90-c37a-44d5-8285-72a68cf0fc46",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "liam",
@@ -772,7 +772,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/2a680c90-c37a-44d5-8285-72a68cf0fc46/posts/5992e5bc-fa09-40f0-a587-5f373e6144af",
+      "object": "http://127.0.0.1:3000/author/2a680c90-c37a-44d5-8285-72a68cf0fc46/posts/5992e5bc-fa09-40f0-a587-5f373e6144af",
       "author": "58762950-31e7-46ea-985a-4dcd6434c3c2",
       "summary": "Some one Liked your post"
     }
@@ -781,7 +781,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/2a680c90-c37a-44d5-8285-72a68cf0fc46/posts/9338eb5c-6081-4a80-9a3b-f2aa258d33ad",
+      "object": "http://127.0.0.1:3000/author/2a680c90-c37a-44d5-8285-72a68cf0fc46/posts/9338eb5c-6081-4a80-9a3b-f2aa258d33ad",
       "author": "c0879d77-fbab-45c1-aaf8-9e7cb0c43224",
       "summary": "Some one Liked your post"
     }
@@ -810,10 +810,10 @@
     "pk": 107,
     "fields": {
       "uuid": "58762950-31e7-46ea-985a-4dcd6434c3c2",
-      "id": "http://localhost:3000/author/58762950-31e7-46ea-985a-4dcd6434c3c2",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/58762950-31e7-46ea-985a-4dcd6434c3c2",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Noah Benjamin",
-      "url": "http://localhost:3000/author/58762950-31e7-46ea-985a-4dcd6434c3c2",
+      "url": "http://127.0.0.1:3000/author/58762950-31e7-46ea-985a-4dcd6434c3c2",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "noah",
@@ -899,7 +899,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/58762950-31e7-46ea-985a-4dcd6434c3c2/posts/a882374d-119a-4a6a-81d2-062648c30e55",
+      "object": "http://127.0.0.1:3000/author/58762950-31e7-46ea-985a-4dcd6434c3c2/posts/a882374d-119a-4a6a-81d2-062648c30e55",
       "author": "c0879d77-fbab-45c1-aaf8-9e7cb0c43224",
       "summary": "Some one Liked your post"
     }
@@ -908,7 +908,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/58762950-31e7-46ea-985a-4dcd6434c3c2/posts/8f41ff2c-a2d1-431d-a8b5-c495089b967c",
+      "object": "http://127.0.0.1:3000/author/58762950-31e7-46ea-985a-4dcd6434c3c2/posts/8f41ff2c-a2d1-431d-a8b5-c495089b967c",
       "author": "63c6d4b3-cefc-4740-884b-ea07817f0d58",
       "summary": "Some one Liked your post"
     }
@@ -937,10 +937,10 @@
     "pk": 108,
     "fields": {
       "uuid": "c0879d77-fbab-45c1-aaf8-9e7cb0c43224",
-      "id": "http://localhost:3000/author/c0879d77-fbab-45c1-aaf8-9e7cb0c43224",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/c0879d77-fbab-45c1-aaf8-9e7cb0c43224",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Nathan Oliver",
-      "url": "http://localhost:3000/author/c0879d77-fbab-45c1-aaf8-9e7cb0c43224",
+      "url": "http://127.0.0.1:3000/author/c0879d77-fbab-45c1-aaf8-9e7cb0c43224",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "nathan",
@@ -1026,7 +1026,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/c0879d77-fbab-45c1-aaf8-9e7cb0c43224/posts/74260b4c-d4b4-43f7-b344-67156912cbd5",
+      "object": "http://127.0.0.1:3000/author/c0879d77-fbab-45c1-aaf8-9e7cb0c43224/posts/74260b4c-d4b4-43f7-b344-67156912cbd5",
       "author": "63c6d4b3-cefc-4740-884b-ea07817f0d58",
       "summary": "Some one Liked your post"
     }
@@ -1035,7 +1035,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/c0879d77-fbab-45c1-aaf8-9e7cb0c43224/posts/f3e9cad9-4d81-4cbd-8490-dd0fc46c1630",
+      "object": "http://127.0.0.1:3000/author/c0879d77-fbab-45c1-aaf8-9e7cb0c43224/posts/f3e9cad9-4d81-4cbd-8490-dd0fc46c1630",
       "author": "48409866-0811-4ad8-a1d9-29014b4d316d",
       "summary": "Some one Liked your post"
     }
@@ -1064,10 +1064,10 @@
     "pk": 109,
     "fields": {
       "uuid": "63c6d4b3-cefc-4740-884b-ea07817f0d58",
-      "id": "http://localhost:3000/author/63c6d4b3-cefc-4740-884b-ea07817f0d58",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/63c6d4b3-cefc-4740-884b-ea07817f0d58",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Thomas Mason",
-      "url": "http://localhost:3000/author/63c6d4b3-cefc-4740-884b-ea07817f0d58",
+      "url": "http://127.0.0.1:3000/author/63c6d4b3-cefc-4740-884b-ea07817f0d58",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "thomas",
@@ -1153,7 +1153,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/63c6d4b3-cefc-4740-884b-ea07817f0d58/posts/e35c3b68-c6cd-4b48-bcf8-e1838dc64f6c",
+      "object": "http://127.0.0.1:3000/author/63c6d4b3-cefc-4740-884b-ea07817f0d58/posts/e35c3b68-c6cd-4b48-bcf8-e1838dc64f6c",
       "author": "47f37a1c-87db-45cc-ab55-644cf6e98e40",
       "summary": "Some one Liked your post"
     }
@@ -1162,7 +1162,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/63c6d4b3-cefc-4740-884b-ea07817f0d58/posts/df5a1dd2-ad4c-4716-a147-ff25cb2729c7",
+      "object": "http://127.0.0.1:3000/author/63c6d4b3-cefc-4740-884b-ea07817f0d58/posts/df5a1dd2-ad4c-4716-a147-ff25cb2729c7",
       "author": "48409866-0811-4ad8-a1d9-29014b4d316d",
       "summary": "Some one Liked your post"
     }
@@ -1191,10 +1191,10 @@
     "pk": 110,
     "fields": {
       "uuid": "48409866-0811-4ad8-a1d9-29014b4d316d",
-      "id": "http://localhost:3000/author/48409866-0811-4ad8-a1d9-29014b4d316d",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/48409866-0811-4ad8-a1d9-29014b4d316d",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Lucas Ethan",
-      "url": "http://localhost:3000/author/48409866-0811-4ad8-a1d9-29014b4d316d",
+      "url": "http://127.0.0.1:3000/author/48409866-0811-4ad8-a1d9-29014b4d316d",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "lucas",
@@ -1280,7 +1280,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/48409866-0811-4ad8-a1d9-29014b4d316d/posts/e4377f60-792b-49b7-be1a-9c324d880dd8",
+      "object": "http://127.0.0.1:3000/author/48409866-0811-4ad8-a1d9-29014b4d316d/posts/e4377f60-792b-49b7-be1a-9c324d880dd8",
       "author": "47f37a1c-87db-45cc-ab55-644cf6e98e40",
       "summary": "Some one Liked your post"
     }
@@ -1289,7 +1289,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/48409866-0811-4ad8-a1d9-29014b4d316d/posts/09d85d1c-4803-4321-aadc-83e6efb4e46c",
+      "object": "http://127.0.0.1:3000/author/48409866-0811-4ad8-a1d9-29014b4d316d/posts/09d85d1c-4803-4321-aadc-83e6efb4e46c",
       "author": "51ee7bfc-02f0-4265-aab2-d40f81b6d249",
       "summary": "Some one Liked your post"
     }
@@ -1318,10 +1318,10 @@
     "pk": 111,
     "fields": {
       "uuid": "47f37a1c-87db-45cc-ab55-644cf6e98e40",
-      "id": "http://localhost:3000/author/47f37a1c-87db-45cc-ab55-644cf6e98e40",
-      "host": "http://localhost:3000/",
+      "id": "http://127.0.0.1:3000/author/47f37a1c-87db-45cc-ab55-644cf6e98e40",
+      "host": "http://127.0.0.1:3000/",
       "displayName": "Jacob Logan",
-      "url": "http://localhost:3000/author/47f37a1c-87db-45cc-ab55-644cf6e98e40",
+      "url": "http://127.0.0.1:3000/author/47f37a1c-87db-45cc-ab55-644cf6e98e40",
       "github": "https://github.com/aakindel/CMPUT404-project-socialdistribution",
       "profileImage": "https://180dc.org/wp-content/uploads/2016/08/default-profile.png",
       "username": "jacob",
@@ -1407,7 +1407,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/47f37a1c-87db-45cc-ab55-644cf6e98e40/posts/d7247c7f-d9a6-4a5a-8687-4f4498f53c0b",
+      "object": "http://127.0.0.1:3000/author/47f37a1c-87db-45cc-ab55-644cf6e98e40/posts/d7247c7f-d9a6-4a5a-8687-4f4498f53c0b",
       "author": "3ae41cb6-9310-429d-b8fc-ebb1ae7a277f",
       "summary": "Some one Liked your post"
     }
@@ -1416,7 +1416,7 @@
     "model": "api.Like",
     "fields": {
       "type": "Like",
-      "object": "http://localhost:3000/author/47f37a1c-87db-45cc-ab55-644cf6e98e40/posts/1d18d823-8ad4-4f69-b7d6-12508206f54b",
+      "object": "http://127.0.0.1:3000/author/47f37a1c-87db-45cc-ab55-644cf6e98e40/posts/1d18d823-8ad4-4f69-b7d6-12508206f54b",
       "author": "3ae41cb6-9310-429d-b8fc-ebb1ae7a277f",
       "summary": "Some one Liked your post"
     }

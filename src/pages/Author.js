@@ -50,6 +50,7 @@ export default function Author({
         },
         body: JSON.stringify({
           type: "follow",
+          summary: `${loggedInUser?.displayName} wants to follow ${author?.displayName}`,
           actor: loggedInUser,
           object: author,
         }),

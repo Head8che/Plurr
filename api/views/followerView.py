@@ -1,9 +1,62 @@
+import json
+
+import requests
 from ..models.authorModel import Author
 from ..serializers import AuthorSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor
+
+
+@api_view(['GET'])
+def FriendList(request, author_uuid):
+  # List all the followers
+  if request.method == 'GET':
+    try:  # try to get the followers
+        followers = Author.objects.get(uuid=author_uuid).followers.all()
+        friendIds = []
+        
+        for follower in followers:
+          followerFollowersPath = (follower.id.replace("/author", "/service/author").replace("3000", "8000") + "followers/" + author_uuid + "/"
+            if follower.id.endswith("/") 
+            else follower.id.replace("/author", "/service/author").replace("3000", "8000") + "/followers/" + author_uuid + "/")
+            
+          isFriend = requests.get(followerFollowersPath, 
+            headers = {'Content-Type': 'application/json', 
+              'Authorization': request.headers.get('Authorization', None)}).status_code == 200
+          
+          if (isFriend):
+            friendIds.append(follower.id)
+            
+        friends = Author.objects.filter(id__in=friendIds).order_by('id')
+    except:  # return an error if something goes wrong
+        return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    # get the page number and size
+    page_number = getPageNumber(request)
+    page_size = getPageSize(request)
+
+    # get the paginated friends
+    paginated_friends = getPaginatedObject(friends, page_number, page_size)
+
+    # get the Author serializer
+    serializer = AuthorSerializer(paginated_friends, many=True)
+
+    # create the `type` field for the Friends data
+    new_data = {'type': "friends"}
+
+    # add the `type` field to the Friends data
+    new_data.update({
+        'items': serializer.data,
+    })
+
+    # return the updated Authors data
+    return Response(new_data, status=status.HTTP_200_OK)
+  
+  # Handle unaccepted methods
+  else:
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 
 @api_view(['GET'])

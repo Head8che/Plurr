@@ -21,6 +21,7 @@ urlpatterns = [
     path('author/<str:author_uuid>/inbox/', inboxView.InboxList, name="inboxList"),
 
     # Follower Endpoints
+    path('author/<str:author_uuid>/friends/', followerView.FriendList, name="friendList"),
     path('author/<str:author_uuid>/followers/', followerView.FollowerList, name="followerList"),
     path('author/<str:author_uuid>/followers/<str:follower_uuid>/', followerView.FollowerDetail, name="followerDetail"),
 
