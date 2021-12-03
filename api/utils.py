@@ -142,7 +142,7 @@ def postIsInInbox(post, inbox):
   inboxItems = inbox if type(inbox) is list else inbox.items
   try:
     for item in inboxItems:
-      if (item.type == "post" and item.id == post.irk):
+      if (item.type == "post" and item.id == post.id):
         return True
     return False
   except:
@@ -168,7 +168,7 @@ def likeIsInInbox(like, inbox):
     for item in inboxItems:
       if (
         item.type == "like" 
-        and item.author.irk == like.author.irk 
+        and item.author.id == like.author.id 
         and item.object == like.object
       ):
         return True
