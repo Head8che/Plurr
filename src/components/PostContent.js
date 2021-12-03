@@ -39,6 +39,9 @@ export default function PostContent({
   const [shouldSubmitForm, setShouldSubmitForm] = React.useState(true)
   const [comments, setComments] = React.useState([])
   const authorLiked = liked?.items?.map((likedObject) => likedObject.object)
+  let postHasImageContentType =
+    post?.contentType === "image/png;base64" ||
+    post?.contentType === "image/jpeg;base64"
 
   const host = getBackEndHostWithSlash()
 
@@ -228,7 +231,35 @@ export default function PostContent({
               >
                 {post.title}
               </Card.Title>
-              <Card.Text className="mb-2">{post.content}</Card.Text>
+              {postHasImageContentType ? (
+                <div
+                  style={{
+                    maxWidth: "100%",
+                    minHeight: "200px",
+                    maxHeight: "500px",
+                    position: "relative",
+                    padding: "0px",
+                    backgroundColor: "transparent",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  <img
+                    id="postImageContent"
+                    src={post?.content}
+                    objectfit="contain"
+                    alt="preview..."
+                    style={{
+                      maxWidth: "100%",
+                      minHeight: "200px",
+                      maxHeight: "500px",
+                    }}
+                  />
+                </div>
+              ) : (
+                <Card.Text className="mb-2">{post.content}</Card.Text>
+              )}
             </>
           )}
           <Row>

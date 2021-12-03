@@ -16,10 +16,18 @@ import {
   withoutTrailingSlash,
   getBackEndHostWithSlash,
   getAuthorIdOrRemoteLink,
+  isNotNullOrUndefined,
   getAuthorImgOrDefault,
 } from "../utils"
 
 export default function CreatePost({ loggedInUser, author, triggerRerender }) {
+  const [postContentType, setPostContentType] = React.useState("text/plain")
+  const [postImageSrc, setPostImageSrc] = React.useState(null)
+  const [disableSubmit, setDisableSubmit] = React.useState(false)
+  let postHasImageContentType =
+    postContentType === "image/png;base64" ||
+    postContentType === "image/jpeg;base64"
+
   // schema to validate form inputs
   const validationSchema = Yup.object().shape({
     content: Yup.string().required("Post content is required"),
@@ -30,6 +38,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
     register,
     handleSubmit,
     reset,
+    setValue,
     setError,
     formState: { errors },
   } = useForm({
@@ -37,6 +46,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
   })
 
   const submitHandler = (data) => {
+    console.log("data")
     console.log(data)
 
     const newData = { ...data }
@@ -45,6 +55,10 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
     }
 
     newData.type = "post"
+
+    if (isNotNullOrUndefined(postImageSrc)) {
+      newData.content = postImageSrc
+    }
 
     if (
       withoutTrailingSlash(loggedInUser.id) !== withoutTrailingSlash(author.id)
@@ -57,7 +71,8 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
     }
 
     const host = getBackEndHostWithSlash()
-    console.log(newData, "DETTTTTAA")
+    console.log("newData")
+    console.log(newData)
 
     // post the validated data to the backend registration service
     fetch(`${host}service/author/${loggedInUser.uuid}/posts/`, {
@@ -73,7 +88,10 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
         .then((apiResponse) => {
           // empty out the form
           reset()
+          setPostImageSrc(null)
+          setPostContentType("text/plain")
           triggerRerender()
+          setDisableSubmit(false)
 
           console.log(apiResponse)
         })
@@ -108,33 +126,14 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
     })
   }
 
-  function postCheck() {
-    var postType = document.getElementById("postType").value
-    const preview = document.getElementsByClassName("previewImg")[0]
-    const previewBtn = document.getElementsByClassName("previewBtn")[0]
-    if (postType == "image/png;base64" || postType == "image/jpeg;base64") {
-      preview.style.display = "block"
-      previewBtn.style.display = "block"
-    } else {
-      preview.style.display = "none"
-      previewBtn.style.display = "none"
-    }
-  }
-
-  function previewFile() {
-    const preview = document.getElementsByClassName("previewImg")[0]
+  function updateImage() {
     const file = document.getElementById("formFile").files[0]
     const reader = new FileReader()
 
-    reader.addEventListener(
-      "load",
-      function () {
-        // convert image file to base64 string
-        preview.src = reader.result
-        console.log(reader.result)
-      },
-      false
-    )
+    reader.onloadend = function () {
+      // convert image file to base64 string
+      setPostImageSrc(reader.result)
+    }
 
     if (file) {
       reader.readAsDataURL(file)
@@ -170,7 +169,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                     src={getAuthorImgOrDefault(author?.profileImage)}
                     roundedCircle
                     style={{
-                      objectFit: "cover",
+                      objectfit: "cover",
                       backgroundColor: "#EEE",
                       width: "40px",
                       height: "40px",
@@ -210,6 +209,12 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                     id="postType"
                     aria-label="Floating label select example"
                     {...register("contentType")}
+                    onChange={(e) => {
+                      setPostImageSrc(null)
+                      setPostContentType(
+                        document.getElementById("postType").value
+                      )
+                    }}
                   >
                     <option value="text/plain">text/plain</option>
                     <option value="text/markdown">text/markdown</option>
@@ -245,58 +250,85 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                   alignItems: "flex-start",
                 }}
               >
-                <a
-                  href={getAuthorIdOrRemoteLink(author)}
-                  style={{
-                    textDecoration: "none",
-                    opacity: "0",
-                    pointerEvents: "none",
-                  }}
-                >
-                  <Image
-                    className="fluid"
-                    src={getAuthorImgOrDefault(author?.profileImage)}
-                    roundedCircle
-                    style={{
-                      objectFit: "cover",
-                      backgroundColor: "#EEE",
-                      width: "40px",
-                      height: "40px",
-                      marginRight: "8px",
-                    }}
-                  />
-                </a>
                 {/* content Form Field */}
-                <Form.Group className="mb-3" style={{ flexGrow: 1 }}>
-                  <Form.Control
-                    defaultValue=""
-                    name="content"
-                    placeholder="Create your post"
-                    as="textarea"
-                    rows={5}
-                    style={{ padding: "0.75rem 0.85rem" }}
-                    {...register("content")}
-                    className={`form-control ${
-                      errors.content ? "is-invalid" : ""
-                    }`}
-                  />
-                  <Form.Text className="invalid-feedback">
-                    {errors.content?.message}
-                  </Form.Text>
-                </Form.Group>
+                {!postHasImageContentType && (
+                  <Form.Group style={{ flexGrow: 1, marginLeft: "48px" }}>
+                    <Form.Control
+                      defaultValue=""
+                      name="content"
+                      id="content"
+                      placeholder="Create your post"
+                      as="textarea"
+                      rows={5}
+                      style={{ padding: "0.75rem 0.85rem" }}
+                      {...register("content")}
+                      className={`form-control ${
+                        errors.content ? "is-invalid" : ""
+                      }`}
+                    />
+                    <Form.Text className="invalid-feedback">
+                      {errors.content?.message}
+                    </Form.Text>
+                  </Form.Group>
+                )}
               </Col>
             </Row>
 
-            <Row>
-              <img
-                className="previewImg"
-                src=""
-                height="200"
-                alt="preview..."
-              ></img>
-            </Row>
+            {postHasImageContentType && (
+              <Row
+                style={{
+                  marginLeft: "37px",
+                  display: "flex",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <div
+                  style={{
+                    maxWidth: "80%",
+                    minHeight: "200px",
+                    maxHeight: "500px",
+                    position: "relative",
+                    padding: "0px",
+                    backgroundColor: "transparent",
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
+                >
+                  {postImageSrc ? (
+                    <img
+                      id="postImageContent"
+                      src={postImageSrc}
+                      objectfit="contain"
+                      alt="preview..."
+                      style={{
+                        maxWidth: "100%",
+                        minHeight: "200px",
+                        maxHeight: "500px",
+                      }}
+                    />
+                  ) : (
+                    <div
+                      style={{
+                        height: "100%",
+                        width: "100%",
+                        position: "absolute",
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        backgroundColor: "#f0f0f0",
+                        fontSize: "18px",
+                      }}
+                    >
+                      No Image Selected
+                    </div>
+                  )}
+                </div>
+              </Row>
+            )}
 
-            <Row>
+            <Row className="mt-3">
               {/* Submit Button */}
               <div
                 style={{
@@ -305,32 +337,50 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                   justifyContent: "flex-end",
                 }}
               >
-                <Button
-                  className="pl-5"
-                  variant="outline-primary"
-                  // type="file"
-                  // id="formFile"
-                  onClick={() => {}}
-                  style={{ padding: "0.6rem 1rem", marginRight: "10px" }}
-                >
-                  Upload Image
-                </Button>
+                {postHasImageContentType && (
+                  <Button
+                    className="pl-5"
+                    variant="outline-primary"
+                    // type="file"
+                    // id="formFile"
+                    onClick={() => {
+                      document.getElementById("formFile").click()
+                    }}
+                    style={{ padding: "0.6rem 1rem", marginRight: "10px" }}
+                  >
+                    Upload Image
+                  </Button>
+                )}
                 <Button
                   className="pl-5"
                   variant="primary"
                   type="submit"
-                  style={{ padding: "0.6rem 1rem" }}
+                  style={{
+                    padding: "0.6rem 1rem",
+                    pointerEvents: `${disableSubmit ? "none" : "auto"}`,
+                  }}
+                  onClick={() => {
+                    setDisableSubmit(true)
+                    setValue("content", "value")
+                  }}
                 >
                   Create Post
                 </Button>
-                {/* <input
+                <input
                   className="form-control"
                   type="file"
                   id="formFile"
+                  accept={
+                    postContentType === "image/png;base64"
+                      ? "image/png"
+                      : postContentType === "image/jpeg;base64"
+                      ? "image/jpeg"
+                      : null
+                  }
                   // {...register("contentx")}
-                  onChange={previewFile}
-                  // style={{ display: "none" }}
-                ></input> */}
+                  onChange={updateImage}
+                  style={{ display: "none" }}
+                ></input>
               </div>
             </Row>
           </Card.Body>
