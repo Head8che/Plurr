@@ -44,6 +44,8 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
       delete newData.title
     }
 
+    newData.type = "post"
+
     if (
       withoutTrailingSlash(loggedInUser.id) !== withoutTrailingSlash(author.id)
     ) {
@@ -199,12 +201,15 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 </Form.Group>
               </Col>
               <Col xs={3}>
-                <FloatingLabel controlId="type" name="type" label="Type">
+                <FloatingLabel
+                  controlId="contentType"
+                  name="contentType"
+                  label="Type"
+                >
                   <Form.Select
                     id="postType"
                     aria-label="Floating label select example"
-                    {...register("type")}
-                    onChange={postCheck}
+                    {...register("contentType")}
                   >
                     <option value="text/plain">text/plain</option>
                     <option value="text/markdown">text/markdown</option>
@@ -221,9 +226,11 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                   controlId="visibility"
                   name="visibility"
                   label="Visibility"
-                  {...register("visibility")}
                 >
-                  <Form.Select aria-label="Floating label select example">
+                  <Form.Select
+                    aria-label="Floating label select example"
+                    {...register("visibility")}
+                  >
                     <option value="PUBLIC">PUBLIC</option>
                     <option value="FRIENDS">FRIENDS</option>
                   </Form.Select>
@@ -285,8 +292,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 className="previewImg"
                 src=""
                 height="200"
-                alt="Image preview..."
-                style={{ display: "none" }}
+                alt="preview..."
               ></img>
             </Row>
 
@@ -308,7 +314,6 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                 </Button>
                 <input
                   className="form-control"
-                  className="previewBtn"
                   type="file"
                   id="formFile"
                   {...register("contentx")}

@@ -6,7 +6,7 @@ import CreateComment from "./CreateComment"
 import { Row, Col, Image, Button, Card } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import DeletePostModal from "../components/DeletePostModal"
-import RemoteChip from "../components/RemoteChip"
+import PlurrChip from "../components/PlurrChip"
 // import EditPostModal from '../components/EditPostModal';
 import { faHeart } from "@fortawesome/free-solid-svg-icons"
 // import { faComment } from '@fortawesome/free-solid-svg-icons'
@@ -138,7 +138,7 @@ export default function PostContent({
                     justifyContent: "end",
                   }}
                 >
-                  <RemoteChip />
+                  <PlurrChip text="remote" />
                 </Col>
               )}
               {loggedInUserIsAuthor ? (
@@ -237,51 +237,57 @@ export default function PostContent({
               style={{
                 display: "flex",
                 alignItems: "center",
+                justifyContent: "space-between",
                 gap: "10px",
               }}
             >
-              <div
-                className={`icon-container like ${
-                  loggedInUserIsAuthor ? "isAuthor" : ""
-                } ${isLiked ? "isLiked" : ""}`}
-                onClick={() =>
-                  loggedInUserIsAuthor
-                    ? null
-                    : isLiked
-                    ? null
-                    : fetchAndSetIsLiked()
-                }
-              >
-                {isLiked ? (
-                  <FontAwesomeIcon
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                <div
+                  className={`icon-container like ${
+                    loggedInUserIsAuthor ? "isAuthor" : ""
+                  } ${isLiked ? "isLiked" : ""}`}
+                  onClick={() =>
+                    loggedInUserIsAuthor
+                      ? null
+                      : isLiked
+                      ? null
+                      : fetchAndSetIsLiked()
+                  }
+                >
+                  {isLiked ? (
+                    <FontAwesomeIcon
+                      style={{
+                        color: "red",
+                        width: "18px",
+                        height: "18px",
+                      }}
+                      icon={faHeart}
+                    />
+                  ) : (
+                    <FontAwesomeIcon
+                      style={{
+                        color: `${loggedInUserIsAuthor ? "#CCC" : "grey"}`,
+                        pointerEvents: `${loggedInUserIsAuthor ? "none" : ""}`,
+                        width: "18px",
+                        height: "18px",
+                      }}
+                      icon={farHeart}
+                    />
+                  )}
+                </div>
+                <div className="icon-container share">
+                  <RiShareLine
                     style={{
-                      color: "red",
+                      color: "grey",
                       width: "18px",
                       height: "18px",
                     }}
-                    icon={faHeart}
                   />
-                ) : (
-                  <FontAwesomeIcon
-                    style={{
-                      color: `${loggedInUserIsAuthor ? "#CCC" : "grey"}`,
-                      pointerEvents: `${loggedInUserIsAuthor ? "none" : ""}`,
-                      width: "18px",
-                      height: "18px",
-                    }}
-                    icon={farHeart}
-                  />
-                )}
+                </div>
               </div>
-              <div className="icon-container share">
-                <RiShareLine
-                  style={{
-                    color: "grey",
-                    width: "18px",
-                    height: "18px",
-                  }}
-                />
-              </div>
+              {post.visibility.toUpperCase() === "FRIENDS" && (
+                <PlurrChip text="friends" />
+              )}
             </Col>
           </Row>
           {comments.length === 0 ? null : (

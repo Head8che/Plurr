@@ -1,3 +1,6 @@
+import json
+from re import A
+import requests
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
@@ -5,6 +8,7 @@ from ..models.authorModel import Author
 from ..models.postModel import Post
 from rest_framework import status
 from ..serializers import PostSerializer
+from django.db.models import Q
 from ..utils import getPageNumber, getPageSize, getPaginatedObject, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
 
 
@@ -13,7 +17,20 @@ def StreamList(request):
   # List all the posts
   if request.method == 'GET':
     try:  # try to get the posts
-        posts = Post.objects.all().order_by('-published')
+      followersPath = (request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "followers/" 
+        if request.user.id.endswith("/") 
+        else request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "/followers/")
+      authorFollowers = json.loads(
+        requests.get(followersPath, 
+        headers = {'Content-Type': 'application/json', 
+          'Authorization': request.headers['Authorization']}).text
+        ).get("items", None)
+      followerIds = [follower['id'] for follower in authorFollowers]
+      
+      publicPosts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
+      otherAuthorsFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id__in=followerIds).order_by('-published')
+      ownFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id=request.user.id).order_by('-published')
+      posts = publicPosts | otherAuthorsFriendPosts | ownFriendPosts
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -87,9 +104,26 @@ def PostList(request, author_uuid):
   # List all the posts
   elif request.method == 'GET':
     try:  # try to get the posts
-        posts = Post.objects.filter(author=author_uuid).order_by('-published')
+      followersPath = (authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "followers/" 
+        if authorObject.id.endswith("/") 
+        else authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "/followers/")
+      authorFollowers = json.loads(
+        requests.get(followersPath, 
+        headers = {'Content-Type': 'application/json', 
+          'Authorization': request.headers['Authorization']}).text
+        ).get("items", None)
+      loggedInUserIsFollower = False
+      for follower in authorFollowers:
+        if str(follower['id']) == str(request.user.id):
+          loggedInUserIsFollower = True
+          
+      if loggedInUserIsFollower or loggedInUserIsAuthor(request, author_uuid):
+        posts = Post.objects.filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC"), 
+          author=author_uuid).order_by('-published')
+      else:
+        posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC").order_by('-published')
     except:  # return an error if something goes wrong
-        return Response(status=status.HTTP_404_NOT_FOUND)
+      return Response(status=status.HTTP_404_NOT_FOUND)
 
     # get the page number and size
     page_number = getPageNumber(request)

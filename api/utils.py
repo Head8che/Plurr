@@ -386,6 +386,7 @@ def _makeRemoteGetRequest(path, node):
       return None
   
 def _createAuthorObjectsFromNode(node):
+  connected_hosts = ["https://cmput404-vgt-socialdist.herokuapp.com/", "https://project-api-404.herokuapp.com/api/"]
   get_authors_path = node.host + "authors/"
   json_response = _makeRemoteGetRequest(get_authors_path, node)
   print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
@@ -405,15 +406,17 @@ def _createAuthorObjectsFromNode(node):
               if validated_data['profileImage'] is None:
                   validated_data['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
               validated_data['password'] = make_password(remote_author_uuid + "pass")
-              Author.objects.create(uuid=remote_author_uuid, **validated_data)
-              print(validated_data)
-              print("object created")
+              if (remote_author_data['host'] in connected_hosts):
+                Author.objects.update_or_create(uuid=remote_author_uuid, **validated_data)
+                print(validated_data)
+                print("object created")
           else:
               print("\nerror author list\n")
               print(validated_data)
     return None
   
 def _createPostObjectsFromNode(node):
+  connected_hosts = ["https://cmput404-vgt-socialdist.herokuapp.com/", "https://project-api-404.herokuapp.com/api/"]
   get_authors_path = node.host + "authors/"
   json_response = _makeRemoteGetRequest(get_authors_path, node)
   # print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
@@ -447,9 +450,10 @@ def _createPostObjectsFromNode(node):
                 validated_data.pop('author', None)
                 validated_data['categories'] = '{}'
                 try:
-                  Post.objects.update_or_create(uuid=remote_post_uuid, 
-                    author=Author.objects.get(uuid=getUUIDFromId(remote_author.get('id'))), **validated_data)
-                  print("object created")
+                  if (remote_author_data['host'] in connected_hosts):
+                    Post.objects.update_or_create(uuid=remote_post_uuid, 
+                      author=Author.objects.get(uuid=getUUIDFromId(remote_author.get('id'))), **validated_data)
+                    print("object created")
                 except:
                   print("post could not be created")
               else:

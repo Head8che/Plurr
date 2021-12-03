@@ -1,7 +1,7 @@
 import React from "react"
 import "./Authors.css"
 import { Image, Card } from "react-bootstrap"
-import RemoteChip from "../components/RemoteChip"
+import PlurrChip from "../components/PlurrChip"
 import {
   getAuthorIdOrRemoteLink,
   isRemoteAuthor,
@@ -61,7 +61,7 @@ function Authors({ authors }) {
                     </a>
                   </div>
                 </div>
-                {isRemoteAuthor(author) && <RemoteChip />}
+                {isRemoteAuthor(author) && <PlurrChip text="remote" />}
               </Card.Body>
             </Card>
           )
