@@ -108,7 +108,7 @@ function PlurrContainer({ children }) {
           </Ratio>
           <h3 className="mb-4 text-center">{loggedInUser?.displayName}</h3>
           <div className="list-group list-group-flush">
-            <Link
+            <div
               className={`plurr-nav-item 
                         ${
                           currentPath === "/stream" ||
@@ -117,12 +117,10 @@ function PlurrContainer({ children }) {
                             : ""
                         }`}
               to="/stream"
-              // onClick={() =>
-              //   window.location.replace("http://localhost:3000/stream")
-              // }
+              onClick={() => window.location.replace(`${host}stream`)}
             >
               Stream
-            </Link>
+            </div>
             <div
               className={`plurr-nav-item 
                         ${
@@ -137,15 +135,31 @@ function PlurrContainer({ children }) {
             <Link
               className={`plurr-nav-item 
                         ${
+                          currentPath ===
+                            `/author/${loggedInUser?.uuid}/followers` ||
+                          currentPath ===
+                            `/author/${loggedInUser?.uuid}/followers/`
+                            ? "active"
+                            : ""
+                        }`}
+              to={`/author/${loggedInUser?.uuid}/followers`}
+            >
+              Followers
+            </Link>
+            <div
+              className={`plurr-nav-item 
+                        ${
                           currentPath === `/author/${loggedInUser?.uuid}` ||
                           currentPath === `/author/${loggedInUser?.uuid}/`
                             ? "active"
                             : ""
                         }`}
-              to={`/author/${loggedInUser?.uuid}`}
+              onClick={() =>
+                window.location.replace(`${host}author/${loggedInUser?.uuid}`)
+              }
             >
               Profile
-            </Link>
+            </div>
             <div
               className="plurr-nav-item"
               onClick={() => {

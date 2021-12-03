@@ -24,8 +24,11 @@ function App() {
             <Route exact path="/authors">
               <PlurrPage page="Authors" />
             </Route>
-            <Route path="/author/:authorId">
+            <Route exact path="/author/:authorId">
               <PlurrPage page="Author" />
+            </Route>
+            <Route exact path="/author/:authorId/followers">
+              <PlurrPage page="Followers" />
             </Route>
             <Route component={NotFound} />
           </Switch>

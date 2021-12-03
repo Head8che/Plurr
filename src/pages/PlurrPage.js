@@ -7,6 +7,7 @@ import Author from "./Author"
 import Authors from "./Authors"
 import Stream from "./Stream"
 import Inbox from "./Inbox"
+import Followers from "./Followers"
 import { getBackEndHostWithSlash } from "../utils"
 
 const allObjectsAreLoaded = (arr) => {
@@ -78,6 +79,19 @@ export default function PlurrPage({ page }) {
           loggedInUser={loggedInUser}
           posts={object}
           liked={secondObject}
+          triggerRerender={triggerRerender}
+        />
+      ),
+    },
+    {
+      name: "Followers",
+      apiRoute: `${host}service/author/${authorId}/`,
+      secondApiRoute: `${host}service/author/${loggedInUser.uuid}/followers/`,
+      component: (
+        <Followers
+          loggedInUser={loggedInUser}
+          author={object}
+          followers={secondObject}
           triggerRerender={triggerRerender}
         />
       ),

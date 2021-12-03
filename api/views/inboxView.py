@@ -116,7 +116,7 @@ def InboxList(request, author_uuid):
     new_data.update({
         'items': paginated_inbox.object_list,
     })
-
+    
     # return the Inbox data
     return Response(new_data, status=status.HTTP_200_OK)
   
