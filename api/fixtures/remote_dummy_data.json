@@ -291,6 +291,16 @@
     }
   },
   {
+    "model": "api.Node",
+    "fields": {
+      "host": "https://project-api-404.herokuapp.com/api/",
+      "username": "T06Username",
+      "password": "T06Username",
+      "remoteUsername": "admin",
+      "remotePassword": "NewConnectionAdmin"
+    }
+  },
+  {
     "model": "api.Like",
     "fields": {
       "type": "Like",
