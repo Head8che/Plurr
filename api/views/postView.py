@@ -17,24 +17,28 @@ def StreamList(request):
   # List all the posts
   if request.method == 'GET':
     try:  # try to get the posts
-      loggedInUserFriendsPath = (request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
-        if request.user.id.endswith("/") 
-        else request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
-      )
+      if "plurr" not in request.META["HTTP_HOST"]:
+        loggedInUserFriendsPath = (request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
+          if request.user.id.endswith("/") 
+          else request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
+        )
 
-      loggedInUserFriends = (json.loads(requests.get(loggedInUserFriendsPath, 
-        headers = {'Content-Type': 'application/json', 
-          'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
-      
-      friendIds = []
+        loggedInUserFriends = (json.loads(requests.get(loggedInUserFriendsPath, 
+          headers = {'Content-Type': 'application/json', 
+            'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
+        
+        friendIds = []
 
-      for loggedInUserFriend in loggedInUserFriends:
-        friendIds.append(str(loggedInUserFriend['id']))
-      
-      publicPosts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
-      otherAuthorsFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id__in=friendIds).order_by('-published')
-      ownFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id=request.user.id).order_by('-published')
-      posts = publicPosts | otherAuthorsFriendPosts | ownFriendPosts
+        for loggedInUserFriend in loggedInUserFriends:
+          friendIds.append(str(loggedInUserFriend['id']))
+        
+        publicPosts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
+        otherAuthorsFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id__in=friendIds).order_by('-published')
+        ownFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id=request.user.id).order_by('-published')
+        posts = publicPosts | otherAuthorsFriendPosts | ownFriendPosts
+      else:
+        posts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
+    
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
 
@@ -108,27 +112,31 @@ def PostList(request, author_uuid):
   # List all the posts
   elif request.method == 'GET':
     try:  # try to get the posts
-      authorFriendsPath = (authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
-        if authorObject.id.endswith("/") 
-        else authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
-      )
+      if "plurr" not in request.META["HTTP_HOST"]:
+        authorFriendsPath = (authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
+          if authorObject.id.endswith("/") 
+          else authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
+        )
 
-      authorFriends = (json.loads(requests.get(authorFriendsPath, 
-        headers = {'Content-Type': 'application/json', 
-          'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
-      
-      friendIds = []
+        authorFriends = (json.loads(requests.get(authorFriendsPath, 
+          headers = {'Content-Type': 'application/json', 
+            'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
+        
+        friendIds = []
 
-      for authorFriend in authorFriends:
-        friendIds.append(str(authorFriend['id']))
-      
-      loggedInUserIsFriend = request.user.id in friendIds
+        for authorFriend in authorFriends:
+          friendIds.append(str(authorFriend['id']))
+        
+        loggedInUserIsFriend = request.user.id in friendIds
 
-      if loggedInUserIsFriend or loggedInUserIsAuthor(request, author_uuid):
-        posts = Post.objects.filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC"), 
-          author=author_uuid).order_by('-published')
+        if loggedInUserIsFriend or loggedInUserIsAuthor(request, author_uuid):
+          posts = Post.objects.filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC"), 
+            author=author_uuid).order_by('-published')
+        else:
+          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC").order_by('-published')
       else:
-        posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC").order_by('-published')
+          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC").order_by('-published')
+
     except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
 
