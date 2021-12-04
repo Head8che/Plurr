@@ -5,6 +5,7 @@ from rest_framework.response import Response
 from api.serializers import AuthorSerializer, PostSerializer
 from .models.authorModel import Author
 from .models.likeModel import Like
+from .models.commentModel import Comment
 from .models.postModel import Post
 from rest_framework import status
 from django.contrib.auth.hashers import make_password
@@ -176,6 +177,20 @@ def likeIsInInbox(like, inbox):
   except:
     return False
 
+def commentIsInInbox(comment, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
+  try:
+    for item in inboxItems:
+      if (
+        item.type == "comment" 
+        and item.author.id == comment.author.id 
+        and item.object == comment.object
+      ):
+        return True
+    return False
+  except:
+    return False
+
 def stripApiAndService(id):
   return id.lower().replace('/service', '').replace('/api', '')
 
@@ -333,6 +348,55 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
     return likeObject
   except:
     return ["the Like object is invalid", status.HTTP_400_BAD_REQUEST]
+
+def validateCommentObject(comment, inbox=None, toPlurr=None):
+  try:
+    commentKeys = ['type', 'author', 'comment', 'contentType', 'published', 'id']
+    commentObject = comment.copy()
+
+    for key in commentObject.keys():
+      if key not in commentKeys:
+        return [key + " is not a valid property of the comment object", 
+          status.HTTP_400_BAD_REQUEST]
+    
+    if len(commentObject.keys()) != len(commentKeys):
+      return ["the Comment object has the wrong number of properties", 
+        status.HTTP_400_BAD_REQUEST]
+    
+    if commentObject['type'].lower() != "comment":
+      return ["the Comment object has an invalid type", 
+        status.HTTP_400_BAD_REQUEST]
+    
+    commentObject['type'] = commentObject['type'].lower()
+    
+    if toPlurr is True:
+      commentObject['author'] = validateAuthorObject(commentObject['author'])
+    else:
+      commentObject['author'] = validateAuthorObject(commentObject['author'], plurrAuthor=True)
+
+    if type(commentObject['author']) is list:
+      return commentObject['author']
+    
+    try:
+      comment.objects.get(author__id=commentObject['author']['id'], object=commentObject['object'])
+      return ["Already commentd.", status.HTTP_409_CONFLICT]
+    except:
+      if (inbox is True) and commentIsInInbox(commentObject, inbox):
+        return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
+      commentObjectWithoutAuthor = commentObject.copy()
+      del commentObjectWithoutAuthor['author']
+      try:  # try to get the specific author
+        authorObjectUUID = getUUIDFromId(commentObject['author']['id'])
+        author = Author.objects.get(uuid=authorObjectUUID)
+        postUUID = getUUIDFromId(commentObject['id'][:commentObject['id'].find('/comments')])
+        post = Post.objects.get(uuid=postUUID)
+        Comment.objects.update_or_create(uuid=getUUIDFromId(commentObject['id']), author=author, post=post, **commentObjectWithoutAuthor)
+      except:  # return an error if something goes wrong
+        print("\n\nComment Object Author does not exist locally!\n\n")
+
+    return commentObject
+  except:
+    return ["the Comment object is invalid", status.HTTP_400_BAD_REQUEST]
 
 def validatePostObject(post, inbox=None, toPlurr=None):
   try:
