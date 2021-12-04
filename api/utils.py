@@ -142,8 +142,11 @@ def postIsInInbox(post, inbox):
   inboxItems = inbox if type(inbox) is list else inbox.items
   try:
     for item in inboxItems:
-      if (item.type == "post" and item.id == post.id):
-        return True
+      try:
+        if (item["type"] == "post" and item["id"] == post["id"]):
+          return True
+      except:
+        pass
     return False
   except:
     return False
@@ -151,30 +154,8 @@ def postIsInInbox(post, inbox):
 def followIsInInbox(follow, inbox):
   inboxItems = inbox if type(inbox) is list else inbox.items
   try:
-    print("\n\n")
-    print("inbox:")
-    print(str(inbox))
-    print("inboxItems:")
-    print(str(inboxItems))
     for item in inboxItems:
       try:
-        print("\n")
-        print("INBOX ITEM COMPARISON\n\nfollow request:")
-        print(str(follow))
-        print("\nitem to compare against follow:")
-        print(str(item))
-        print("\nfollow fields:")
-        print(str(follow["actor"]["id"]))
-        print(str(follow["object"]["id"]))
-        print("\nitem fields:")
-        print(str(item["type"]))
-        print(str(item["actor"]["id"]))
-        print(str(item["object"]["id"]))
-        print("\nequality checks:")
-        print("type == follow: " + str(item["type"] == "follow"))
-        print("actor_id == actor_id: " + str(item["actor"]["id"] == follow["actor"]["id"]))
-        print("object_id == object_id: " + str(item["object"]["id"] == follow["object"]["id"]))
-        print("\n")
         if (
           item["type"] == "follow" 
           and item["actor"]["id"] == follow["actor"]["id"]
@@ -191,12 +172,15 @@ def likeIsInInbox(like, inbox):
   inboxItems = inbox if type(inbox) is list else inbox.items
   try:
     for item in inboxItems:
-      if (
-        item.type == "like" 
-        and item.author.id == like.author.id 
-        and item.object == like.object
-      ):
-        return True
+      try:
+        if (
+          item["type"] == "like" 
+          and item["author"]["id"] == like["author"]["id"] 
+          and item["object"] == like["object"]
+        ):
+          return True
+      except:
+        pass
     return False
   except:
     return False
@@ -205,30 +189,16 @@ def commentIsInInbox(comment, inbox):
   inboxItems = inbox if type(inbox) is list else inbox.items
   try:
     for item in inboxItems:
-      if (
-        item.type == "comment" 
-        and item.author.id == comment.author.id 
-        and item.object == comment.object
-      ):
-        return True
+      try:
+        if (
+          item["type"] == "comment" 
+          and item["author"]["id"] == comment["author"]["id"] 
+          and item["id"] == comment["id"]
+        ):
+          return True
+      except:
+        pass
     return False
-  except:
-    return False
-
-def isInInbox(item, inbox):
-  inboxItems = inbox if type(inbox) is list else inbox.items
-  try:
-    print("\n\n")
-    print("item:")
-    print(str(item))
-    print("inbox:")
-    print(str(inbox))
-    print("inboxItems:")
-    print(str(inboxItems))
-    print("item in inboxItems:")
-    print(str(item) in str(inboxItems))
-    print("\n\n")
-    return str(item) in str(inboxItems)
   except:
     return False
 
@@ -379,7 +349,7 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
       Like.objects.get(author__id=likeObject['author']['id'], object=likeObject['object'])
       return ["Already liked.", status.HTTP_409_CONFLICT]
     except:
-      if (inbox is not None) and isInInbox(likeObject, inbox):
+      if (inbox is not None) and likeIsInInbox(likeObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
       likeObjectWithoutAuthor = likeObject.copy()
       del likeObjectWithoutAuthor['author']
@@ -427,7 +397,7 @@ def validateCommentObject(comment, inbox=None, toPlurr=None):
       comment.objects.get(author__id=commentObject['author']['id'], object=commentObject['object'])
       return ["Already commentd.", status.HTTP_409_CONFLICT]
     except:
-      if (inbox is not None) and isInInbox(commentObject, inbox):
+      if (inbox is not None) and commentIsInInbox(commentObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
       commentObjectWithoutAuthor = commentObject.copy()
       del commentObjectWithoutAuthor['author']
@@ -482,7 +452,7 @@ def validatePostObject(post, inbox=None, toPlurr=None):
       post = Post.objects.get(uuid=postObjectUUID)
       return ["Already posted.", status.HTTP_409_CONFLICT]
     except:
-      if (inbox is not None) and isInInbox(postObject, inbox):
+      if (inbox is not None) and postIsInInbox(postObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
       try:
         postObjectWithoutAuthor = postObject.copy()
