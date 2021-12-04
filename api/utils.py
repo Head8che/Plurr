@@ -297,10 +297,11 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
     
     likeObject['type'] = likeObject['type'].lower()
     
-    if toPlurr is True:
-      likeObject['author'] = validateAuthorObject(likeObject['author'])
-    else:
-      likeObject['author'] = validateAuthorObject(likeObject['author'], plurrAuthor=True)
+    likeObject['author'] = validateAuthorObject(likeObject['author'])
+    # if toPlurr is True:
+    #   likeObject['author'] = validateAuthorObject(likeObject['author'])
+    # else:
+    #   likeObject['author'] = validateAuthorObject(likeObject['author'], plurrAuthor=True)
 
     if type(likeObject['author']) is list:
       return likeObject['author']
