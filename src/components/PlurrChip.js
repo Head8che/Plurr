@@ -1,8 +1,9 @@
 import React from "react"
 
-export default function PlurrChip({ text }) {
+export default function PlurrChip({ text, host = null }) {
   let bgColor
   let textColor
+  let remoteName
 
   switch (text.toLowerCase()) {
     case "remote":
@@ -18,6 +19,20 @@ export default function PlurrChip({ text }) {
       textColor = "#fff"
   }
 
+  if (host !== null) {
+    if (host.includes("cmput404-vgt-socialdist")) {
+      remoteName = "404 VGT"
+    } else if (host.includes("project-api-404")) {
+      remoteName = "Project API"
+    } else if (host.includes("newconnection-server")) {
+      remoteName = "New Connection"
+    } else if (host.includes("cmput-404-social-distribution")) {
+      remoteName = "404 Social"
+    } else {
+      remoteName = null
+    }
+  }
+
   return (
     <div
       style={{
@@ -29,7 +44,9 @@ export default function PlurrChip({ text }) {
         justifyContent: "center",
       }}
     >
-      <span style={{ fontSize: "12px", color: textColor }}>{text}</span>
+      <span style={{ fontSize: "12px", color: textColor }}>
+        {remoteName ? `${text} : ${remoteName}` : text}
+      </span>
     </div>
   )
 }

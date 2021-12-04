@@ -410,6 +410,11 @@ def validatePostObject(post, inbox=None, toPlurr=None):
         'commentsSrc', 'published', 'visibility', 'unlisted']
     postObject = post.copy()
 
+    if postObject.get('url', None) is not None:
+      del postObject['url']
+    if postObject.get('numLikes', None) is not None:
+      del postObject['numLikes']
+    
     for key in postObject.keys():
       if key not in postKeys:
         return [key + " is not a valid property of the Post object", 
@@ -480,11 +485,23 @@ def _makeRemoteGetRequest(path, node):
     except:
       print("\nREQUEST FAILED\n")
       return None
-  
+
+def getNodeServiceHostWithTralingSlash(node):
+  if 'cmput404-vgt-socialdist' in node.host:
+    return 'https://cmput404-vgt-socialdist.herokuapp.com/service/'
+  elif 'project-api-404' in node.host:
+    return 'https://project-api-404.herokuapp.com/api/'
+  elif 'newconnection-server' in node.host:
+    return 'https://newconnection-server.herokuapp.com/api/v1/'
+  elif 'cmput-404-social-distribution' in node.host:
+    return 'https://cmput-404-social-distribution.herokuapp.com/api/'
+  else:
+    return None
+
 def _createAuthorObjectsFromNode(node):
   connected_hosts = ["https://cmput404-vgt-socialdist.herokuapp.com/", "https://project-api-404.herokuapp.com/api/",
     "https://newconnection-server.herokuapp.com/", "https://cmput-404-social-distribution.herokuapp.com/api/"]
-  get_authors_path = node.host + "authors/"
+  get_authors_path = getNodeServiceHostWithTralingSlash(node) + "authors/"
   json_response = _makeRemoteGetRequest(get_authors_path, node)
   print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
   if json_response is not None:
@@ -512,14 +529,15 @@ def _createAuthorObjectsFromNode(node):
                   print(validated_data)
                   print("Author object created.")
           else:
-              print("\nerror author list\n")
+              print("\nauthor error list:\n")
               print(validated_data)
+              print("\n\n")
     return None
   
 def _createPostObjectsFromNode(node):
   connected_hosts = ["https://cmput404-vgt-socialdist.herokuapp.com/", "https://project-api-404.herokuapp.com/api/",
     "https://newconnection-server.herokuapp.com/", "https://cmput-404-social-distribution.herokuapp.com/api/"]
-  get_authors_path = node.host + "authors/"
+  get_authors_path = getNodeServiceHostWithTralingSlash(node) + "authors/"
   json_response = _makeRemoteGetRequest(get_authors_path, node)
   # print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
   if json_response is not None:
@@ -530,7 +548,7 @@ def _createPostObjectsFromNode(node):
         remote_author_uuid = getUUIDFromId(stripApiAndService(remote_author.get('id')))
         remote_author_data = remote_author.copy()
 
-        get_posts_path = node.host + "author/" + remote_author_uuid + "/posts/"
+        get_posts_path = getNodeServiceHostWithTralingSlash(node) + "author/" + remote_author_uuid + "/posts/"
         json_response = _makeRemoteGetRequest(get_posts_path, node)
         print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
         if json_response is not None:
@@ -558,13 +576,15 @@ def _createPostObjectsFromNode(node):
                       validated_data.pop('author', None)
                       validated_data['categories'] = '{}'
                       postAuthor = Author.objects.get(uuid=getUUIDFromId(remote_author.get('id')))
-                      Post.objects.update_or_create(uuid=remote_post_uuid, author=postAuthor, **validated_data)
-                      print("Post object created.")
+                      if (postAuthor['host'] in connected_hosts):
+                        Post.objects.update_or_create(uuid=remote_post_uuid, author=postAuthor, **validated_data)
+                        print("Post object created.")
                 except:
                   print("post could not be created")
               else:
-                print("\nerror list\n")
+                print("\npost error list:")
                 print(validated_data)
+                print("\n\n")
     return None
 
 # def sendPostRequestAsUser(path, username, password, data=None):

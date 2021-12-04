@@ -19,6 +19,7 @@ import {
   getAuthorIdOrRemoteLink,
   getAuthorImgOrDefault,
   isRemoteAuthor,
+  isNotNullOrUndefined,
 } from "../utils"
 
 export default function PostContent({
@@ -141,7 +142,11 @@ export default function PostContent({
                     justifyContent: "end",
                   }}
                 >
-                  <PlurrChip text="remote" />
+                  {isNotNullOrUndefined(author?.host) ? (
+                    <PlurrChip text="remote" host={author.host} />
+                  ) : (
+                    <PlurrChip text="remote" />
+                  )}
                 </Col>
               )}
               {loggedInUserIsAuthor ? (
