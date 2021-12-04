@@ -138,6 +138,80 @@ def getLoggedInAuthorObject(request):
   
   return loggedInAuthorObject
 
+def postIsInInbox(post, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
+  try:
+    for item in inboxItems:
+      if (item.type == "post" and item.id == post.id):
+        return True
+    return False
+  except:
+    return False
+
+def followIsInInbox(follow, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
+  try:
+    print("\n\n")
+    print("inbox:")
+    print(str(inbox))
+    print("inboxItems:")
+    print(str(inboxItems))
+    for item in inboxItems:
+      print("\n")
+      print("INBOX ITEM COMPARISON\n\nfollow request:")
+      print(str(follow))
+      print("\nitem to compare against follow:")
+      print(str(item))
+      print("\nfollow fields:")
+      print(str(follow["actor"]["id"]))
+      print(str(follow["object"]["id"]))
+      print("\nitem fields:")
+      print(str(item["type"]))
+      print(str(item["actor"]["id"]))
+      print(str(item["object"]["id"]))
+      print("\nequality checks:")
+      print("type == follow: " + str(item["type"] == "follow"))
+      print("actor_id == actor_id: " + str(item["actor"]["id"] == follow["actor"]["id"]))
+      print("object_id == object_id: " + str(item["object"]["id"] == follow["object"]["id"]))
+      print("\n")
+      if (
+        item["type"] == "follow" 
+        and item["actor"]["id"] == follow["actor"]["id"]
+        and item["object"]["id"] == follow["object"]["id"]
+      ):
+        return True
+    return False
+  except:
+    return False
+
+def likeIsInInbox(like, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
+  try:
+    for item in inboxItems:
+      if (
+        item.type == "like" 
+        and item.author.id == like.author.id 
+        and item.object == like.object
+      ):
+        return True
+    return False
+  except:
+    return False
+
+def commentIsInInbox(comment, inbox):
+  inboxItems = inbox if type(inbox) is list else inbox.items
+  try:
+    for item in inboxItems:
+      if (
+        item.type == "comment" 
+        and item.author.id == comment.author.id 
+        and item.object == comment.object
+      ):
+        return True
+    return False
+  except:
+    return False
+
 def isInInbox(item, inbox):
   inboxItems = inbox if type(inbox) is list else inbox.items
   try:
@@ -259,7 +333,7 @@ def validateFollowObject(follow, inbox=None, toPlurr=None):
       Author.objects.get(uuid=getUUIDFromId(followObject['object']['id'])).followers.get(uuid=getUUIDFromId(followObject['actor']['id']))
       return ["Already following.", status.HTTP_409_CONFLICT]
     except:
-      if (inbox is not None) and isInInbox(followObject, inbox):
+      if (inbox is not None) and followIsInInbox(followObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
 
     return followObject
