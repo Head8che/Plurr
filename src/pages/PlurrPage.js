@@ -61,11 +61,13 @@ export default function PlurrPage({ page }) {
       name: "Inbox",
       apiRoute: `${host}service/author/${loggedInUser.uuid}/inbox/?size=10000`,
       secondApiRoute: `${host}service/author/${loggedInUser.uuid}/followers/?size=10000`,
+      thirdApiRoute: `${host}service/author/${loggedInUser.uuid}/liked/?size=10000`,
       component: (
         <Inbox
           loggedInUser={loggedInUser}
           inbox={object}
           followers={secondObject}
+          liked={thirdObject}
           triggerRerender={triggerRerender}
         />
       ),

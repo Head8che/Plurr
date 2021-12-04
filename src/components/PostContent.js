@@ -28,6 +28,7 @@ export default function PostContent({
   liked,
   authorHasLiked,
   triggerRerender,
+  inInbox = false,
 }) {
   const [modalShowDelete, setModalShowDelete] = React.useState(false)
   const author = post?.author
@@ -326,7 +327,7 @@ export default function PostContent({
               )}
             </Col>
           </Row>
-          {comments.length === 0 ? null : (
+          {!inInbox && comments.length === 0 ? null : (
             <div
               style={{
                 borderBottom: "1px solid #CCC",
@@ -337,7 +338,8 @@ export default function PostContent({
               }}
             ></div>
           )}
-          {comments &&
+          {!inInbox &&
+            comments &&
             comments?.map((comment) => {
               return (
                 <CommentContent
@@ -349,20 +351,24 @@ export default function PostContent({
                 />
               )
             })}
-          <div
-            style={{
-              borderBottom: "1px solid #CCC",
-              height: "0px",
-              width: "100%",
-              marginTop: "30px",
-            }}
-          ></div>
-          <CreateComment
-            loggedInUser={loggedInUser}
-            author={author}
-            post={post}
-            triggerRerender={triggerRerender}
-          />
+          {!inInbox && (
+            <>
+              <div
+                style={{
+                  borderBottom: "1px solid #CCC",
+                  height: "0px",
+                  width: "100%",
+                  marginTop: "30px",
+                }}
+              ></div>
+              <CreateComment
+                loggedInUser={loggedInUser}
+                author={author}
+                post={post}
+                triggerRerender={triggerRerender}
+              />
+            </>
+          )}
         </Card.Body>
       </Card>
     </div>

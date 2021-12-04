@@ -1,8 +1,10 @@
 import React from "react"
 import { Card, Button } from "react-bootstrap"
+import CommentContent from "../components/CommentContent"
+import PostContent from "../components/PostContent"
 import { getBackEndHostWithSlash, getUUIDFromId } from "../utils"
 
-function Inbox({ loggedInUser, inbox, followers, triggerRerender }) {
+function Inbox({ loggedInUser, inbox, followers, liked, triggerRerender }) {
   const host = getBackEndHostWithSlash()
   const [inboxItemCount, setInboxItemCount] = React.useState(
     inbox.type !== "inbox" ? 0 : inbox?.items?.length
@@ -12,6 +14,8 @@ function Inbox({ loggedInUser, inbox, followers, triggerRerender }) {
   )
 
   if (inbox.type !== "inbox") return null
+
+  const authorLiked = liked?.items?.map((likedObject) => likedObject.object)
 
   const isAlreadyAFollower = (newFollower) => {
     return (
@@ -160,39 +164,25 @@ function Inbox({ loggedInUser, inbox, followers, triggerRerender }) {
           )
         } else if (inboxItem?.type.toLowerCase() === "comment") {
           return (
-            <Card key={count} className="Card my-5">
-              <Card.Body>
-                <Card.Title>
-                  {inboxItem.type.charAt(0).toUpperCase() +
-                    inboxItem.type.slice(1)}
-                </Card.Title>
-                <div>
-                  {inboxItem?.comment !== null &&
-                  inboxItem?.comment !== undefined
-                    ? `${inboxItem.author?.displayName} commented on your post`
-                    : null}
-                </div>
-              </Card.Body>
-            </Card>
+            <CommentContent
+              key={inboxItem.id}
+              loggedInUser={loggedInUser}
+              comment={inboxItem}
+              liked={liked}
+              authorHasLiked={authorLiked?.includes(inboxItem.id)}
+            />
           )
         } else if (inboxItem?.type.toLowerCase() === "post") {
           return (
-            <Card key={count} className="Card my-5">
-              <Card.Body>
-                <Card.Title
-                  className="mt-3"
-                  style={{
-                    fontSize: "1.2rem",
-                    fontWeight: "500",
-                  }}
-                >
-                  {JSON.stringify(inboxItem?.title)}
-                </Card.Title>
-                <Card.Text className="mb-2">
-                  {JSON.stringify(inboxItem?.content)}
-                </Card.Text>
-              </Card.Body>
-            </Card>
+            <PostContent
+              key={inboxItem.id}
+              loggedInUser={loggedInUser}
+              post={inboxItem}
+              liked={liked}
+              authorHasLiked={authorLiked?.includes(inboxItem.id)}
+              triggerRerender={triggerRerender}
+              inInbox={true}
+            />
           )
         } else {
           return null

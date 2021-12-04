@@ -20,7 +20,7 @@ def getPageNumber(request, number=1):
   # return the page number
   return page
 
-def getPageSize(request, size=10):
+def getPageSize(request, size=100):
   try:  # try to get the `size` query parameter
     page_size = int(request.query_params['size'])
   except:  # set `size` to `10` if something goes wrong
