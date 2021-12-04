@@ -447,23 +447,24 @@ def validatePostObject(post, inbox=None, toPlurr=None):
     if type(postObject['author']) is list:
       return postObject['author']
     
+    if (inbox is not None) and postIsInInbox(postObject, inbox):
+      return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
+    
     try:
-      postObjectUUID = getUUIDFromId(postObject['id'])
-      post = Post.objects.get(uuid=postObjectUUID)
-      return ["Already posted.", status.HTTP_409_CONFLICT]
-    except:
-      if (inbox is not None) and postIsInInbox(postObject, inbox):
-        return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
       try:
+        postObjectUUID = getUUIDFromId(postObject['id'])
+        post = Post.objects.get(uuid=postObjectUUID)
+      except:
         postObjectWithoutAuthor = postObject.copy()
         del postObjectWithoutAuthor['author']
         if postObjectWithoutAuthor.get('commentsSrc', None) is not None:
           del postObjectWithoutAuthor['commentsSrc']
         author = Author.objects.get(uuid=getUUIDFromId(postObject['author']['id']))
+        postObjectUUID = getUUIDFromId(postObject['id'])
         Post.objects.update_or_create(uuid=postObjectUUID, author=author, **postObjectWithoutAuthor)
         print("Post object created")
-      except:
-        print("\nPost Object Author does not exist locally!\n\n")
+    except:
+      print("\nPost Object Author does not exist locally!\n\n")
     
     return postObject
   except:
