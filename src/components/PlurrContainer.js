@@ -1,6 +1,5 @@
 import React from "react"
 import { Image, Ratio } from "react-bootstrap"
-import { Link } from "react-router-dom"
 import "./PlurrContainer.css"
 import { useHistory, useLocation } from "react-router-dom"
 import { useUserHandler } from "../UserContext"

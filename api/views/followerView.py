@@ -102,13 +102,13 @@ def FollowerDetail(request, author_uuid, follower_uuid):
     try:  # try to get the specific follower
       follower = Author.objects.get(uuid=author_uuid).followers.get(uuid=follower_uuid)
     except:  # return an error if something goes wrong
-      return Response(status=status.HTTP_404_NOT_FOUND)
+      return Response("false", status=status.HTTP_404_NOT_FOUND)
 
     # get the Author serializer
-    serializer = AuthorSerializer(follower, many=False)
+    # serializer = AuthorSerializer(follower, many=False)
 
     # return the Follower data
-    return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response("true", status=status.HTTP_200_OK)
 
   # Create a specific follower
   elif request.method == 'PUT':
