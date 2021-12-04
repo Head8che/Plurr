@@ -157,29 +157,32 @@ def followIsInInbox(follow, inbox):
     print("inboxItems:")
     print(str(inboxItems))
     for item in inboxItems:
-      print("\n")
-      print("INBOX ITEM COMPARISON\n\nfollow request:")
-      print(str(follow))
-      print("\nitem to compare against follow:")
-      print(str(item))
-      print("\nfollow fields:")
-      print(str(follow["actor"]["id"]))
-      print(str(follow["object"]["id"]))
-      print("\nitem fields:")
-      print(str(item["type"]))
-      print(str(item["actor"]["id"]))
-      print(str(item["object"]["id"]))
-      print("\nequality checks:")
-      print("type == follow: " + str(item["type"] == "follow"))
-      print("actor_id == actor_id: " + str(item["actor"]["id"] == follow["actor"]["id"]))
-      print("object_id == object_id: " + str(item["object"]["id"] == follow["object"]["id"]))
-      print("\n")
-      if (
-        item["type"] == "follow" 
-        and item["actor"]["id"] == follow["actor"]["id"]
-        and item["object"]["id"] == follow["object"]["id"]
-      ):
-        return True
+      try:
+        print("\n")
+        print("INBOX ITEM COMPARISON\n\nfollow request:")
+        print(str(follow))
+        print("\nitem to compare against follow:")
+        print(str(item))
+        print("\nfollow fields:")
+        print(str(follow["actor"]["id"]))
+        print(str(follow["object"]["id"]))
+        print("\nitem fields:")
+        print(str(item["type"]))
+        print(str(item["actor"]["id"]))
+        print(str(item["object"]["id"]))
+        print("\nequality checks:")
+        print("type == follow: " + str(item["type"] == "follow"))
+        print("actor_id == actor_id: " + str(item["actor"]["id"] == follow["actor"]["id"]))
+        print("object_id == object_id: " + str(item["object"]["id"] == follow["object"]["id"]))
+        print("\n")
+        if (
+          item["type"] == "follow" 
+          and item["actor"]["id"] == follow["actor"]["id"]
+          and item["object"]["id"] == follow["object"]["id"]
+        ):
+          return True
+      except:
+        pass
     return False
   except:
     return False
