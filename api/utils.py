@@ -309,9 +309,6 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
     if type(likeObject['object']) is list:
       return likeObject['object']
     
-    if likeObject['author']['id'] == likeObject['object']['id']:
-      return ["Self-liking is prohibited.", status.HTTP_409_CONFLICT]
-    
     try:
       Like.objects.get(author=likeObject['author'], object=likeObject['object'])
       return ["Already liked.", status.HTTP_409_CONFLICT]
