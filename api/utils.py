@@ -234,10 +234,13 @@ def validateAuthorObject(author, plurrAuthor=None):
       authorObject['url'] = authorObject['url'].lower().replace('/service', '').replace('/api', '')
 
     try:  # try to get the specific author
-        authorObjectUUID = getUUIDFromId(authorObject['id'])
-        author = Author.objects.get(uuid=authorObjectUUID)
+      authorObjectUUID = getUUIDFromId(authorObject['id'])
+      author = Author.objects.get(uuid=authorObjectUUID)
     except:  # return an error if something goes wrong
-        Author.objects.update_or_create(uuid=authorObjectUUID, username=authorObjectUUID, password=authorObjectUUID, **authorObject)
+      if authorObject['profileImage'] is None:
+        authorObject['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
+      Author.objects.update_or_create(uuid=authorObjectUUID, username=authorObjectUUID, password=authorObjectUUID, **authorObject)
+      print("Author object created")
     
     return authorObject
   except:
@@ -342,6 +345,7 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
         authorObjectUUID = getUUIDFromId(likeObject['author']['id'])
         author = Author.objects.get(uuid=authorObjectUUID)
         Like.objects.update_or_create(author=author, **likeObjectWithoutAuthor)
+        print("Like object created")
       except:  # return an error if something goes wrong
         print("\n\nLike Object Author does not exist locally!\n\n")
 
@@ -391,6 +395,7 @@ def validateCommentObject(comment, inbox=None, toPlurr=None):
         postUUID = getUUIDFromId(commentObject['id'][:commentObject['id'].find('/comments')])
         post = Post.objects.get(uuid=postUUID)
         Comment.objects.update_or_create(uuid=getUUIDFromId(commentObject['id']), author=author, post=post, **commentObjectWithoutAuthor)
+        print("Comment object created")
       except:  # return an error if something goes wrong
         print("\n\nComment Object Author does not exist locally!\n\n")
 
@@ -438,6 +443,7 @@ def validatePostObject(post, inbox=None, toPlurr=None):
           del postObjectWithoutAuthor['commentsSrc']
         author = Author.objects.get(uuid=getUUIDFromId(postObject['author']['id']))
         Post.objects.update_or_create(uuid=postObjectUUID, author=author, **postObjectWithoutAuthor)
+        print("Post object created")
       except:
         print("\nPost Object Author does not exist locally!\n\n")
     
@@ -476,7 +482,8 @@ def _makeRemoteGetRequest(path, node):
       return None
   
 def _createAuthorObjectsFromNode(node):
-  connected_hosts = ["https://cmput404-vgt-socialdist.herokuapp.com/", "https://project-api-404.herokuapp.com/api/"]
+  connected_hosts = ["https://cmput404-vgt-socialdist.herokuapp.com/", "https://project-api-404.herokuapp.com/api/",
+    "https://newconnection-server.herokuapp.com/", "https://cmput-404-social-distribution.herokuapp.com/api/"]
   get_authors_path = node.host + "authors/"
   json_response = _makeRemoteGetRequest(get_authors_path, node)
   print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
@@ -497,16 +504,21 @@ def _createAuthorObjectsFromNode(node):
                   validated_data['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
               validated_data['password'] = make_password(remote_author_uuid + "pass")
               if (remote_author_data['host'] in connected_hosts):
-                Author.objects.update_or_create(uuid=remote_author_uuid, **validated_data)
-                print(validated_data)
-                print("object created")
+                try:  # try to get the specific author
+                  Author.objects.get(uuid=remote_author_uuid)
+                  print("Author object exists.")
+                except:  # return an error if something goes wrong
+                  Author.objects.update_or_create(uuid=remote_author_uuid, **validated_data)
+                  print(validated_data)
+                  print("Author object created.")
           else:
               print("\nerror author list\n")
               print(validated_data)
     return None
   
 def _createPostObjectsFromNode(node):
-  connected_hosts = ["https://cmput404-vgt-socialdist.herokuapp.com/", "https://project-api-404.herokuapp.com/api/"]
+  connected_hosts = ["https://cmput404-vgt-socialdist.herokuapp.com/", "https://project-api-404.herokuapp.com/api/",
+    "https://newconnection-server.herokuapp.com/", "https://cmput-404-social-distribution.herokuapp.com/api/"]
   get_authors_path = node.host + "authors/"
   json_response = _makeRemoteGetRequest(get_authors_path, node)
   # print("\n\nJSON RESPONSE\n" + str(json_response) + "\n\n")
@@ -537,13 +549,17 @@ def _createPostObjectsFromNode(node):
               
 
               if type(validated_data) is not list:
-                validated_data.pop('author', None)
-                validated_data['categories'] = '{}'
                 try:
                   if (remote_author_data['host'] in connected_hosts):
-                    Post.objects.update_or_create(uuid=remote_post_uuid, 
-                      author=Author.objects.get(uuid=getUUIDFromId(remote_author.get('id'))), **validated_data)
-                    print("object created")
+                    try:
+                      Post.objects.get(uuid=remote_post_uuid)
+                      print("Post object exists.")
+                    except:
+                      validated_data.pop('author', None)
+                      validated_data['categories'] = '{}'
+                      postAuthor = Author.objects.get(uuid=getUUIDFromId(remote_author.get('id')))
+                      Post.objects.update_or_create(uuid=remote_post_uuid, author=postAuthor, **validated_data)
+                      print("Post object created.")
                 except:
                   print("post could not be created")
               else:

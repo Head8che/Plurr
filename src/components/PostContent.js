@@ -353,6 +353,7 @@ export default function PostContent({
             }}
           ></div>
           <CreateComment
+            loggedInUser={loggedInUser}
             author={author}
             post={post}
             triggerRerender={triggerRerender}

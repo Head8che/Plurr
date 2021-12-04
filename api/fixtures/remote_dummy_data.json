@@ -293,7 +293,7 @@
   {
     "model": "api.Node",
     "fields": {
-      "host": "https://project-api-404.herokuapp.com/api/",
+      "host": "https://newconnection-server.herokuapp.com/",
       "username": "T06Username",
       "password": "T06Username",
       "remoteUsername": "admin",
