@@ -141,6 +141,16 @@ def getLoggedInAuthorObject(request):
 def isInInbox(item, inbox):
   inboxItems = inbox if type(inbox) is list else inbox.items
   try:
+    print("\n\n")
+    print("item:")
+    print(str(item))
+    print("inbox:")
+    print(str(inbox))
+    print("inboxItems:")
+    print(str(inboxItems))
+    print("item in inboxItems:")
+    print(str(item) in str(inboxItems))
+    print("\n\n")
     return str(item) in str(inboxItems)
   except:
     return False
