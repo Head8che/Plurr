@@ -138,56 +138,10 @@ def getLoggedInAuthorObject(request):
   
   return loggedInAuthorObject
 
-
-def postIsInInbox(post, inbox):
+def isInInbox(item, inbox):
   inboxItems = inbox if type(inbox) is list else inbox.items
   try:
-    for item in inboxItems:
-      if (item.type == "post" and item.id == post.id):
-        return True
-    return False
-  except:
-    return False
-
-def followIsInInbox(follow, inbox):
-  inboxItems = inbox if type(inbox) is list else inbox.items
-  try:
-    for item in inboxItems:
-      if (
-        item["type"] == "follow" 
-        and item["actor"]["id"] == follow["actor"]["id"]
-        and item["object"]["id"] == follow["object"]["id"]
-      ):
-        return True
-    return False
-  except:
-    return False
-
-def likeIsInInbox(like, inbox):
-  inboxItems = inbox if type(inbox) is list else inbox.items
-  try:
-    for item in inboxItems:
-      if (
-        item.type == "like" 
-        and item.author.id == like.author.id 
-        and item.object == like.object
-      ):
-        return True
-    return False
-  except:
-    return False
-
-def commentIsInInbox(comment, inbox):
-  inboxItems = inbox if type(inbox) is list else inbox.items
-  try:
-    for item in inboxItems:
-      if (
-        item.type == "comment" 
-        and item.author.id == comment.author.id 
-        and item.object == comment.object
-      ):
-        return True
-    return False
+    return str(item) in str(inboxItems)
   except:
     return False
 
@@ -239,7 +193,8 @@ def validateAuthorObject(author, plurrAuthor=None):
     except:  # return an error if something goes wrong
       if authorObject['profileImage'] is None:
         authorObject['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
-      Author.objects.update_or_create(uuid=authorObjectUUID, username=authorObjectUUID, password=authorObjectUUID, **authorObject)
+      Author.objects.update_or_create(uuid=authorObjectUUID, username=authorObjectUUID, 
+        password=make_password(str(authorObjectUUID) + "pass"), **authorObject)
       print("Author object created")
     
     return authorObject
@@ -294,7 +249,7 @@ def validateFollowObject(follow, inbox=None, toPlurr=None):
       Author.objects.get(uuid=getUUIDFromId(followObject['object']['id'])).followers.get(uuid=getUUIDFromId(followObject['actor']['id']))
       return ["Already following.", status.HTTP_409_CONFLICT]
     except:
-      if (inbox is True) and followIsInInbox(followObject, inbox):
+      if (inbox is not None) and isInInbox(followObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
 
     return followObject
@@ -337,7 +292,7 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
       Like.objects.get(author__id=likeObject['author']['id'], object=likeObject['object'])
       return ["Already liked.", status.HTTP_409_CONFLICT]
     except:
-      if (inbox is True) and likeIsInInbox(likeObject, inbox):
+      if (inbox is not None) and isInInbox(likeObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
       likeObjectWithoutAuthor = likeObject.copy()
       del likeObjectWithoutAuthor['author']
@@ -385,7 +340,7 @@ def validateCommentObject(comment, inbox=None, toPlurr=None):
       comment.objects.get(author__id=commentObject['author']['id'], object=commentObject['object'])
       return ["Already commentd.", status.HTTP_409_CONFLICT]
     except:
-      if (inbox is True) and commentIsInInbox(commentObject, inbox):
+      if (inbox is not None) and isInInbox(commentObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
       commentObjectWithoutAuthor = commentObject.copy()
       del commentObjectWithoutAuthor['author']
@@ -394,7 +349,8 @@ def validateCommentObject(comment, inbox=None, toPlurr=None):
         author = Author.objects.get(uuid=authorObjectUUID)
         postUUID = getUUIDFromId(commentObject['id'][:commentObject['id'].find('/comments')])
         post = Post.objects.get(uuid=postUUID)
-        Comment.objects.update_or_create(uuid=getUUIDFromId(commentObject['id']), author=author, post=post, **commentObjectWithoutAuthor)
+        Comment.objects.update_or_create(uuid=getUUIDFromId(commentObject['id']), 
+          author=author, post=post, **commentObjectWithoutAuthor)
         print("Comment object created")
       except:  # return an error if something goes wrong
         print("\n\nComment Object Author does not exist locally!\n\n")
@@ -439,7 +395,7 @@ def validatePostObject(post, inbox=None, toPlurr=None):
       post = Post.objects.get(uuid=postObjectUUID)
       return ["Already posted.", status.HTTP_409_CONFLICT]
     except:
-      if (inbox is True) and postIsInInbox(postObject, inbox):
+      if (inbox is not None) and isInInbox(postObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
       try:
         postObjectWithoutAuthor = postObject.copy()
@@ -519,7 +475,7 @@ def _createAuthorObjectsFromNode(node):
               validated_data['username'] = remote_author_uuid
               if validated_data['profileImage'] is None:
                   validated_data['profileImage'] = 'https://180dc.org/wp-content/uploads/2016/08/default-profile.png'
-              validated_data['password'] = make_password(remote_author_uuid + "pass")
+              validated_data['password'] = make_password(str(remote_author_uuid) + "pass")
               if (remote_author_data['host'] in connected_hosts):
                 try:  # try to get the specific author
                   Author.objects.get(uuid=remote_author_uuid)
