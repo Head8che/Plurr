@@ -301,6 +301,16 @@
     }
   },
   {
+    "model": "api.Node",
+    "fields": {
+      "host": "https://cmput-404-social-distribution.herokuapp.com/api/",
+      "username": "T07Username",
+      "password": "T07Username",
+      "remoteUsername": "team26",
+      "remotePassword": "cmput404"
+    }
+  },
+  {
     "model": "api.Like",
     "fields": {
       "type": "Like",

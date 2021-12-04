@@ -218,6 +218,12 @@ def validateAuthorObject(author, plurrAuthor=None):
       authorObject['id'] = authorObject['id'].lower().replace('/service', '').replace('/api', '')
       authorObject['url'] = authorObject['url'].lower().replace('/service', '').replace('/api', '')
 
+    try:  # try to get the specific author
+        authorObjectUUID = getUUIDFromId(authorObject['id'])
+        author = Author.objects.get(uuid=authorObjectUUID)
+    except:  # return an error if something goes wrong
+        Author.objects.update_or_create(uuid=authorObjectUUID, username=authorObjectUUID, password=authorObjectUUID, **authorObject)
+    
     return authorObject
   except:
     return ["the Plurr Author object is invalid" if plurrAuthor is True else "the Author object is invalid", 
@@ -282,6 +288,10 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
     likeKeys = ['context', 'summary', 'type', 'author', 'object']
     likeObject = like.copy()
 
+    if likeObject.get('@context', None) is not None:
+      likeObject['context'] = likeObject['@context']
+      del likeObject['@context']
+
     for key in likeObject.keys():
       if key not in likeKeys:
         return [key + " is not a valid property of the Like object", 
@@ -297,24 +307,28 @@ def validateLikeObject(like, inbox=None, toPlurr=None):
     
     likeObject['type'] = likeObject['type'].lower()
     
-    likeObject['author'] = validateAuthorObject(likeObject['author'])
-    # if toPlurr is True:
-    #   likeObject['author'] = validateAuthorObject(likeObject['author'])
-    # else:
-    #   likeObject['author'] = validateAuthorObject(likeObject['author'], plurrAuthor=True)
+    if toPlurr is True:
+      likeObject['author'] = validateAuthorObject(likeObject['author'])
+    else:
+      likeObject['author'] = validateAuthorObject(likeObject['author'], plurrAuthor=True)
 
     if type(likeObject['author']) is list:
       return likeObject['author']
     
-    if type(likeObject['object']) is list:
-      return likeObject['object']
-    
     try:
-      Like.objects.get(author=likeObject['author'], object=likeObject['object'])
+      Like.objects.get(author__id=likeObject['author']['id'], object=likeObject['object'])
       return ["Already liked.", status.HTTP_409_CONFLICT]
     except:
       if (inbox is True) and likeIsInInbox(likeObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
+      likeObjectWithoutAuthor = likeObject.copy()
+      del likeObjectWithoutAuthor['author']
+      try:  # try to get the specific author
+        authorObjectUUID = getUUIDFromId(likeObject['author']['id'])
+        author = Author.objects.get(uuid=authorObjectUUID)
+        Like.objects.update_or_create(author=author, **likeObjectWithoutAuthor)
+      except:  # return an error if something goes wrong
+        print("\n\nLike Object Author does not exist locally!\n\n")
 
     return likeObject
   except:
@@ -353,6 +367,18 @@ def validatePostObject(post, inbox=None, toPlurr=None):
       if (inbox is True) and postIsInInbox(postObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
 
+    try:  # try to get the specific post
+      postObjectUUID = getUUIDFromId(postObject['id'])
+      post = Post.objects.get(uuid=postObjectUUID)
+    except:  # return an error if something goes wrong
+      try:
+        postObjectWithoutAuthor = postObject.copy()
+        del postObjectWithoutAuthor['author']
+        author = Author.objects.get(id=postObject['author']['id'])
+        Post.objects.update_or_create(uuid=postObjectUUID, author=author, **postObjectWithoutAuthor)
+      except:
+        print("\n\Post Object Author does not exist locally!\n\n")
+    
     return postObject
   except:
     return ["the Post object is invalid", status.HTTP_400_BAD_REQUEST]

@@ -10,9 +10,9 @@ def AuthorList(request):
   # List all the authors
   if request.method == 'GET':
     try:  # try to get the authors
-        print(request.headers)
-        print(request.META.get("HTTP_REFERER"))
-        print("\n\n")
+        # print(request.headers)
+        # print(request.META.get("HTTP_REFERER"))
+        # print("\n\n")
         authors = (Author.objects.all().order_by('id') 
           if ((request.META.get("HTTP_REFERER") == "http://localhost:3000/") 
             or (request.META.get("HTTP_REFERER") == "http://127.0.0.1:3000/"))
