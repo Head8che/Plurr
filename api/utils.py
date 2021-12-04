@@ -406,9 +406,18 @@ def validateCommentObject(comment, inbox=None, toPlurr=None):
         author = Author.objects.get(uuid=authorObjectUUID)
         postUUID = getUUIDFromId(commentObject['id'][:commentObject['id'].find('/comments')])
         post = Post.objects.get(uuid=postUUID)
-        Comment.objects.update_or_create(uuid=getUUIDFromId(commentObject['id']), 
-          author=author, post=post, **commentObjectWithoutAuthor)
-        print("Comment object created")
+        commentHasUUID = len(commentObject['id'].rstrip('/').split('/comments')[-1].lstrip('/')) > 0
+        if commentHasUUID:
+          try:
+            Comment.objects.get(uuid=getUUIDFromId(commentObject['id']))
+          except:
+            Comment.objects.update_or_create(uuid=getUUIDFromId(commentObject['id']), 
+              author=author, post=post, **commentObjectWithoutAuthor)
+            print("Comment object created")
+        else:
+          Comment.objects.update_or_create(author=author, 
+            post=post, **commentObjectWithoutAuthor)
+          print("Comment object created")
       except:  # return an error if something goes wrong
         print("\n\nComment Object Author does not exist locally!\n\n")
 
