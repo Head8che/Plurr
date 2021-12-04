@@ -158,6 +158,23 @@ function Inbox({ loggedInUser, inbox, followers, triggerRerender }) {
               </Card.Body>
             </Card>
           )
+        } else if (inboxItem?.type.toLowerCase() === "comment") {
+          return (
+            <Card key={count} className="Card my-5">
+              <Card.Body>
+                <Card.Title>
+                  {inboxItem.type.charAt(0).toUpperCase() +
+                    inboxItem.type.slice(1)}
+                </Card.Title>
+                <div>
+                  {inboxItem?.comment !== null &&
+                  inboxItem?.comment !== undefined
+                    ? `${inboxItem.author?.displayName} commented on your post`
+                    : null}
+                </div>
+              </Card.Body>
+            </Card>
+          )
         } else if (inboxItem?.type.toLowerCase() === "post") {
           return (
             <Card key={count} className="Card my-5">
