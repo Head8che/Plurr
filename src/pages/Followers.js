@@ -3,6 +3,7 @@ import { Image, Button, Card } from "react-bootstrap"
 import {
   getBackEndHostWithSlash,
   getUUIDFromId,
+  isNotNullOrUndefined,
   withoutTrailingSlash,
 } from "../utils"
 
@@ -14,9 +15,9 @@ export default function Followers({
   triggerRerender,
 }) {
   const host = getBackEndHostWithSlash()
-  const friendIds = friends?.items?.map((friend) =>
-    withoutTrailingSlash(friend?.id)
-  )
+  const friendIds = isNotNullOrUndefined(friends)
+    ? friends?.items?.map((friend) => withoutTrailingSlash(friend?.id))
+    : []
 
   const isFriend = (follower) => {
     return friendIds?.includes(withoutTrailingSlash(follower?.id))

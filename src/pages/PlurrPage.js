@@ -87,7 +87,9 @@ export default function PlurrPage({ page }) {
       name: "Followers",
       apiRoute: `${host}service/author/${authorId}/`,
       secondApiRoute: `${host}service/author/${loggedInUser.uuid}/followers/`,
-      thirdApiRoute: `${host}service/author/${loggedInUser.uuid}/friends/`,
+      thirdApiRoute: host.includes("plurr")
+        ? null
+        : `${host}service/author/${loggedInUser.uuid}/friends/`,
       component: (
         <Followers
           loggedInUser={loggedInUser}
