@@ -269,11 +269,11 @@ def validateFollowObject(follow, inbox=None, toPlurr=None):
     if type(followObject['object']) is list:
       return followObject['object']
     
-    if followObject['actor']['id'] == followObject['object']['id']:
+    if getUUIDFromId(followObject['actor']['id']) == getUUIDFromId(followObject['object']['id']):
       return ["Self-following is prohibited.", status.HTTP_409_CONFLICT]
     
     try:
-      Author.objects.get(id=followObject['object']['id']).followers.get(id=followObject['actor']['id'])
+      Author.objects.get(uuid=getUUIDFromId(followObject['object']['id'])).followers.get(uuid=getUUIDFromId(followObject['actor']['id']))
       return ["Already following.", status.HTTP_409_CONFLICT]
     except:
       if (inbox is True) and followIsInInbox(followObject, inbox):
@@ -361,23 +361,21 @@ def validatePostObject(post, inbox=None, toPlurr=None):
       return postObject['author']
     
     try:
-      Post.objects.get(id=postObject['id'])
+      postObjectUUID = getUUIDFromId(postObject['id'])
+      post = Post.objects.get(uuid=postObjectUUID)
       return ["Already posted.", status.HTTP_409_CONFLICT]
     except:
       if (inbox is True) and postIsInInbox(postObject, inbox):
         return ["Inbox item already exists.", status.HTTP_409_CONFLICT]
-
-    try:  # try to get the specific post
-      postObjectUUID = getUUIDFromId(postObject['id'])
-      post = Post.objects.get(uuid=postObjectUUID)
-    except:  # return an error if something goes wrong
       try:
         postObjectWithoutAuthor = postObject.copy()
         del postObjectWithoutAuthor['author']
-        author = Author.objects.get(id=postObject['author']['id'])
+        if postObjectWithoutAuthor.get('commentsSrc', None) is not None:
+          del postObjectWithoutAuthor['commentsSrc']
+        author = Author.objects.get(uuid=getUUIDFromId(postObject['author']['id']))
         Post.objects.update_or_create(uuid=postObjectUUID, author=author, **postObjectWithoutAuthor)
       except:
-        print("\n\Post Object Author does not exist locally!\n\n")
+        print("\nPost Object Author does not exist locally!\n\n")
     
     return postObject
   except:
