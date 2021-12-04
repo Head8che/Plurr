@@ -5,6 +5,7 @@ import PostContent from "../components/PostContent"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import { faGithub } from "@fortawesome/free-brands-svg-icons"
 import CreatePost from "../components/CreatePost"
+import GithubModal from "../components/GithubModal"
 import {
   getBackEndHostWithSlash,
   getUUIDFromId,
@@ -35,6 +36,7 @@ export default function Author({
   )
   const [modalShowEdit, setModalShowEdit] = React.useState(false)
   const authorLiked = liked?.items?.map((likedObject) => likedObject.object)
+  const [modalShowGithub, setModalShowGithub] = React.useState(false)
 
   const host = getBackEndHostWithSlash()
 
@@ -111,7 +113,24 @@ export default function Author({
           >
             {author.displayName}
           </div>
-          <a href={author.github}>
+          <FontAwesomeIcon
+            icon={faGithub}
+            style={{
+              width: "23px",
+              height: "23px",
+              marginTop: "0px",
+              color: "#777",
+            }}
+            onClick={() => setModalShowGithub(true)}
+          />
+          <GithubModal
+            loggedInUser={loggedInUser}
+            show={modalShowGithub}
+            onHide={() => setModalShowGithub(false)}
+            closeModal={() => setModalShowGithub(false)}
+            triggerRerender={triggerRerender}
+          />
+          {/* <a href={author.github}>
             <FontAwesomeIcon
               icon={faGithub}
               style={{
@@ -121,7 +140,7 @@ export default function Author({
                 color: "#777",
               }}
             />
-          </a>
+          </a> */}
         </Col>
         <Col
           xs={6}
