@@ -9,7 +9,7 @@ from ..models.postModel import Post
 from rest_framework import status
 from ..serializers import PostSerializer
 from django.db.models import Q
-from ..utils import getPageNumber, getPageSize, getPaginatedObject, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, getUUIDFromId, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
 
 
 @api_view(['GET'])
@@ -17,20 +17,16 @@ def StreamList(request):
   # List all the posts
   if request.method == 'GET':
     try:  # try to get the posts
-      if "plurr" not in request.META["HTTP_HOST"]:
-        loggedInUserFriendsPath = (request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
-          if request.user.id.endswith("/") 
-          else request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
-        )
-
-        loggedInUserFriends = (json.loads(requests.get(loggedInUserFriendsPath, 
-          headers = {'Content-Type': 'application/json', 
-            'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
-        
+      if request.user.id is not None:
+        author = Author.objects.get(uuid=getUUIDFromId(request.user.id))
+        followers = author.followers.all()
         friendIds = []
-
-        for loggedInUserFriend in loggedInUserFriends:
-          friendIds.append(str(loggedInUserFriend['id']))
+        
+        for follower in followers:
+          followerFollowers = Author.objects.get(uuid=follower.uuid).followers.all()
+          for followerFollower in followerFollowers:
+            if str(followerFollower.id) == str(author.id):
+              friendIds.append(follower.id)
         
         publicPosts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
         otherAuthorsFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id__in=friendIds).order_by('-published')
@@ -112,20 +108,16 @@ def PostList(request, author_uuid):
   # List all the posts
   elif request.method == 'GET':
     try:  # try to get the posts
-      if "plurr" not in request.META["HTTP_HOST"]:
-        authorFriendsPath = (authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
-          if authorObject.id.endswith("/") 
-          else authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
-        )
-
-        authorFriends = (json.loads(requests.get(authorFriendsPath, 
-          headers = {'Content-Type': 'application/json', 
-            'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
-        
+      if request.user.id is not None:
+        author = Author.objects.get(uuid=getUUIDFromId(authorObject.id))
+        followers = author.followers.all()
         friendIds = []
-
-        for authorFriend in authorFriends:
-          friendIds.append(str(authorFriend['id']))
+        
+        for follower in followers:
+          followerFollowers = Author.objects.get(uuid=follower.uuid).followers.all()
+          for followerFollower in followerFollowers:
+            if str(followerFollower.id) == str(author.id):
+              friendIds.append(follower.id)
         
         loggedInUserIsFriend = request.user.id in friendIds
 

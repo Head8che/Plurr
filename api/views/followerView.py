@@ -14,24 +14,20 @@ def FriendList(request, author_uuid):
   # List all the followers
   if request.method == 'GET':
     try:  # try to get the followers
-        followers = Author.objects.get(uuid=author_uuid).followers.all()
-        friendIds = []
-        
-        for follower in followers:
-          followerFollowersPath = (follower.id.replace("/author", "/service/author").replace("3000", "8000") + "followers/" + author_uuid + "/"
-            if follower.id.endswith("/") 
-            else follower.id.replace("/author", "/service/author").replace("3000", "8000") + "/followers/" + author_uuid + "/")
-            
-          isFriend = requests.get(followerFollowersPath, 
-            headers = {'Content-Type': 'application/json', 
-              'Authorization': request.headers.get('Authorization', None)}).status_code == 200
-          
-          if (isFriend):
+      author = Author.objects.get(uuid=author_uuid)
+      followers = author.followers.all()
+      friendIds = []
+      
+      for follower in followers:
+        followerFollowers = Author.objects.get(uuid=follower.uuid).followers.all()
+        for followerFollower in followerFollowers:
+          if str(followerFollower.id) == str(author.id):
             friendIds.append(follower.id)
-            
-        friends = Author.objects.filter(id__in=friendIds).order_by('id')
+      
+      friends = Author.objects.filter(id__in=friendIds).order_by('id')
+
     except:  # return an error if something goes wrong
-        return Response(status=status.HTTP_400_BAD_REQUEST)
+      return Response(status=status.HTTP_400_BAD_REQUEST)
     
     # get the page number and size
     page_number = getPageNumber(request)

@@ -12,11 +12,12 @@ def AuthorList(request):
     try:  # try to get the authors
         # print(request.headers)
         # print(request.META.get("HTTP_REFERER"))
+        # print(request.META.get("HTTP_HOST"))
         # print("\n\n")
         authors = (Author.objects.all().order_by('id') 
-          if ((request.META.get("HTTP_REFERER") == "http://localhost:3000/") 
-            or (request.META.get("HTTP_REFERER") == "http://127.0.0.1:3000/"))
-            or (request.META.get("HTTP_REFERER") == "https://plurr.herokuapp.com/")
+          if ((str(request.META.get("HTTP_HOST")) == "localhost:8000") 
+            or (str(request.META.get("HTTP_HOST")) == "127.0.0.1:8000"))
+            or (str(request.META.get("HTTP_HOST")) == "plurr.herokuapp.com")
           else Author.objects.filter(host="https://plurr.herokuapp.com/").order_by('id'))
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_400_BAD_REQUEST)

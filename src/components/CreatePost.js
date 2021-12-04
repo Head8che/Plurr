@@ -361,7 +361,9 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                   }}
                   onClick={() => {
                     setDisableSubmit(true)
-                    setValue("content", "value")
+                    if (postImageSrc !== null) {
+                      setValue("content", "value")
+                    }
                   }}
                 >
                   Create Post
