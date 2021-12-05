@@ -98,6 +98,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
           reset()
           setPostImageSrc(null)
           setPostContentType("text/plain")
+          setPostMarkdownContent("")
           triggerRerender()
           setDisableSubmit(false)
 
