@@ -130,17 +130,6 @@ export default function Author({
             closeModal={() => setModalShowGithub(false)}
             triggerRerender={triggerRerender}
           />
-          {/* <a href={author.github}>
-            <FontAwesomeIcon
-              icon={faGithub}
-              style={{
-                width: "23px",
-                height: "23px",
-                marginTop: "0px",
-                color: "#777",
-              }}
-            />
-          </a> */}
         </Col>
         <Col
           xs={6}
