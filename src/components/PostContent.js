@@ -7,11 +7,9 @@ import { Row, Col, Image, Button, Card } from "react-bootstrap"
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome"
 import DeletePostModal from "../components/DeletePostModal"
 import PlurrChip from "../components/PlurrChip"
-// import EditPostModal from '../components/EditPostModal';
+import ReactCommonmark from "react-commonmark"
 import { faHeart } from "@fortawesome/free-solid-svg-icons"
-// import { faComment } from '@fortawesome/free-solid-svg-icons'
 import { RiShareLine } from "react-icons/ri"
-// import { RiShareFill } from 'react-icons/ri'
 import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons"
 import {
   getBackEndHostWithSlash,
@@ -41,6 +39,7 @@ export default function PostContent({
   const [shouldSubmitForm, setShouldSubmitForm] = React.useState(true)
   const [comments, setComments] = React.useState([])
   const authorLiked = liked?.items?.map((likedObject) => likedObject.object)
+  let postHasMarkdownContentType = post?.contentType === "text/markdown"
   let postHasImageContentType =
     post?.contentType === "image/png;base64" ||
     post?.contentType === "image/jpeg;base64"
@@ -262,6 +261,10 @@ export default function PostContent({
                       maxHeight: "500px",
                     }}
                   />
+                </div>
+              ) : postHasMarkdownContentType ? (
+                <div className="mb-2">
+                  <ReactCommonmark source={post.content} escapeHtml={true} />
                 </div>
               ) : (
                 <Card.Text className="mb-2">{post.content}</Card.Text>
