@@ -1,6 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from api.models.authorModel import Author
+from api.models.nodeModel import Node
 from ..models.likeModel import Like
 from ..models.commentModel import Comment
 from ..models.postModel import Post
@@ -12,9 +14,10 @@ from ..serializers import LikeSerializer
 @api_view(['POST', 'GET'])
 def LikeListPost(request, author_uuid, post_uuid):
   try:  # try to get the specific author and post
-      postObject = Post.objects.get(author=author_uuid, uuid=post_uuid)
+    authorObject = Author.objects.get(uuid=author_uuid)
+    postObject = Post.objects.get(author=author_uuid, uuid=post_uuid)
   except:  # return an error if something goes wrong
-      return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
   # Create a new like
   if request.method == 'POST':
@@ -36,7 +39,12 @@ def LikeListPost(request, author_uuid, post_uuid):
         summary=(loggedInAuthorObject.displayName + " likes your post"), 
         object=postObject.id
       )
-      postToAuthorInbox(request, serializer.data, author_uuid)
+      if str(authorObject.id) != str(loggedInAuthorObject.id):
+        try:
+          remote_node = Node.objects.filter(text__startswith=authorObject.host[:20])[0]
+          postToAuthorInbox(request, serializer.data, authorObject, remote_node)
+        except:
+          postToAuthorInbox(request, serializer.data, authorObject)
       return Response({"message": "Like created", "data": serializer.data}, 
         status=status.HTTP_201_CREATED)
 
@@ -79,10 +87,11 @@ def LikeListPost(request, author_uuid, post_uuid):
 @api_view(['POST', 'GET'])
 def LikeListComment(request, author_uuid, post_uuid, comment_uuid):
   try:  # try to get the specific author, post and comment
-      Post.objects.get(author=author_uuid, uuid=post_uuid)
-      commentObject = Comment.objects.get(uuid=comment_uuid)
+    authorObject = Author.objects.get(uuid=author_uuid)
+    Post.objects.get(author=author_uuid, uuid=post_uuid)
+    commentObject = Comment.objects.get(uuid=comment_uuid)
   except:  # return an error if something goes wrong
-      return Response(status=status.HTTP_404_NOT_FOUND)
+    return Response(status=status.HTTP_404_NOT_FOUND)
 
   # Create a new like
   if request.method == 'POST':
@@ -104,7 +113,12 @@ def LikeListComment(request, author_uuid, post_uuid, comment_uuid):
         summary=(loggedInAuthorObject.displayName + " likes your comment"), 
         object=commentObject.id
       )
-      postToAuthorInbox(request, serializer.data, author_uuid)
+      if str(authorObject.id) != str(loggedInAuthorObject.id):
+        try:
+          remote_node = Node.objects.filter(text__startswith=authorObject.host[:20])[0]
+          postToAuthorInbox(request, serializer.data, authorObject, remote_node)
+        except:
+          postToAuthorInbox(request, serializer.data, authorObject)
       return Response({"message": "Like created", "data": serializer.data}, 
         status=status.HTTP_201_CREATED)
 

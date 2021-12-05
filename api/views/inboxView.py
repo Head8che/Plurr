@@ -7,7 +7,7 @@ from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from ..utils import (getPageNumber, getPageSize, getPaginatedObject, loggedInUserIsAuthor, 
-  getLoggedInAuthorObject, validatePostObject, validateFollowObject, validateLikeObject)
+  getLoggedInAuthorObject, validatePostObject, validateFollowObject, validateLikeObject, validateCommentObject)
 
 
 @api_view(['POST', 'GET', 'DELETE'])
@@ -83,6 +83,23 @@ def InboxList(request, author_uuid):
       return Response({"message": "Inbox item added", "data": validated_request}, 
         status=status.HTTP_201_CREATED)
 
+    elif item_type.lower() == 'comment':
+      try:  # try to validate the data
+        print("\n\Comment Object\n" + str(request.data) + "\n\n")
+        validated_request = validateCommentObject(request.data, inbox=inbox, toPlurr=True)
+        
+        if type(validated_request) is list:
+          return Response({"message": validated_request[0], 
+            "data": request.data}, status=validated_request[1])
+      except:  # return an error if something goes wrong
+        return Response({"message": "the Comment object is invalid.", 
+          "data": request.data}, status=status.HTTP_400_BAD_REQUEST)
+        
+      inbox.items.append(validated_request)
+      inbox.save()
+      return Response({"message": "Inbox item added", "data": validated_request}, 
+        status=status.HTTP_201_CREATED)
+
     else:
       # return an error if something goes wrong with the update
       return Response({"message": "Item type must be `post`, `follow` or `like`!"}, 
@@ -114,7 +131,7 @@ def InboxList(request, author_uuid):
 
     # add the `type` field to the Posts data
     new_data.update({
-        'items': paginated_inbox.object_list,
+        'items': paginated_inbox.object_list[::-1],
     })
     
     # return the Inbox data

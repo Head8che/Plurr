@@ -6,6 +6,7 @@ import {
   getAuthorIdOrRemoteLink,
   isRemoteAuthor,
   getAuthorImgOrDefault,
+  isNotNullOrUndefined,
 } from "../utils"
 
 function Authors({ authors }) {
@@ -61,7 +62,12 @@ function Authors({ authors }) {
                     </a>
                   </div>
                 </div>
-                {isRemoteAuthor(author) && <PlurrChip text="remote" />}
+                {isRemoteAuthor(author) &&
+                  (isNotNullOrUndefined(author?.host) ? (
+                    <PlurrChip text="remote" host={author.host} />
+                  ) : (
+                    <PlurrChip text="remote" />
+                  ))}
               </Card.Body>
             </Card>
           )

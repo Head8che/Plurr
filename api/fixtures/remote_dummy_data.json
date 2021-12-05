@@ -293,11 +293,21 @@
   {
     "model": "api.Node",
     "fields": {
-      "host": "https://project-api-404.herokuapp.com/api/",
+      "host": "https://newconnection-server.herokuapp.com/",
       "username": "T06Username",
-      "password": "T06Username",
+      "password": "T06Password",
       "remoteUsername": "admin",
       "remotePassword": "NewConnectionAdmin"
+    }
+  },
+  {
+    "model": "api.Node",
+    "fields": {
+      "host": "https://cmput-404-social-distribution.herokuapp.com/api/",
+      "username": "T07Username",
+      "password": "T07Password",
+      "remoteUsername": "team26",
+      "remotePassword": "cmput404"
     }
   },
   {

@@ -19,6 +19,7 @@ import {
   getAuthorIdOrRemoteLink,
   getAuthorImgOrDefault,
   isRemoteAuthor,
+  isNotNullOrUndefined,
 } from "../utils"
 
 export default function PostContent({
@@ -27,6 +28,7 @@ export default function PostContent({
   liked,
   authorHasLiked,
   triggerRerender,
+  inInbox = false,
 }) {
   const [modalShowDelete, setModalShowDelete] = React.useState(false)
   const author = post?.author
@@ -141,7 +143,11 @@ export default function PostContent({
                     justifyContent: "end",
                   }}
                 >
-                  <PlurrChip text="remote" />
+                  {isNotNullOrUndefined(author?.host) ? (
+                    <PlurrChip text="remote" host={author.host} />
+                  ) : (
+                    <PlurrChip text="remote" />
+                  )}
                 </Col>
               )}
               {loggedInUserIsAuthor ? (
@@ -262,66 +268,70 @@ export default function PostContent({
               )}
             </>
           )}
-          <Row>
-            <Col
-              xs={12}
-              style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-                gap: "10px",
-              }}
-            >
-              <div style={{ display: "flex", flexDirection: "row" }}>
-                <div
-                  className={`icon-container like ${
-                    loggedInUserIsAuthor ? "isAuthor" : ""
-                  } ${isLiked ? "isLiked" : ""}`}
-                  onClick={() =>
-                    loggedInUserIsAuthor
-                      ? null
-                      : isLiked
-                      ? null
-                      : fetchAndSetIsLiked()
-                  }
-                >
-                  {isLiked ? (
-                    <FontAwesomeIcon
+          {!inInbox && (
+            <Row>
+              <Col
+                xs={12}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: "10px",
+                }}
+              >
+                <div style={{ display: "flex", flexDirection: "row" }}>
+                  <div
+                    className={`icon-container like ${
+                      loggedInUserIsAuthor ? "isAuthor" : ""
+                    } ${isLiked ? "isLiked" : ""}`}
+                    onClick={() =>
+                      loggedInUserIsAuthor
+                        ? null
+                        : isLiked
+                        ? null
+                        : fetchAndSetIsLiked()
+                    }
+                  >
+                    {isLiked ? (
+                      <FontAwesomeIcon
+                        style={{
+                          color: "red",
+                          width: "18px",
+                          height: "18px",
+                        }}
+                        icon={faHeart}
+                      />
+                    ) : (
+                      <FontAwesomeIcon
+                        style={{
+                          color: `${loggedInUserIsAuthor ? "#CCC" : "grey"}`,
+                          pointerEvents: `${
+                            loggedInUserIsAuthor ? "none" : ""
+                          }`,
+                          width: "18px",
+                          height: "18px",
+                        }}
+                        icon={farHeart}
+                      />
+                    )}
+                  </div>
+                  <div className="icon-container share">
+                    <RiShareLine
                       style={{
-                        color: "red",
+                        color: "grey",
                         width: "18px",
                         height: "18px",
                       }}
-                      icon={faHeart}
                     />
-                  ) : (
-                    <FontAwesomeIcon
-                      style={{
-                        color: `${loggedInUserIsAuthor ? "#CCC" : "grey"}`,
-                        pointerEvents: `${loggedInUserIsAuthor ? "none" : ""}`,
-                        width: "18px",
-                        height: "18px",
-                      }}
-                      icon={farHeart}
-                    />
-                  )}
+                  </div>
                 </div>
-                <div className="icon-container share">
-                  <RiShareLine
-                    style={{
-                      color: "grey",
-                      width: "18px",
-                      height: "18px",
-                    }}
-                  />
-                </div>
-              </div>
-              {post.visibility.toUpperCase() === "FRIENDS" && (
-                <PlurrChip text="friends" />
-              )}
-            </Col>
-          </Row>
-          {comments.length === 0 ? null : (
+                {post.visibility.toUpperCase() === "FRIENDS" && (
+                  <PlurrChip text="friends" />
+                )}
+              </Col>
+            </Row>
+          )}
+          {inInbox || comments.length === 0 ? null : (
             <div
               style={{
                 borderBottom: "1px solid #CCC",
@@ -332,7 +342,8 @@ export default function PostContent({
               }}
             ></div>
           )}
-          {comments &&
+          {!inInbox &&
+            comments &&
             comments?.map((comment) => {
               return (
                 <CommentContent
@@ -344,19 +355,24 @@ export default function PostContent({
                 />
               )
             })}
-          <div
-            style={{
-              borderBottom: "1px solid #CCC",
-              height: "0px",
-              width: "100%",
-              marginTop: "30px",
-            }}
-          ></div>
-          <CreateComment
-            author={author}
-            post={post}
-            triggerRerender={triggerRerender}
-          />
+          {!inInbox && (
+            <>
+              <div
+                style={{
+                  borderBottom: "1px solid #CCC",
+                  height: "0px",
+                  width: "100%",
+                  marginTop: "30px",
+                }}
+              ></div>
+              <CreateComment
+                loggedInUser={loggedInUser}
+                author={author}
+                post={post}
+                triggerRerender={triggerRerender}
+              />
+            </>
+          )}
         </Card.Body>
       </Card>
     </div>

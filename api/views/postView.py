@@ -4,12 +4,14 @@ import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from api.models.inboxModel import Inbox
+from api.models.nodeModel import Node
 from ..models.authorModel import Author
 from ..models.postModel import Post
 from rest_framework import status
 from ..serializers import PostSerializer
 from django.db.models import Q
-from ..utils import getPageNumber, getPageSize, getPaginatedObject, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
+from ..utils import getPageNumber, getPageSize, getPaginatedObject, getUUIDFromId, handlePostImage, loggedInUserIsAuthor, postToAuthorInbox
 
 
 @api_view(['GET'])
@@ -17,27 +19,23 @@ def StreamList(request):
   # List all the posts
   if request.method == 'GET':
     try:  # try to get the posts
-      if "plurr" not in request.META["HTTP_HOST"]:
-        loggedInUserFriendsPath = (request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
-          if request.user.id.endswith("/") 
-          else request.user.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
-        )
-
-        loggedInUserFriends = (json.loads(requests.get(loggedInUserFriendsPath, 
-          headers = {'Content-Type': 'application/json', 
-            'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
-        
+      if request.user.id is not None:
+        author = Author.objects.get(uuid=getUUIDFromId(request.user.id))
+        followers = author.followers.all()
         friendIds = []
-
-        for loggedInUserFriend in loggedInUserFriends:
-          friendIds.append(str(loggedInUserFriend['id']))
         
-        publicPosts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
-        otherAuthorsFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id__in=friendIds).order_by('-published')
-        ownFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id=request.user.id).order_by('-published')
+        for follower in followers:
+          followerFollowers = Author.objects.get(uuid=follower.uuid).followers.all()
+          for followerFollower in followerFollowers:
+            if str(followerFollower.id) == str(author.id):
+              friendIds.append(follower.id)
+        
+        publicPosts = Post.objects.filter(Q(visibility="PUBLIC"), unlisted=False).order_by('-published')
+        otherAuthorsFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id__in=friendIds, unlisted=False).order_by('-published')
+        ownFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id=request.user.id, unlisted=False).order_by('-published')
         posts = publicPosts | otherAuthorsFriendPosts | ownFriendPosts
       else:
-        posts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
+        posts = Post.objects.filter(Q(visibility="PUBLIC"), unlisted=False).order_by('-published')
     
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -98,7 +96,11 @@ def PostList(request, author_uuid):
       try:  # try to get the followers
         followers = Author.objects.get(uuid=author_uuid).followers.all()
         for follower in followers:
-          postToAuthorInbox(request, serializer.data, follower.uuid)
+          try:
+            remote_node = Node.objects.filter(text__startswith=follower.host[:20])[0]
+            postToAuthorInbox(request, serializer.data, follower, remote_node)
+          except:
+            postToAuthorInbox(request, serializer.data, follower)
       except:  # return an error if something goes wrong
         pass
 
@@ -112,30 +114,26 @@ def PostList(request, author_uuid):
   # List all the posts
   elif request.method == 'GET':
     try:  # try to get the posts
-      if "plurr" not in request.META["HTTP_HOST"]:
-        authorFriendsPath = (authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "friends/"
-          if authorObject.id.endswith("/") 
-          else authorObject.id.replace("/author", "/service/author").replace("3000", "8000") + "/friends/"
-        )
-
-        authorFriends = (json.loads(requests.get(authorFriendsPath, 
-          headers = {'Content-Type': 'application/json', 
-            'Authorization': request.headers.get('Authorization', None)}).text).get("items", None))
-        
+      if request.user.id is not None:
+        author = Author.objects.get(uuid=getUUIDFromId(authorObject.id))
+        followers = author.followers.all()
         friendIds = []
-
-        for authorFriend in authorFriends:
-          friendIds.append(str(authorFriend['id']))
+        
+        for follower in followers:
+          followerFollowers = Author.objects.get(uuid=follower.uuid).followers.all()
+          for followerFollower in followerFollowers:
+            if str(followerFollower.id) == str(author.id):
+              friendIds.append(follower.id)
         
         loggedInUserIsFriend = request.user.id in friendIds
 
         if loggedInUserIsFriend or loggedInUserIsAuthor(request, author_uuid):
           posts = Post.objects.filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC"), 
-            author=author_uuid).order_by('-published')
+            author=author_uuid, unlisted=False).order_by('-published')
         else:
-          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC").order_by('-published')
+          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC", unlisted=False).order_by('-published')
       else:
-          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC").order_by('-published')
+          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC", unlisted=False).order_by('-published')
 
     except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
@@ -232,7 +230,11 @@ def PostDetail(request, author_uuid, post_uuid):
       try:  # try to get the followers
         followers = Author.objects.get(uuid=author_uuid).followers.all()
         for follower in followers:
-          postToAuthorInbox(request, serializer.data, follower.uuid)
+          try:
+            remote_node = Node.objects.filter(text__startswith=follower.host[:20])[0]
+            postToAuthorInbox(request, serializer.data, follower, remote_node)
+          except:
+            postToAuthorInbox(request, serializer.data, follower)
       except:  # return an error if something goes wrong
         pass
       

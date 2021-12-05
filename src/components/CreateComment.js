@@ -4,13 +4,14 @@ import { Row, Col, Image, Button, Form } from "react-bootstrap"
 import * as Yup from "yup"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import {
-  getBackEndHostWithSlash,
-  getAuthorIdOrRemoteLink,
-  getAuthorImgOrDefault,
-} from "../utils"
+import { getBackEndHostWithSlash, getAuthorImgOrDefault } from "../utils"
 
-export default function CreateComment({ author, post, triggerRerender }) {
+export default function CreateComment({
+  loggedInUser,
+  author,
+  post,
+  triggerRerender,
+}) {
   // schema to validate form inputs
   const validationSchema = Yup.object().shape({
     comment: Yup.string().required("Post comment is required"),
@@ -79,13 +80,10 @@ export default function CreateComment({ author, post, triggerRerender }) {
       <Form onSubmit={handleSubmit(submitHandler)}>
         <Row style={{ marginTop: "30px" }}>
           <Col xs={12} style={{ display: "flex", alignItems: "flex-start" }}>
-            <a
-              href={getAuthorIdOrRemoteLink(author)}
-              style={{ textDecoration: "none" }}
-            >
+            <a href={loggedInUser.id} style={{ textDecoration: "none" }}>
               <Image
                 className="fluid"
-                src={getAuthorImgOrDefault(author?.profileImage)}
+                src={getAuthorImgOrDefault(loggedInUser?.profileImage)}
                 roundedCircle
                 style={{
                   objectFit: "cover",
