@@ -56,6 +56,11 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
 
     newData.type = "post"
 
+    if (newData.visibility === "UNLISTED") {
+      newData.visibility = "FRIENDS"
+      newData.unlisted = true
+    }
+
     if (isNotNullOrUndefined(postImageSrc)) {
       newData.content = postImageSrc
     }
@@ -238,6 +243,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
                   >
                     <option value="PUBLIC">PUBLIC</option>
                     <option value="FRIENDS">FRIENDS</option>
+                    <option value="UNLISTED">UNLISTED</option>
                   </Form.Select>
                 </FloatingLabel>
               </Col>

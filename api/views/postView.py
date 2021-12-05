@@ -30,12 +30,12 @@ def StreamList(request):
             if str(followerFollower.id) == str(author.id):
               friendIds.append(follower.id)
         
-        publicPosts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
-        otherAuthorsFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id__in=friendIds).order_by('-published')
-        ownFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id=request.user.id).order_by('-published')
+        publicPosts = Post.objects.filter(Q(visibility="PUBLIC"), unlisted=False).order_by('-published')
+        otherAuthorsFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id__in=friendIds, unlisted=False).order_by('-published')
+        ownFriendPosts = Post.objects.filter(Q(visibility="FRIENDS"), author__id=request.user.id, unlisted=False).order_by('-published')
         posts = publicPosts | otherAuthorsFriendPosts | ownFriendPosts
       else:
-        posts = Post.objects.filter(Q(visibility="PUBLIC")).order_by('-published')
+        posts = Post.objects.filter(Q(visibility="PUBLIC"), unlisted=False).order_by('-published')
     
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
@@ -129,11 +129,11 @@ def PostList(request, author_uuid):
 
         if loggedInUserIsFriend or loggedInUserIsAuthor(request, author_uuid):
           posts = Post.objects.filter(Q(visibility="FRIENDS") | Q(visibility="PUBLIC"), 
-            author=author_uuid).order_by('-published')
+            author=author_uuid, unlisted=False).order_by('-published')
         else:
-          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC").order_by('-published')
+          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC", unlisted=False).order_by('-published')
       else:
-          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC").order_by('-published')
+          posts = Post.objects.filter(author=author_uuid, visibility="PUBLIC", unlisted=False).order_by('-published')
 
     except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
