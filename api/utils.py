@@ -1,6 +1,7 @@
 from django.core.paginator import Paginator, EmptyPage
 from requests.auth import HTTPBasicAuth
 from rest_framework.response import Response
+from api.models.inboxModel import Inbox
 
 from api.serializers import AuthorSerializer, PostSerializer
 from .models.authorModel import Author
@@ -479,15 +480,25 @@ def validatePostObject(post, inbox=None, toPlurr=None):
   except:
     return ["the Post object is invalid", status.HTTP_400_BAD_REQUEST]
 
-def postToAuthorInbox(request, data, receiver_author_uuid):
+def postToAuthorInbox(request, data, receiver_author, remote_node=None):
   try:
-    url = 'http://' + request.get_host() + '/service/author/' + receiver_author_uuid + '/inbox/'
-    payload = data
-    sender_author_authorization = request.headers['Authorization']
-    headers = {'content-type': 'application/json', 'Authorization': sender_author_authorization}
-    requests.post(url, data=json.dumps(payload), headers=headers)
+    receiverInbox = Inbox.objects.get(author=receiver_author.id)
+    receiverInbox.items.append(data)
+    receiverInbox.save()
   except:  # raise an error if something goes wrong
-      raise ValueError('Posting to Inbox went wrong.')
+    raise ValueError('Posting to Inbox went wrong.')
+  
+  if (remote_node is not None) and ('plurr' not in receiver_author.host) and ('127.0.0.1' not in receiver_author.host):
+    print("\n\nremote node\n\n")
+    try:
+      # remote_node = Node.objects.filter(text__startswith=receiver_author.host[:20])[0]
+      post_inbox_path = getNodeServiceHostWithTralingSlash(remote_node) + "author/" + str(getUUIDFromId(receiver_author.id)) + "/inbox/"
+      print("\npost_inbox_path\n" + post_inbox_path)
+      post_response = _makeRemotePostRequest(post_inbox_path, remote_node, data)
+      print("\npost_response\n" + post_response)
+      print("\n\nPOST REQUEST RESPONSE\n" + str(post_response) + "\n\n")
+    except:
+      pass
 
 # code adapted from https://stackoverflow.com/a/16511493
 def _makeRemoteGetRequest(path, node):
@@ -499,6 +510,27 @@ def _makeRemoteGetRequest(path, node):
       print("\n" + login_request.text + "\n")
       # print("\nstatus code: " + str(login_request.status_code) + "\n")
       return json.loads(login_request.text)
+    except requests.exceptions.Timeout:
+      print("\nREQUEST FAILED: TIMEOUT\n")
+      return None
+    except requests.exceptions.TooManyRedirects:
+      print("\nREQUEST FAILED: BAD URL\n")
+      return None
+    except:
+      print("\nREQUEST FAILED\n")
+      return None
+
+# code adapted from https://stackoverflow.com/a/16511493
+def _makeRemotePostRequest(path, node, data):
+    print("\npath\n" + path + "\n")
+    print("username: " + node.remoteUsername + "\npassword: " + node.remotePassword + "\n")
+    
+    try:
+      login_request = requests.post(path, auth=HTTPBasicAuth(node.remoteUsername, node.remotePassword), data = data)
+      print("\n" + login_request.text + "\n")
+      print("\n" + login_request.status_code + "\n")
+      # print("\nstatus code: " + str(login_request.status_code) + "\n")
+      return True
     except requests.exceptions.Timeout:
       print("\nREQUEST FAILED: TIMEOUT\n")
       return None

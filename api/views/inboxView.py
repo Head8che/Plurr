@@ -131,7 +131,7 @@ def InboxList(request, author_uuid):
 
     # add the `type` field to the Posts data
     new_data.update({
-        'items': paginated_inbox.object_list,
+        'items': paginated_inbox.object_list[::-1],
     })
     
     # return the Inbox data

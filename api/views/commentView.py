@@ -1,6 +1,8 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from api.models.nodeModel import Node
+
 from ..models.commentModel import Comment
 from ..models.authorModel import Author
 from ..models.postModel import Post
@@ -12,7 +14,7 @@ from ..serializers import CommentSerializer
 @api_view(['POST', 'GET'])
 def CommentList(request, author_uuid, post_uuid):
   try:  # try to get the specific authors and post
-      Author.objects.get(uuid=author_uuid)
+      authorObject = Author.objects.get(uuid=author_uuid)
       postObject = Post.objects.get(author=author_uuid, uuid=post_uuid)
   except:  # return an error if something goes wrong
       return Response(status=status.HTTP_404_NOT_FOUND)
@@ -34,7 +36,12 @@ def CommentList(request, author_uuid, post_uuid):
     # update the Comment data if the serializer is valid
     if serializer.is_valid():
       serializer.save(author=loggedInAuthorObject, post=postObject)
-      postToAuthorInbox(request, serializer.data, author_uuid)
+      if str(authorObject.id) != str(loggedInAuthorObject.id):
+        try:
+          remote_node = Node.objects.filter(text__startswith=authorObject.host[:20])[0]
+          postToAuthorInbox(request, serializer.data, authorObject, remote_node)
+        except:
+          postToAuthorInbox(request, serializer.data, authorObject)
       return Response({"message": "Comment created", "data": serializer.data}, 
         status=status.HTTP_201_CREATED)
 

@@ -1,8 +1,11 @@
 import React from "react"
 import { Card, Button } from "react-bootstrap"
-import CommentContent from "../components/CommentContent"
 import PostContent from "../components/PostContent"
-import { getBackEndHostWithSlash, getUUIDFromId } from "../utils"
+import {
+  getBackEndHostWithSlash,
+  getUUIDFromId,
+  withoutTrailingSlash,
+} from "../utils"
 
 function Inbox({ loggedInUser, inbox, followers, liked, triggerRerender }) {
   const host = getBackEndHostWithSlash()
@@ -18,9 +21,16 @@ function Inbox({ loggedInUser, inbox, followers, liked, triggerRerender }) {
   const authorLiked = liked?.items?.map((likedObject) => likedObject.object)
 
   const isAlreadyAFollower = (newFollower) => {
+    console.log(withoutTrailingSlash(newFollower.id))
+    console.log(
+      followers?.items?.map((author) => withoutTrailingSlash(author.id))
+    )
     return (
-      followers?.items?.filter((author) => author.id === newFollower.id)
-        .length > 0
+      followers?.items?.filter(
+        (author) =>
+          withoutTrailingSlash(author.id) ===
+          withoutTrailingSlash(newFollower.id)
+      ).length > 0
     )
   }
 
@@ -151,26 +161,61 @@ function Inbox({ loggedInUser, inbox, followers, liked, triggerRerender }) {
                     inboxItem.type.slice(1)}
                 </Card.Title>
                 <div>
-                  {inboxItem?.summary !== null &&
-                  inboxItem?.summary !== undefined &&
-                  inboxItem?.summary !== ""
-                    ? inboxItem?.summary
-                    : inboxItem?.summary?.includes("comment")
-                    ? `${inboxItem.actor?.displayName} likes something your comment`
-                    : `${inboxItem.actor?.displayName} likes something your post`}
+                  {`${inboxItem.author?.displayName} likes your `}
+                  <a style={{ textDecoration: "none" }} href={inboxItem.object}>
+                    post
+                  </a>
+                  .
                 </div>
               </Card.Body>
             </Card>
           )
         } else if (inboxItem?.type.toLowerCase() === "comment") {
           return (
-            <CommentContent
-              key={inboxItem.id}
-              loggedInUser={loggedInUser}
-              comment={inboxItem}
-              liked={liked}
-              authorHasLiked={authorLiked?.includes(inboxItem.id)}
-            />
+            <Card key={count} className="Card my-5">
+              <Card.Body>
+                <Card.Title>
+                  {inboxItem.type.charAt(0).toUpperCase() +
+                    inboxItem.type.slice(1)}
+                </Card.Title>
+                <div>
+                  {inboxItem?.comment !== null &&
+                  inboxItem?.comment !== undefined ? (
+                    <div>
+                      <div>
+                        {`${inboxItem.author?.displayName} commented on `}
+                        <a
+                          style={{ textDecoration: "none" }}
+                          href={inboxItem.id.split("/comments")[0]}
+                        >
+                          one of your posts
+                        </a>
+                        .
+                      </div>
+                      <div
+                        style={{
+                          fontSize: "14px",
+                          backgroundColor: "#f4f4f5",
+                          marginTop: "8px",
+                          padding: "10px",
+                          borderRadius: "5px",
+                        }}
+                      >
+                        {`${inboxItem?.comment}`}
+                      </div>
+                    </div>
+                  ) : (
+                    <div>
+                      {`${inboxItem.author?.displayName} commented on `}
+                      <a style={{ textDecoration: "none" }} href={inboxItem.id}>
+                        one of your posts
+                      </a>
+                      .
+                    </div>
+                  )}
+                </div>
+              </Card.Body>
+            </Card>
           )
         } else if (inboxItem?.type.toLowerCase() === "post") {
           return (

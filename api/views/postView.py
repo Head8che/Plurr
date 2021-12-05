@@ -4,6 +4,8 @@ import requests
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
+from api.models.inboxModel import Inbox
+from api.models.nodeModel import Node
 from ..models.authorModel import Author
 from ..models.postModel import Post
 from rest_framework import status
@@ -94,7 +96,11 @@ def PostList(request, author_uuid):
       try:  # try to get the followers
         followers = Author.objects.get(uuid=author_uuid).followers.all()
         for follower in followers:
-          postToAuthorInbox(request, serializer.data, follower.uuid)
+          try:
+            remote_node = Node.objects.filter(text__startswith=follower.host[:20])[0]
+            postToAuthorInbox(request, serializer.data, follower, remote_node)
+          except:
+            postToAuthorInbox(request, serializer.data, follower)
       except:  # return an error if something goes wrong
         pass
 
@@ -224,7 +230,11 @@ def PostDetail(request, author_uuid, post_uuid):
       try:  # try to get the followers
         followers = Author.objects.get(uuid=author_uuid).followers.all()
         for follower in followers:
-          postToAuthorInbox(request, serializer.data, follower.uuid)
+          try:
+            remote_node = Node.objects.filter(text__startswith=follower.host[:20])[0]
+            postToAuthorInbox(request, serializer.data, follower, remote_node)
+          except:
+            postToAuthorInbox(request, serializer.data, follower)
       except:  # return an error if something goes wrong
         pass
       
