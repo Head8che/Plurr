@@ -13,6 +13,8 @@ import { RiShareLine } from "react-icons/ri"
 import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons"
 import {
   getBackEndHostWithSlash,
+  getFrontEndHostWithSlash,
+  getUUIDFromId,
   withoutTrailingSlash,
   getAuthorIdOrRemoteLink,
   getAuthorImgOrDefault,
@@ -45,6 +47,7 @@ export default function PostContent({
     post?.contentType === "image/jpeg;base64"
 
   const host = getBackEndHostWithSlash()
+  const frontendHost = getFrontEndHostWithSlash()
 
   React.useEffect(() => {
     post?.id?.split("/author")[1] &&
@@ -234,7 +237,14 @@ export default function PostContent({
                   fontWeight: "500",
                 }}
               >
-                {post.title}
+                <a
+                  href={`${frontendHost}author/${getUUIDFromId(
+                    post?.author?.id
+                  )}/posts/${getUUIDFromId(post?.id)}/`}
+                  style={{ textDecoration: "none", color: "#000" }}
+                >
+                  {post.title}
+                </a>
               </Card.Title>
               {postHasImageContentType ? (
                 <div

@@ -9,13 +9,14 @@ import Stream from "./Stream"
 import Inbox from "./Inbox"
 import Followers from "./Followers"
 import { getBackEndHostWithSlash } from "../utils"
+import PostContent from "../components/PostContent"
 
 const allObjectsAreLoaded = (arr) => {
   return arr.filter((item) => Object.keys(item).length === 0).length === 0
 }
 
 export default function PlurrPage({ page }) {
-  const { authorId } = useParams()
+  const { authorId, postId } = useParams()
   const { loggedInUser } = useUserHandler()
   const [loading, setLoading] = React.useState(true)
   const [object, setObject] = React.useState({})
@@ -96,6 +97,21 @@ export default function PlurrPage({ page }) {
           author={object}
           followers={secondObject}
           friends={thirdObject}
+          triggerRerender={triggerRerender}
+        />
+      ),
+    },
+    {
+      name: "Post",
+      apiRoute: `${host}service/author/${authorId}/posts/${postId}/`,
+      secondApiRoute: `${host}service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      component: (
+        <PostContent
+          key={postId}
+          loggedInUser={loggedInUser}
+          post={object}
+          liked={secondObject}
+          authorHasLiked={false}
           triggerRerender={triggerRerender}
         />
       ),
