@@ -11,6 +11,7 @@ import {
 } from "react-bootstrap"
 import * as Yup from "yup"
 import { useForm } from "react-hook-form"
+import ReactCommonmark from "react-commonmark"
 import { yupResolver } from "@hookform/resolvers/yup"
 import {
   withoutTrailingSlash,
@@ -23,7 +24,9 @@ import {
 export default function CreatePost({ loggedInUser, author, triggerRerender }) {
   const [postContentType, setPostContentType] = React.useState("text/plain")
   const [postImageSrc, setPostImageSrc] = React.useState(null)
+  const [postMarkdownContent, setPostMarkdownContent] = React.useState("")
   const [disableSubmit, setDisableSubmit] = React.useState(false)
+  let postHasMarkdownContentType = postContentType === "text/markdown"
   let postHasImageContentType =
     postContentType === "image/png;base64" ||
     postContentType === "image/jpeg;base64"
@@ -131,7 +134,7 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
     })
   }
 
-  function updateImage() {
+  const updateImage = () => {
     const file = document.getElementById("formFile").files[0]
     const reader = new FileReader()
 
@@ -258,24 +261,61 @@ export default function CreatePost({ loggedInUser, author, triggerRerender }) {
               >
                 {/* content Form Field */}
                 {!postHasImageContentType && (
-                  <Form.Group style={{ flexGrow: 1, marginLeft: "48px" }}>
-                    <Form.Control
-                      defaultValue=""
-                      name="content"
-                      id="content"
-                      placeholder="Create your post"
-                      as="textarea"
-                      rows={5}
-                      style={{ padding: "0.75rem 0.85rem" }}
-                      {...register("content")}
-                      className={`form-control ${
-                        errors.content ? "is-invalid" : ""
-                      }`}
-                    />
-                    <Form.Text className="invalid-feedback">
-                      {errors.content?.message}
-                    </Form.Text>
-                  </Form.Group>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      flexGrow: 1,
+                      marginLeft: "48px",
+                    }}
+                  >
+                    <Form.Group
+                      style={{
+                        width: `${postHasMarkdownContentType ? "46%" : "100%"}`,
+                      }}
+                    >
+                      <Form.Control
+                        defaultValue=""
+                        name="content"
+                        id="content"
+                        placeholder="Create your post"
+                        as="textarea"
+                        rows={5}
+                        style={{ padding: "0.75rem 0.85rem" }}
+                        {...register("content")}
+                        onChange={(e) => {
+                          setPostMarkdownContent(
+                            document.getElementById("content").value
+                          )
+                        }}
+                        className={`form-control ${
+                          errors.content ? "is-invalid" : ""
+                        }`}
+                      />
+                      <Form.Text className="invalid-feedback">
+                        {errors.content?.message}
+                      </Form.Text>
+                    </Form.Group>
+                    {postHasMarkdownContentType && (
+                      <div
+                        style={{
+                          width: "51%",
+                          height: "146px",
+                          border: "1px solid #ced4da",
+                          borderRadius: "0.25rem",
+                          padding: "0.75rem 0.85rem",
+                          whiteSpace: "pre-line",
+                          resize: "vertical",
+                          overflowY: "scroll",
+                        }}
+                      >
+                        <ReactCommonmark
+                          source={postMarkdownContent}
+                          escapeHtml={true}
+                        />
+                      </div>
+                    )}
+                  </div>
                 )}
               </Col>
             </Row>
