@@ -52,7 +52,7 @@ export default function Author({
         },
         body: JSON.stringify({
           type: "follow",
-          summary: `${loggedInUser?.displayName} wants to follow ${author?.displayName}`,
+          summary: `${loggedInUser?.displayName} wants to follow ${author?.displayNamedisplayName}`,
           actor: loggedInUser,
           object: author,
         }),
@@ -93,7 +93,7 @@ export default function Author({
         <Col xs={6} md={10} style={{ display: "flex", alignItems: "center" }}>
           <Image
             className="fluid"
-            src={getAuthorImgOrDefault(author?.profileImage)}
+            src={getAuthorImgOrDefault(author?.displayNameprofileImage)}
             roundedCircle
             style={{
               objectFit: "cover",
@@ -124,7 +124,7 @@ export default function Author({
             onClick={() => setModalShowGithub(true)}
           />
           <GithubModal
-            loggedInUser={loggedInUser}
+            loggedInUser={author}
             show={modalShowGithub}
             onHide={() => setModalShowGithub(false)}
             closeModal={() => setModalShowGithub(false)}
