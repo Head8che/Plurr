@@ -1,0 +1,69 @@
+.github-header {
+  /* display: table-cell; */
+  top: "1px";
+  left: "1px";
+  padding: 10px;
+  width: 100% !;
+}
+
+.github-icon {
+  display: inline;
+  float: left;
+  padding: 9px 0px 0px;
+  width: 35px;
+  height: 35px;
+}
+
+.github-link {
+  display: inline-block;
+  float: left;
+  margin: 0px auto;
+  padding: 6px 10px 5px;
+  color: rgb(73, 89, 97);
+  font-size: 20px;
+  text-decoration: none;
+}
+
+.github-displayname {
+  font-size: 26px;
+  line-height: 30px;
+}
+
+.github-username {
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 300;
+  line-height: 24px;
+  color: rgb(102, 102, 102);
+}
+
+.github-image {
+  /* display: inline;  */
+  float: right;
+  margin-right: 10px;
+  padding-right: 20px;
+  max-width: 60px;
+  height: 67px;
+}
+
+.github-avatar {
+  padding: 3px;
+  height: 100%;
+  border: 1px solid rgb(221, 221, 221);
+  box-shadow: rgb(204, 204, 204) 1px 1px 3px;
+}
+
+.github-stats {
+  justify-content: flex-start !important;
+}
+
+.github-card {
+  /* display:block; */
+  text-align: center;
+  width: 100%;
+  height: 100%;
+}
+
+.github-time {
+  color: #bbb;
+}
