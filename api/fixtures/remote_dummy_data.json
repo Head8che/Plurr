@@ -311,6 +311,16 @@
     }
   },
   {
+    "model": "api.Node",
+    "fields": {
+      "host": "https://cmput404-social-circle.herokuapp.com/",
+      "username": "Team5",
+      "password": "Team5",
+      "remoteUsername": "admin",
+      "remotePassword": "admin"
+    }
+  },
+  {
     "model": "api.Like",
     "fields": {
       "type": "Like",
