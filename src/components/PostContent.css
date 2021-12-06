@@ -80,3 +80,24 @@
   width: max-content;
   transition: 0.15s;
 }
+
+.view-comments-btn {
+  color: #777;
+  padding: 0.6rem 1rem;
+  width: 100%;
+  margin-top: 20px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: 0.15s;
+}
+
+.view-comments-btn:hover {
+  color: #fff;
+  background-color: #0d6efd;
+  border: 1px solid #0d6efd;
+  cursor: pointer;
+  transition: 0.15s;
+}

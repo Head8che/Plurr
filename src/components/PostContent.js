@@ -57,9 +57,6 @@ export default function PostContent({
   const host = getBackEndHostWithSlash()
   const frontendHost = getFrontEndHostWithSlash()
 
-  console.log(postLikes?.items?.length)
-  console.log(postComments?.items?.length)
-
   React.useEffect(() => {
     post?.id?.split("/author")[1] &&
       fetch(`${host}service/author${post?.id?.split("/author")[1]}/comments/`, {
@@ -358,14 +355,12 @@ export default function PostContent({
                   }}
                 >
                   {isNotNullOrUndefined(postLikeCount) && postLikeCount > 0 && (
-                    <div style={{ marginLeft: "10px" }}>
-                      {postLikeCount > 1
-                        ? `${postLikeCount} likes`
-                        : `${postLikeCount} like`}
-                    </div>
-                  )}
-                  {isNotNullOrUndefined(postCommentCount) &&
-                    postCommentCount > 0 && (
+                    <a
+                      style={{ textDecoration: "none" }}
+                      href={`${frontendHost}author/${getUUIDFromId(
+                        post?.author?.id
+                      )}/posts/${getUUIDFromId(post?.id)}/likes/`}
+                    >
                       <div
                         style={{
                           marginLeft: "10px",
@@ -373,10 +368,32 @@ export default function PostContent({
                           fontSize: "16px",
                         }}
                       >
-                        {postCommentCount > 1
-                          ? `${postCommentCount} comments`
-                          : `${postCommentCount} comment`}
+                        {postLikeCount > 1
+                          ? `${postLikeCount} likes`
+                          : `${postLikeCount} like`}
                       </div>
+                    </a>
+                  )}
+                  {isNotNullOrUndefined(postCommentCount) &&
+                    postCommentCount > 0 && (
+                      <a
+                        style={{ textDecoration: "none" }}
+                        href={`${frontendHost}author/${getUUIDFromId(
+                          post?.author?.id
+                        )}/posts/${getUUIDFromId(post?.id)}/comments/`}
+                      >
+                        <div
+                          style={{
+                            marginLeft: "10px",
+                            color: "#494f54",
+                            fontSize: "16px",
+                          }}
+                        >
+                          {postCommentCount > 1
+                            ? `${postCommentCount} comments`
+                            : `${postCommentCount} comment`}
+                        </div>
+                      </a>
                     )}
                   {post.visibility.toUpperCase() === "FRIENDS" && (
                     <div style={{ marginLeft: "10px" }}>
@@ -398,8 +415,7 @@ export default function PostContent({
               }}
             ></div>
           )}
-          {!inInbox &&
-            comments &&
+          {!inInbox && comments && comments.length < 3 ? (
             comments?.map((comment) => {
               return (
                 <CommentContent
@@ -410,7 +426,31 @@ export default function PostContent({
                   authorHasLiked={authorLiked?.includes(comment.id)}
                 />
               )
-            })}
+            })
+          ) : (
+            <>
+              {comments?.slice(0, 2)?.map((comment) => {
+                return (
+                  <CommentContent
+                    key={comment.id}
+                    loggedInUser={loggedInUser}
+                    comment={comment}
+                    liked={liked}
+                    authorHasLiked={authorLiked?.includes(comment.id)}
+                  />
+                )
+              })}
+              <a
+                className="view-comments-btn"
+                style={{ textDecoration: "none" }}
+                href={`${frontendHost}author/${getUUIDFromId(
+                  post?.author?.id
+                )}/posts/${getUUIDFromId(post?.id)}/comments/`}
+              >
+                View all comments
+              </a>
+            </>
+          )}
           {!inInbox && (
             <>
               <div

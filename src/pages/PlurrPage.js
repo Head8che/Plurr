@@ -10,6 +10,8 @@ import Inbox from "./Inbox"
 import Followers from "./Followers"
 import { getBackEndHostWithSlash } from "../utils"
 import PostContent from "../components/PostContent"
+import PostLikes from "./PostLikes"
+import PostComments from "./PostComments"
 
 const allObjectsAreLoaded = (arr) => {
   return arr.filter((item) => Object.keys(item).length === 0).length === 0
@@ -126,6 +128,16 @@ export default function PlurrPage({ page }) {
           triggerRerender={triggerRerender}
         />
       ),
+    },
+    {
+      name: "PostLikes",
+      apiRoute: `${host}service/author/${authorId}/posts/${postId}/likes/?size=10000`,
+      component: <PostLikes postLikes={object} />,
+    },
+    {
+      name: "PostComments",
+      apiRoute: `${host}service/author/${authorId}/posts/${postId}/comments/?size=10000`,
+      component: <PostComments postComments={object} />,
     },
   ]
 

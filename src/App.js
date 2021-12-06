@@ -30,6 +30,12 @@ function App() {
             <Route exact path="/author/:authorId/posts/:postId">
               <PlurrPage page="Post" />
             </Route>
+            <Route exact path="/author/:authorId/posts/:postId/likes">
+              <PlurrPage page="PostLikes" />
+            </Route>
+            <Route exact path="/author/:authorId/posts/:postId/comments">
+              <PlurrPage page="PostComments" />
+            </Route>
             <Route exact path="/author/:authorId">
               <PlurrPage page="Author" />
             </Route>
