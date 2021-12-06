@@ -16,8 +16,6 @@ export default function GithubModal({ loggedInUser, show, onHide }) {
       })
       .then((data) => {
         setEvents(data)
-        console.log("fetched")
-        console.log(data, "TESTTT")
       })
   }
 
@@ -62,12 +60,16 @@ export default function GithubModal({ loggedInUser, show, onHide }) {
         </div>
       </Modal.Body>
       <Modal.Footer className="github-stats">
-        <ListGroup>
+        <ListGroup style={{ width: "100%" }}>
           <div>
             {events.map((event) => {
               if (event.type === "IssuesEvent") {
                 return (
-                  <ListGroup.Item className="github-card octicon octicon-issue-closed">
+                  <ListGroup.Item
+                    key={event.id}
+                    className="github-card octicon octicon-issue-closed"
+                  >
+                    {" "}
                     {gitUsername} {event.payload.action}{" "}
                     <a href={"https://github.com/" + event.repo.name}>
                       {event.repo.name}
@@ -80,7 +82,11 @@ export default function GithubModal({ loggedInUser, show, onHide }) {
                 )
               } else {
                 return (
-                  <ListGroup.Item className="github-card octicon octicon-git-commit">
+                  <ListGroup.Item
+                    key={event.id}
+                    className="github-card octicon octicon-git-commit"
+                  >
+                    {" "}
                     {gitUsername} pushed{" "}
                     <a href={"https://github.com/" + event.repo.name}>
                       {event.repo.name}
