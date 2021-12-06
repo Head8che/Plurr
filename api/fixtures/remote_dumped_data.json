@@ -1507,6 +1507,17 @@
     }
   },
   {
+    "model": "api.node",
+    "pk": "https://cmput404-social-circle.herokuapp.com/",
+    "fields": {
+      "username": "Team5",
+      "password": "Team5",
+      "remoteUsername": "admin",
+      "remotePassword": "admin",
+      "connectedDate": "2021-12-04T19:12:28.718Z"
+    }
+  },
+  {
     "model": "api.post",
     "pk": "09d85d1c-4803-4321-aadc-83e6efb4e46c",
     "fields": {

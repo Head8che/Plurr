@@ -1,8 +1,6 @@
-import json
-
-import requests
+from api.models.postModel import Post
 from ..models.authorModel import Author
-from ..serializers import AuthorSerializer
+from ..serializers import AuthorSerializer, PostSerializer
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -41,6 +39,51 @@ def FriendList(request, author_uuid):
 
     # create the `type` field for the Friends data
     new_data = {'type': "friends"}
+
+    # add the `type` field to the Friends data
+    new_data.update({
+        'items': serializer.data,
+    })
+
+    # return the updated Authors data
+    return Response(new_data, status=status.HTTP_200_OK)
+  
+  # Handle unaccepted methods
+  else:
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['GET'])
+def FriendPostList(request, author_uuid):
+  # List all the followers
+  if request.method == 'GET':
+    try:  # try to get the followers
+      author = Author.objects.get(uuid=author_uuid)
+      followers = author.followers.all()
+      friendIds = []
+      
+      for follower in followers:
+        followerFollowers = Author.objects.get(uuid=follower.uuid).followers.all()
+        for followerFollower in followerFollowers:
+          if str(followerFollower.id) == str(author.id):
+            friendIds.append(follower.id)
+      
+      friend_posts = Post.objects.filter(author__id__in=friendIds, unlisted=False).order_by('-published')
+
+    except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_400_BAD_REQUEST)
+    
+    # get the page number and size
+    page_number = getPageNumber(request)
+    page_size = getPageSize(request)
+
+    # get the paginated friend_posts
+    paginated_friend_posts = getPaginatedObject(friend_posts, page_number, page_size)
+
+    # get the Post serializer
+    serializer = PostSerializer(paginated_friend_posts, many=True)
+
+    # create the `type` field for the Friends data
+    new_data = {'type': "friendPosts"}
 
     # add the `type` field to the Friends data
     new_data.update({

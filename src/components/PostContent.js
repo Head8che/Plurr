@@ -9,10 +9,13 @@ import DeletePostModal from "../components/DeletePostModal"
 import PlurrChip from "../components/PlurrChip"
 import ReactCommonmark from "react-commonmark"
 import { faHeart } from "@fortawesome/free-solid-svg-icons"
-import { RiShareLine } from "react-icons/ri"
+import { v4 as uuidv4 } from "uuid"
+import { RiShareLine, RiShareFill } from "react-icons/ri"
 import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons"
 import {
   getBackEndHostWithSlash,
+  getFrontEndHostWithSlash,
+  getUUIDFromId,
   withoutTrailingSlash,
   getAuthorIdOrRemoteLink,
   getAuthorImgOrDefault,
@@ -27,6 +30,8 @@ export default function PostContent({
   authorHasLiked,
   triggerRerender,
   inInbox = false,
+  postLikes = null,
+  postComments = null,
 }) {
   const [modalShowDelete, setModalShowDelete] = React.useState(false)
   const author = post?.author
@@ -38,6 +43,12 @@ export default function PostContent({
   const [isEditing, setIsEditing] = React.useState(false)
   const [shouldSubmitForm, setShouldSubmitForm] = React.useState(true)
   const [comments, setComments] = React.useState([])
+  const [postLikeCount, setPostLikeCount] = React.useState(
+    postLikes?.items?.length
+  )
+  const [postCommentCount, setPostCommentCount] = React.useState(
+    postComments?.items?.length
+  )
   const authorLiked = liked?.items?.map((likedObject) => likedObject.object)
   let postHasMarkdownContentType = post?.contentType === "text/markdown"
   let postHasImageContentType =
@@ -45,6 +56,7 @@ export default function PostContent({
     post?.contentType === "image/jpeg;base64"
 
   const host = getBackEndHostWithSlash()
+  const frontendHost = getFrontEndHostWithSlash()
 
   React.useEffect(() => {
     post?.id?.split("/author")[1] &&
@@ -81,9 +93,91 @@ export default function PostContent({
         .then((apiResponse) => {
           console.log(apiResponse)
           setIsLiked(!isLiked)
+          setPostLikeCount(postLikeCount + 1)
         })
         .catch((e) => {
           console.log(e)
+        })
+    })
+  }
+
+  const sharePostWithFollowers = () => {
+    let sharedPost = JSON.parse(JSON.stringify(post))
+    let loggedInUserAuthor = JSON.parse(JSON.stringify(loggedInUser))
+
+    let newPostUUID = uuidv4()
+    let newPostId = `${frontendHost}author/${loggedInUserAuthor.uuid}/posts/${newPostUUID}`
+    let newCommentId = `${frontendHost}author/${loggedInUserAuthor.uuid}/posts/${newPostUUID}/comments`
+
+    delete loggedInUserAuthor.uuid
+    delete loggedInUserAuthor.username
+    sharedPost.title = `SHARED POST: "${post.title}" by ${post.author.displayName}`
+    sharedPost.author = loggedInUserAuthor
+    sharedPost.id = newPostId
+    sharedPost.type = "post"
+    sharedPost.comments = newCommentId
+    sharedPost.published = null
+
+    // post the validated data to the backend registration service
+    fetch(`${host}service/author/${loggedInUser.uuid}/posts/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(sharedPost),
+    }).then((corsResponse) => {
+      const apiPromise = corsResponse.json()
+      apiPromise
+        .then((apiResponse) => {
+          // empty out the form
+          console.log(apiResponse)
+        })
+        .catch((e) => {
+          // get the errors object
+          const errors = e.response.data
+          console.log(errors)
+        })
+    })
+  }
+
+  const sharePostWithFriends = () => {
+    let sharedPost = JSON.parse(JSON.stringify(post))
+    let loggedInUserAuthor = JSON.parse(JSON.stringify(loggedInUser))
+
+    let newPostUUID = uuidv4()
+    let newPostId = `${frontendHost}author/${loggedInUserAuthor.uuid}/posts/${newPostUUID}`
+    let newCommentId = `${frontendHost}author/${loggedInUserAuthor.uuid}/posts/${newPostUUID}/comments`
+
+    delete loggedInUserAuthor.uuid
+    delete loggedInUserAuthor.username
+    sharedPost.title = `SHARED POST: "${post.title}" by ${post.author.displayName}`
+    sharedPost.author = loggedInUserAuthor
+    sharedPost.id = newPostId
+    sharedPost.type = "post"
+    sharedPost.visibility = "FRIENDS"
+    sharedPost.comments = newCommentId
+    sharedPost.published = null
+
+    // post the validated data to the backend registration service
+    fetch(`${host}service/author/${loggedInUser.uuid}/share/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(sharedPost),
+    }).then((corsResponse) => {
+      const apiPromise = corsResponse.json()
+      apiPromise
+        .then((apiResponse) => {
+          // empty out the form
+          console.log(apiResponse)
+        })
+        .catch((e) => {
+          // get the errors object
+          const errors = e.response.data
+          console.log(errors)
         })
     })
   }
@@ -158,7 +252,7 @@ export default function PostContent({
                       justifyContent: "end",
                     }}
                   >
-                    {isEditing ? (
+                    {isEditing && !post.title.includes("SHARED POST:") ? (
                       <div
                         style={{
                           display: "flex",
@@ -178,17 +272,19 @@ export default function PostContent({
                         </Button>
                       </div>
                     ) : (
-                      <Button
-                        variant="outline-primary"
-                        style={{
-                          padding: "0.4rem 1rem",
-                        }}
-                        onClick={() => {
-                          setIsEditing(true)
-                        }}
-                      >
-                        Edit
-                      </Button>
+                      !post.title.includes("SHARED POST:") && (
+                        <Button
+                          variant="outline-primary"
+                          style={{
+                            padding: "0.4rem 1rem",
+                          }}
+                          onClick={() => {
+                            setIsEditing(true)
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      )
                     )}
 
                     <Button
@@ -234,7 +330,14 @@ export default function PostContent({
                   fontWeight: "500",
                 }}
               >
-                {post.title}
+                <a
+                  href={`${frontendHost}author/${getUUIDFromId(
+                    post?.author?.id
+                  )}/posts/${getUUIDFromId(post?.id)}/`}
+                  style={{ textDecoration: "none", color: "#000" }}
+                >
+                  {post.title}
+                </a>
               </Card.Title>
               {postHasImageContentType ? (
                 <div
@@ -318,7 +421,12 @@ export default function PostContent({
                       />
                     )}
                   </div>
-                  <div className="icon-container share">
+                  <div
+                    className="icon-container share-followers"
+                    onClick={() => {
+                      sharePostWithFollowers()
+                    }}
+                  >
                     <RiShareLine
                       style={{
                         color: "grey",
@@ -327,10 +435,75 @@ export default function PostContent({
                       }}
                     />
                   </div>
+                  <div
+                    className="icon-container share-friends"
+                    onClick={() => {
+                      sharePostWithFriends()
+                    }}
+                  >
+                    <RiShareFill
+                      style={{
+                        color: "grey",
+                        width: "18px",
+                        height: "18px",
+                      }}
+                    />
+                  </div>
                 </div>
-                {post.visibility.toUpperCase() === "FRIENDS" && (
-                  <PlurrChip text="friends" />
-                )}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  {isNotNullOrUndefined(postLikeCount) && postLikeCount > 0 && (
+                    <a
+                      style={{ textDecoration: "none" }}
+                      href={`${frontendHost}author/${getUUIDFromId(
+                        post?.author?.id
+                      )}/posts/${getUUIDFromId(post?.id)}/likes/`}
+                    >
+                      <div
+                        style={{
+                          marginLeft: "10px",
+                          color: "#494f54",
+                          fontSize: "16px",
+                        }}
+                      >
+                        {postLikeCount > 1
+                          ? `${postLikeCount} likes`
+                          : `${postLikeCount} like`}
+                      </div>
+                    </a>
+                  )}
+                  {isNotNullOrUndefined(postCommentCount) &&
+                    postCommentCount > 0 && (
+                      <a
+                        style={{ textDecoration: "none" }}
+                        href={`${frontendHost}author/${getUUIDFromId(
+                          post?.author?.id
+                        )}/posts/${getUUIDFromId(post?.id)}/comments/`}
+                      >
+                        <div
+                          style={{
+                            marginLeft: "10px",
+                            color: "#494f54",
+                            fontSize: "16px",
+                          }}
+                        >
+                          {postCommentCount > 1
+                            ? `${postCommentCount} comments`
+                            : `${postCommentCount} comment`}
+                        </div>
+                      </a>
+                    )}
+                  {post.visibility.toUpperCase() === "FRIENDS" && (
+                    <div style={{ marginLeft: "10px" }}>
+                      <PlurrChip text="friends" />
+                    </div>
+                  )}
+                </div>
               </Col>
             </Row>
           )}
@@ -345,19 +518,42 @@ export default function PostContent({
               }}
             ></div>
           )}
-          {!inInbox &&
-            comments &&
-            comments?.map((comment) => {
-              return (
-                <CommentContent
-                  key={comment.id}
-                  loggedInUser={loggedInUser}
-                  comment={comment}
-                  liked={liked}
-                  authorHasLiked={authorLiked?.includes(comment.id)}
-                />
-              )
-            })}
+          {!inInbox && comments && comments.length < 3
+            ? comments?.map((comment) => {
+                return (
+                  <CommentContent
+                    key={comment.id}
+                    loggedInUser={loggedInUser}
+                    comment={comment}
+                    liked={liked}
+                    authorHasLiked={authorLiked?.includes(comment.id)}
+                  />
+                )
+              })
+            : !inInbox && (
+                <>
+                  {comments?.slice(0, 2)?.map((comment) => {
+                    return (
+                      <CommentContent
+                        key={comment.id}
+                        loggedInUser={loggedInUser}
+                        comment={comment}
+                        liked={liked}
+                        authorHasLiked={authorLiked?.includes(comment.id)}
+                      />
+                    )
+                  })}
+                  <a
+                    className="view-comments-btn"
+                    style={{ textDecoration: "none" }}
+                    href={`${frontendHost}author/${getUUIDFromId(
+                      post?.author?.id
+                    )}/posts/${getUUIDFromId(post?.id)}/comments/`}
+                  >
+                    View all comments
+                  </a>
+                </>
+              )}
           {!inInbox && (
             <>
               <div
@@ -372,6 +568,8 @@ export default function PostContent({
                 loggedInUser={loggedInUser}
                 author={author}
                 post={post}
+                postCommentCount={postCommentCount}
+                setPostCommentCount={setPostCommentCount}
                 triggerRerender={triggerRerender}
               />
             </>

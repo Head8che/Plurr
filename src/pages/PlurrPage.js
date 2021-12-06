@@ -9,13 +9,16 @@ import Stream from "./Stream"
 import Inbox from "./Inbox"
 import Followers from "./Followers"
 import { getBackEndHostWithSlash } from "../utils"
+import PostContent from "../components/PostContent"
+import PostLikes from "./PostLikes"
+import PostComments from "./PostComments"
 
 const allObjectsAreLoaded = (arr) => {
   return arr.filter((item) => Object.keys(item).length === 0).length === 0
 }
 
 export default function PlurrPage({ page }) {
-  const { authorId } = useParams()
+  const { authorId, postId } = useParams()
   const { loggedInUser } = useUserHandler()
   const [loading, setLoading] = React.useState(true)
   const [object, setObject] = React.useState({})
@@ -99,6 +102,42 @@ export default function PlurrPage({ page }) {
           triggerRerender={triggerRerender}
         />
       ),
+    },
+    {
+      name: "Post",
+      apiRoute: `${host}service/author/${authorId}/posts/${postId}/`,
+      secondApiRoute: `${host}service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      thirdApiRoute: `${host}service/author/${authorId}/posts/${postId}/likes/?size=10000`,
+      fourthApiRoute: `${host}service/author/${authorId}/posts/${postId}/comments/?size=10000`,
+      component: (
+        <PostContent
+          key={postId}
+          loggedInUser={loggedInUser}
+          post={object}
+          liked={secondObject}
+          postLikes={thirdObject}
+          postComments={fourthObject}
+          authorHasLiked={
+            Object.keys(object).length > 0 &&
+            Object.keys(secondObject).length > 0
+              ? secondObject?.items
+                  ?.map((likedObject) => likedObject.object)
+                  ?.includes(object.id)
+              : null
+          }
+          triggerRerender={triggerRerender}
+        />
+      ),
+    },
+    {
+      name: "PostLikes",
+      apiRoute: `${host}service/author/${authorId}/posts/${postId}/likes/?size=10000`,
+      component: <PostLikes postLikes={object} />,
+    },
+    {
+      name: "PostComments",
+      apiRoute: `${host}service/author/${authorId}/posts/${postId}/comments/?size=10000`,
+      component: <PostComments postComments={object} />,
     },
   ]
 

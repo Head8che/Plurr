@@ -22,12 +22,14 @@ urlpatterns = [
 
     # Follower Endpoints
     path('author/<str:author_uuid>/friends/', followerView.FriendList, name="friendList"),
+    path('author/<str:author_uuid>/friends/posts/', followerView.FriendPostList, name="friendPostList"),
     path('author/<str:author_uuid>/followers/', followerView.FollowerList, name="followerList"),
     path('author/<str:author_uuid>/followers/<str:follower_uuid>/', followerView.FollowerDetail, name="followerDetail"),
 
     # Post Endpoints
     path('stream/', postView.StreamList, name="streamPosts"),
     path('author/<str:author_uuid>/posts/', postView.PostList, name="authorPosts"),
+    path('author/<str:author_uuid>/share/', postView.ShareFriends, name="authorShare"),
     path('author/<str:author_uuid>/posts/<str:post_uuid>/', postView.PostDetail, name="authorPost"),
 
     # Comment Endpoints

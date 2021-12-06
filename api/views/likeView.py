@@ -55,7 +55,7 @@ def LikeListPost(request, author_uuid, post_uuid):
   # List all the likes
   if request.method == 'GET':
     try:  # try to get the likes
-        likes = Like.objects.filter(author=author_uuid, object=postObject.id)
+        likes = Like.objects.filter(object=postObject.id)
     except:  # return an error if something goes wrong
         return Response(status=status.HTTP_404_NOT_FOUND)
 

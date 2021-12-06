@@ -163,7 +163,7 @@ function Inbox({ loggedInUser, inbox, followers, liked, triggerRerender }) {
                 <div>
                   {`${inboxItem.author?.displayName} likes your `}
                   <a style={{ textDecoration: "none" }} href={inboxItem.object}>
-                    post
+                    {inboxItem.object.includes("comment") ? `comment` : `post`}
                   </a>
                   .
                 </div>
