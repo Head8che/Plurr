@@ -9,7 +9,8 @@ import DeletePostModal from "../components/DeletePostModal"
 import PlurrChip from "../components/PlurrChip"
 import ReactCommonmark from "react-commonmark"
 import { faHeart } from "@fortawesome/free-solid-svg-icons"
-import { RiShareLine } from "react-icons/ri"
+import { v4 as uuidv4 } from "uuid"
+import { RiShareLine, RiShareFill } from "react-icons/ri"
 import { faHeart as farHeart } from "@fortawesome/free-regular-svg-icons"
 import {
   getBackEndHostWithSlash,
@@ -100,6 +101,87 @@ export default function PostContent({
     })
   }
 
+  const sharePostWithFollowers = () => {
+    let sharedPost = JSON.parse(JSON.stringify(post))
+    let loggedInUserAuthor = JSON.parse(JSON.stringify(loggedInUser))
+
+    let newPostUUID = uuidv4()
+    let newPostId = `${frontendHost}author/${loggedInUserAuthor.uuid}/posts/${newPostUUID}`
+    let newCommentId = `${frontendHost}author/${loggedInUserAuthor.uuid}/posts/${newPostUUID}/comments`
+
+    delete loggedInUserAuthor.uuid
+    delete loggedInUserAuthor.username
+    sharedPost.title = `SHARED POST: "${post.title}" by ${post.author.displayName}`
+    sharedPost.author = loggedInUserAuthor
+    sharedPost.id = newPostId
+    sharedPost.type = "post"
+    sharedPost.comments = newCommentId
+    sharedPost.published = null
+
+    // post the validated data to the backend registration service
+    fetch(`${host}service/author/${loggedInUser.uuid}/posts/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(sharedPost),
+    }).then((corsResponse) => {
+      const apiPromise = corsResponse.json()
+      apiPromise
+        .then((apiResponse) => {
+          // empty out the form
+          console.log(apiResponse)
+        })
+        .catch((e) => {
+          // get the errors object
+          const errors = e.response.data
+          console.log(errors)
+        })
+    })
+  }
+
+  const sharePostWithFriends = () => {
+    let sharedPost = JSON.parse(JSON.stringify(post))
+    let loggedInUserAuthor = JSON.parse(JSON.stringify(loggedInUser))
+
+    let newPostUUID = uuidv4()
+    let newPostId = `${frontendHost}author/${loggedInUserAuthor.uuid}/posts/${newPostUUID}`
+    let newCommentId = `${frontendHost}author/${loggedInUserAuthor.uuid}/posts/${newPostUUID}/comments`
+
+    delete loggedInUserAuthor.uuid
+    delete loggedInUserAuthor.username
+    sharedPost.title = `SHARED POST: "${post.title}" by ${post.author.displayName}`
+    sharedPost.author = loggedInUserAuthor
+    sharedPost.id = newPostId
+    sharedPost.type = "post"
+    sharedPost.visibility = "FRIENDS"
+    sharedPost.comments = newCommentId
+    sharedPost.published = null
+
+    // post the validated data to the backend registration service
+    fetch(`${host}service/author/${loggedInUser.uuid}/share/`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify(sharedPost),
+    }).then((corsResponse) => {
+      const apiPromise = corsResponse.json()
+      apiPromise
+        .then((apiResponse) => {
+          // empty out the form
+          console.log(apiResponse)
+        })
+        .catch((e) => {
+          // get the errors object
+          const errors = e.response.data
+          console.log(errors)
+        })
+    })
+  }
+
   return author === null || author === undefined ? (
     <div></div>
   ) : (
@@ -170,7 +252,7 @@ export default function PostContent({
                       justifyContent: "end",
                     }}
                   >
-                    {isEditing ? (
+                    {isEditing && !post.title.includes("SHARED POST:") ? (
                       <div
                         style={{
                           display: "flex",
@@ -190,17 +272,19 @@ export default function PostContent({
                         </Button>
                       </div>
                     ) : (
-                      <Button
-                        variant="outline-primary"
-                        style={{
-                          padding: "0.4rem 1rem",
-                        }}
-                        onClick={() => {
-                          setIsEditing(true)
-                        }}
-                      >
-                        Edit
-                      </Button>
+                      !post.title.includes("SHARED POST:") && (
+                        <Button
+                          variant="outline-primary"
+                          style={{
+                            padding: "0.4rem 1rem",
+                          }}
+                          onClick={() => {
+                            setIsEditing(true)
+                          }}
+                        >
+                          Edit
+                        </Button>
+                      )
                     )}
 
                     <Button
@@ -337,8 +421,27 @@ export default function PostContent({
                       />
                     )}
                   </div>
-                  <div className="icon-container share">
+                  <div
+                    className="icon-container share-followers"
+                    onClick={() => {
+                      sharePostWithFollowers()
+                    }}
+                  >
                     <RiShareLine
+                      style={{
+                        color: "grey",
+                        width: "18px",
+                        height: "18px",
+                      }}
+                    />
+                  </div>
+                  <div
+                    className="icon-container share-friends"
+                    onClick={() => {
+                      sharePostWithFriends()
+                    }}
+                  >
+                    <RiShareFill
                       style={{
                         color: "grey",
                         width: "18px",
@@ -415,21 +518,8 @@ export default function PostContent({
               }}
             ></div>
           )}
-          {!inInbox && comments && comments.length < 3 ? (
-            comments?.map((comment) => {
-              return (
-                <CommentContent
-                  key={comment.id}
-                  loggedInUser={loggedInUser}
-                  comment={comment}
-                  liked={liked}
-                  authorHasLiked={authorLiked?.includes(comment.id)}
-                />
-              )
-            })
-          ) : (
-            <>
-              {comments?.slice(0, 2)?.map((comment) => {
+          {!inInbox && comments && comments.length < 3
+            ? comments?.map((comment) => {
                 return (
                   <CommentContent
                     key={comment.id}
@@ -439,18 +529,31 @@ export default function PostContent({
                     authorHasLiked={authorLiked?.includes(comment.id)}
                   />
                 )
-              })}
-              <a
-                className="view-comments-btn"
-                style={{ textDecoration: "none" }}
-                href={`${frontendHost}author/${getUUIDFromId(
-                  post?.author?.id
-                )}/posts/${getUUIDFromId(post?.id)}/comments/`}
-              >
-                View all comments
-              </a>
-            </>
-          )}
+              })
+            : !inInbox && (
+                <>
+                  {comments?.slice(0, 2)?.map((comment) => {
+                    return (
+                      <CommentContent
+                        key={comment.id}
+                        loggedInUser={loggedInUser}
+                        comment={comment}
+                        liked={liked}
+                        authorHasLiked={authorLiked?.includes(comment.id)}
+                      />
+                    )
+                  })}
+                  <a
+                    className="view-comments-btn"
+                    style={{ textDecoration: "none" }}
+                    href={`${frontendHost}author/${getUUIDFromId(
+                      post?.author?.id
+                    )}/posts/${getUUIDFromId(post?.id)}/comments/`}
+                  >
+                    View all comments
+                  </a>
+                </>
+              )}
           {!inInbox && (
             <>
               <div

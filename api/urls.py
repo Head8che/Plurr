@@ -29,6 +29,7 @@ urlpatterns = [
     # Post Endpoints
     path('stream/', postView.StreamList, name="streamPosts"),
     path('author/<str:author_uuid>/posts/', postView.PostList, name="authorPosts"),
+    path('author/<str:author_uuid>/share/', postView.ShareFriends, name="authorShare"),
     path('author/<str:author_uuid>/posts/<str:post_uuid>/', postView.PostDetail, name="authorPost"),
 
     # Comment Endpoints

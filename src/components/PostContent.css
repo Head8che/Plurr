@@ -42,8 +42,12 @@
   content: "Comment";
 }
 
-.icon-container.share:before {
-  content: "Share";
+.icon-container.share-followers:before {
+  content: "Share with Followers";
+}
+
+.icon-container.share-friends:before {
+  content: "Share with Friends";
 }
 
 .icon-container:before {

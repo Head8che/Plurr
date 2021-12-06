@@ -66,6 +66,66 @@ def StreamList(request):
     return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @api_view(['POST', 'GET'])
+def ShareFriends(request, author_uuid):
+  try:  # try to get the specific author
+      authorObject = Author.objects.get(uuid=author_uuid)
+  except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_404_NOT_FOUND)
+
+  # Create a new post
+  if request.method == 'POST':
+    # if the logged in user is not the author
+    if not loggedInUserIsAuthor(request, author_uuid):  
+      return Response(status=status.HTTP_401_UNAUTHORIZED)
+
+    try:  # try to get the image handled data
+      post_count = Post.objects.filter(author=author_uuid).count()
+      request_data = handlePostImage(request.data)
+      if request_data.get('title') == None:
+        request_data["title"] = "Post " + str(post_count + 1) + " by " + authorObject.displayName
+    except:  # return an error if something goes wrong
+      return Response(status=status.HTTP_400_BAD_REQUEST)
+        
+    # get the Post serializer
+    serializer = PostSerializer(data=request_data)
+
+    # update the Post data if the serializer is valid
+    if serializer.is_valid():
+      serializer.save(author=authorObject)
+
+      try:  # try to get the followers
+        author = Author.objects.get(uuid=getUUIDFromId(request.user.id))
+        followers = author.followers.all()
+        friendIds = []
+        
+        for follower in followers:
+          followerFollowers = Author.objects.get(uuid=follower.uuid).followers.all()
+          for followerFollower in followerFollowers:
+            if str(followerFollower.id) == str(author.id):
+              friendIds.append(follower.id)
+        
+        friends = Author.objects.filter(id__in=friendIds)
+        for friend in friends:
+          try:
+            remote_node = Node.objects.filter(text__startswith=friend.host[:20])[0]
+            postToAuthorInbox(request, serializer.data, friend, remote_node)
+          except:
+            postToAuthorInbox(request, serializer.data, friend)
+      except:  # return an error if something goes wrong
+        pass
+
+      return Response({"message": "Post created", "data": serializer.data}, 
+        status=status.HTTP_201_CREATED)
+
+    # return an error if something goes wrong with the update
+    return Response({"message": serializer.errors}, 
+      status=status.HTTP_400_BAD_REQUEST)
+
+  # Handle unaccepted methods
+  else:
+    return Response(status=status.HTTP_405_METHOD_NOT_ALLOWED)
+
+@api_view(['POST', 'GET'])
 def PostList(request, author_uuid):
   try:  # try to get the specific author
       authorObject = Author.objects.get(uuid=author_uuid)
