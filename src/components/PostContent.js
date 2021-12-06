@@ -29,6 +29,8 @@ export default function PostContent({
   authorHasLiked,
   triggerRerender,
   inInbox = false,
+  postLikes = null,
+  postComments = null,
 }) {
   const [modalShowDelete, setModalShowDelete] = React.useState(false)
   const author = post?.author
@@ -40,6 +42,12 @@ export default function PostContent({
   const [isEditing, setIsEditing] = React.useState(false)
   const [shouldSubmitForm, setShouldSubmitForm] = React.useState(true)
   const [comments, setComments] = React.useState([])
+  const [postLikeCount, setPostLikeCount] = React.useState(
+    postLikes?.items?.length
+  )
+  const [postCommentCount, setPostCommentCount] = React.useState(
+    postComments?.items?.length
+  )
   const authorLiked = liked?.items?.map((likedObject) => likedObject.object)
   let postHasMarkdownContentType = post?.contentType === "text/markdown"
   let postHasImageContentType =
@@ -48,6 +56,9 @@ export default function PostContent({
 
   const host = getBackEndHostWithSlash()
   const frontendHost = getFrontEndHostWithSlash()
+
+  console.log(postLikes?.items?.length)
+  console.log(postComments?.items?.length)
 
   React.useEffect(() => {
     post?.id?.split("/author")[1] &&
@@ -84,6 +95,7 @@ export default function PostContent({
         .then((apiResponse) => {
           console.log(apiResponse)
           setIsLiked(!isLiked)
+          setPostLikeCount(postLikeCount + 1)
         })
         .catch((e) => {
           console.log(e)
@@ -338,9 +350,40 @@ export default function PostContent({
                     />
                   </div>
                 </div>
-                {post.visibility.toUpperCase() === "FRIENDS" && (
-                  <PlurrChip text="friends" />
-                )}
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    alignItems: "center",
+                  }}
+                >
+                  {isNotNullOrUndefined(postLikeCount) && postLikeCount > 0 && (
+                    <div style={{ marginLeft: "10px" }}>
+                      {postLikeCount > 1
+                        ? `${postLikeCount} likes`
+                        : `${postLikeCount} like`}
+                    </div>
+                  )}
+                  {isNotNullOrUndefined(postCommentCount) &&
+                    postCommentCount > 0 && (
+                      <div
+                        style={{
+                          marginLeft: "10px",
+                          color: "#494f54",
+                          fontSize: "16px",
+                        }}
+                      >
+                        {postCommentCount > 1
+                          ? `${postCommentCount} comments`
+                          : `${postCommentCount} comment`}
+                      </div>
+                    )}
+                  {post.visibility.toUpperCase() === "FRIENDS" && (
+                    <div style={{ marginLeft: "10px" }}>
+                      <PlurrChip text="friends" />
+                    </div>
+                  )}
+                </div>
               </Col>
             </Row>
           )}
@@ -382,6 +425,8 @@ export default function PostContent({
                 loggedInUser={loggedInUser}
                 author={author}
                 post={post}
+                postCommentCount={postCommentCount}
+                setPostCommentCount={setPostCommentCount}
                 triggerRerender={triggerRerender}
               />
             </>

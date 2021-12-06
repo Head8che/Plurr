@@ -11,6 +11,8 @@ export default function CreateComment({
   author,
   post,
   triggerRerender,
+  postCommentCount,
+  setPostCommentCount,
 }) {
   // schema to validate form inputs
   const validationSchema = Yup.object().shape({
@@ -53,6 +55,7 @@ export default function CreateComment({
           .then((apiResponse) => {
             // empty out the form
             reset()
+            setPostCommentCount(postCommentCount + 1)
             triggerRerender()
 
             console.log(apiResponse)

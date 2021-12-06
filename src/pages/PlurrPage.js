@@ -105,13 +105,24 @@ export default function PlurrPage({ page }) {
       name: "Post",
       apiRoute: `${host}service/author/${authorId}/posts/${postId}/`,
       secondApiRoute: `${host}service/author/${loggedInUser.uuid}/liked/?size=10000`,
+      thirdApiRoute: `${host}service/author/${authorId}/posts/${postId}/likes/?size=10000`,
+      fourthApiRoute: `${host}service/author/${authorId}/posts/${postId}/comments/?size=10000`,
       component: (
         <PostContent
           key={postId}
           loggedInUser={loggedInUser}
           post={object}
           liked={secondObject}
-          authorHasLiked={false}
+          postLikes={thirdObject}
+          postComments={fourthObject}
+          authorHasLiked={
+            Object.keys(object).length > 0 &&
+            Object.keys(secondObject).length > 0
+              ? secondObject?.items
+                  ?.map((likedObject) => likedObject.object)
+                  ?.includes(object.id)
+              : null
+          }
           triggerRerender={triggerRerender}
         />
       ),
