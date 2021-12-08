@@ -52,7 +52,7 @@ export default function Author({
         },
         body: JSON.stringify({
           type: "follow",
-          summary: `${loggedInUser?.displayName} wants to follow ${author?.displayNamedisplayName}`,
+          summary: `${loggedInUser?.displayName} wants to follow ${author?.displayName}`,
           actor: loggedInUser,
           object: author,
         }),
@@ -93,7 +93,7 @@ export default function Author({
         <Col xs={6} md={10} style={{ display: "flex", alignItems: "center" }}>
           <Image
             className="fluid"
-            src={getAuthorImgOrDefault(author?.displayNameprofileImage)}
+            src={getAuthorImgOrDefault(author?.profileImage)}
             roundedCircle
             style={{
               objectFit: "cover",
