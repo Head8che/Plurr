@@ -55,6 +55,7 @@ export default function GithubModal({ loggedInUser, show, onHide }) {
             <img
               className="github-avatar"
               src={events[0] ? events[0].actor.avatar_url : ""}
+              alt="github"
             />
           </div>
         </div>

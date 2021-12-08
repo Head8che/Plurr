@@ -366,7 +366,10 @@ export default function PostContent({
                   />
                 </div>
               ) : postHasMarkdownContentType ? (
-                <div className="mb-2">
+                <div
+                  className="mb-2"
+                  style={{ maxHeight: "600px", overflow: "hidden" }}
+                >
                   <ReactCommonmark source={post.content} escapeHtml={true} />
                 </div>
               ) : (
