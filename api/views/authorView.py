@@ -17,6 +17,7 @@ def AuthorList(request):
         authors = (Author.objects.all().order_by('id') 
           if ((str(request.META.get("HTTP_HOST")) == "localhost:8000") 
             or (str(request.META.get("HTTP_HOST")) == "127.0.0.1:8000"))
+            or (str(request.META.get("HTTP_HOST")) == "plurr.herokuapp.com")
             or (str(request.META.get("HTTP_REFERER")) == "plurr.herokuapp.com")
           else Author.objects.filter(host="https://plurr.herokuapp.com/").order_by('id'))
     except:  # return an error if something goes wrong
