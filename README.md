@@ -15,6 +15,9 @@ Make a distributed social network!
 ## Heroku
 [https://plurr.herokuapp.com](http://plurr.herokuapp.com)
 
+Documentation
+============
+[Plurr Wiki](https://github.com/aakindel/CMPUT404-project-socialdistribution/wiki/API-Documentation)
 
 Contributing
 ============
